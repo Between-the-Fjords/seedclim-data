@@ -1,7 +1,9 @@
 #' Imports Community data from source files
 #' 
-#' @param db The path to the database or DNS
-#' @param isDNS Is db a DNS?
+#' @param username is the username
+#' @param password is password
+#' @param host is host
+#' @param port is port
 #' @param moss Load bryophyte data?
 #' @description Runs source files to load community data into memory. 
 #' @details Uses RODBC so only works with 32 bit version of windows.
@@ -23,13 +25,13 @@
 #' @importFrom RODBC odbcConnectAccess2007 odbcConnect
 
 
-load_community_data<-function(db = "D:/downloadeddata/seedclim_2014-12-19.mdb", isDNS=FALSE, moss = FALSE){
-  if(version$arch!="i386"){stop("Need to use 32 bit version of R for RODBC package")}
-  if(isDNS){  
-    con<-odbcConnect(db)
-  }else{
-    con<-odbcConnectAccess2007(db)
-  }
+load_community_data<-function(username = "", password = "", host = "127.0.0.1", port = 3306, moss = FALSE){
+  con <- dbConnect (RMySQL::MySQL(),
+                    username = username,
+                    password = password,
+                    host = host,
+                    port = port,
+                    dbname = "seedclimComm")
   con<<-con#ugly hack otherwise not found in scope
   source(file.path(system.file(package = "seedclimComm"), "importSource", "loadCover.r"))
   source(file.path(system.file(package = "seedclimComm"), "importSource", "loadSubplotfreq.r"))
