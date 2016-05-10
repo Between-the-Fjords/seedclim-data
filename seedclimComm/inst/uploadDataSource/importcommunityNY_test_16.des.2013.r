@@ -1,0 +1,288 @@
+####################
+#todo############
+#check species in taxon table before inserting
+#
+####################
+
+
+library (RODBC)
+#library(gdata)
+
+wd<-"d:\\downloadeddata\\"
+
+db<-odbcConnectAccess(paste(wd,"seedclim_2014-12-19.mdb", sep=""))
+sqlTables(db)
+
+wd<-"o:\\data\\seedclim2014\\"
+
+#file.choose()
+filelist2009<-dir(path=paste(wd,"Seedclim 2009 sp.fix csv\\",sep=""), full.names=T)    #uncomment to loop    #needs to be directory of just csv files
+filelist2011<-dir(path=paste(wd,"Seedclim 2011 sp.fix CSV\\",sep=""), full.names=T) 
+filelist2012<-dir(path=paste(wd,"Seedclim 2012 sp.fix CSV\\",sep=""), full.names=T) 
+filelist2013<-dir(path=paste(wd,"SeedClim 2013 fix CSV\\",sep=""), full.names=T)
+filelist2010<-dir(path=paste(wd,"rtg2010\\v2\\",sep=""), pattern=".csv", full.names=T)
+
+
+filelistall<-dir(path=paste(wd,"csv files\\",sep=""), full.names=T)
+
+   
+ #Trim   (getting rid of gdata..)
+    trim <-function (s, recode.factor = TRUE, ...) 
+{
+    s <- sub(pattern = "^ +", replacement = "", x = s)
+    s <- sub(pattern = " +$", replacement = "", x = s)
+    s
+}
+
+
+#for loop
+import.data<-function(filelist){
+  sapply(filelist,function(n){     
+  
+                                                                              #uncomment to loop
+    #n<-"O:\\data\\SEEDCLIM2014\\Seedclim 2012 sp.fix CSV\\Lavisdalen2012 sp.fix.csv"                  #comment to loop
+    print(n)
+    chkft<-c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
+    dat<-read.csv2(n, dec=",")  
+    if(ncol(dat)>1){
+      if(any(sapply(dat[,chkft ], class)=="factor")) 
+        dat<-read.csv2(n, dec=".")  
+    }else{
+      dat<-read.csv(n, dec=".")
+      if(any(sapply(dat[, chkft], class)=="factor"))
+        dat<-read.csv(n, dec=",")
+     } 
+         
+    dat<-dat[!is.na(dat$originPlotID),]
+    head(dat)
+    names(dat)
+    dat$turfID<-trim(dat$turfID)
+ 
+   
+  print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
+    
+    ##USB:
+    #file.choose()
+  #filelist<-dir(path="\\\\ustaoset.uib.no\\jha066\\SEEDCLIM\\Seedclim data 2009-2012\\Seed clim 2009 CSV files\\", full.names=T)    #uncomment to loop    #needs to be directory of just csv files
+  #sapply(filelist,function(n){                                                                                 #uncomment to loop
+    #n<-"O:\\data\\SEEDCLIM2014\\SeedClim 2013 fix CSV\\SeedClim Community 2013 VES corr. LCK,CP,Feb2014, sp.fix.csv"                   #comment to loop
+    #print(n)
+    #dat<-read.csv2(n, dec=".")
+    #dat<-dat[!is.na(dat$originPlotID),]
+    #head(dat)
+    #names(dat)
+    #dat$turfID<-trim(dat$turfID)
+     
+    #extract turf data
+    turf<-dat[,c("turfID", "TTtreat","RTtreat", "GRtreat", "originPlotID","destinationPlotID")]
+    turf<-unique(turf)
+    turf$TTtreat<-trim(turf$TTtreat) #  trim white spaces
+    turf$RTtreat<-trim(turf$RTtreat)
+    turf$GRtreat<-trim(turf$GRtreat)
+  
+    turf
+    names(turf)
+    
+    alreadyIn<-sqlQuery(db,"select turfId from turfs")$turfId
+    newTurfs<-turf[!as.character(turf$turfID)%in%alreadyIn,]#find which turfs IDs are not already in database
+    
+    if(nrow(newTurfs)>0)sqlSave(db,newTurfs,"turfs", rownames=F, append=T)
+    nrow(turf)
+    nrow(newTurfs)
+    
+    print("done turfs")                                  
+    
+    
+    #subTurf env
+    subturfEnv<-dat[dat$Measure!="Cover", c("turfID","subPlot","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "comment" )  ]
+    names(subturfEnv)[2]<-"subTurf"
+    if(!is.null(dat$missing)){
+       bad=dat$missing[dat$Measure!="Cover"]
+       bad[is.na(bad)]<-""
+      subturfEnv<-cbind(subturfEnv, bad=bad)
+    }else{
+      subturfEnv<-cbind(subturfEnv, bad="")    
+    }
+    subturfEnv 
+    sqlSave(db,subturfEnv,"subTurfEnvironment", rownames=FALSE, append=TRUE)
+    nrow(subturfEnv)
+    
+    #TurfEnv
+    turfEnv<-dat[dat$Measure=="Cover", c("turfID","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular","totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment","recorder", "date")]
+    if(any(nchar(as.character(turfEnv$comment))>255))stop("more than 255 characters in a comment field in turfEnv")
+    sqlSave(db,turfEnv,"turfEnvironment", rownames=F, append=T)
+  nrow(turfEnv)   
+  
+    #TurfCommunity  
+    spp<-cbind(dat[,c("turfID", "year")],dat[, (which(names(dat)=="recorder")+1):(which(names(dat)=="pleuro")-1) ])[dat$Measure=="Cover",]
+    unique(as.vector(sapply(spp[, -(1:2)], as.character)))    #oddity search
+    table(as.vector(sapply(spp[, -(1:2)], as.character)), useNA="ifany") 
+
+   sppT<-data.frame(turfID=NA, year=NA, species=NA, cover=NA, cf=NA)[-1,]
+    
+    lapply(3:ncol(spp),function(nc){
+      #print(names(spp)[nc])
+      sp<-spp[,nc ]
+      cf<-grep("cf",sp, ignore.case=T)
+      sp<-gsub("cf", "", sp, ignore.case=T)
+      sp<-gsub("\\*", "", sp, ignore.case=T)
+      sp<-as.numeric(as.character(sp))
+      spp2<-data.frame(turfID=spp$turfID, year=spp$year, species=names(spp)[nc], cover=sp, cf=0)
+      spp2$cf[cf]<-1
+      spp2<-spp2[!is.na(spp2$cover),]
+      spp2<-spp2[spp2$cover>0,]
+     # print(spp2)
+  #     write.table(spp2,"test.txt", sep="\t", quote=F, row.names=F) 
+      if(nrow(spp2)>0)sppT<<-rbind(sppT, spp2)#sqlSave(db,spp2,"turfCommunity", rownames=F, append=T)
+      invisible()
+    })
+      sqlSave(db,sppT,"turfCommunity", rownames=F, append=T)
+  
+  
+     #Check rows query for TurfCommunity :
+ print( sum(sapply(spp[,3:ncol(spp)], function(x) as.numeric(as.character(x)))>0, na.rm=T))   #Check expected number of rows added
+   
+  print(
+  if(dat$year[1]!=2009){
+    tmp<-sqlQuery(db, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID WHERE ( ((turfCommunity.year)=',dat$year[1],')); ', sep=""))
+    sum(tolower(substring(tmp, 0,3))==tolower(substring(as.character(dat$OriginSite[1]), 0,3)))#Check for 2011 and 2013 data: 
+  }else{
+    tmp<-sqlQuery(db, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.originPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID WHERE ( ((turfCommunity.year)=',dat$year[1],')); ', sep=""))
+    sum(tolower(substring(tmp, 0,3))==tolower(substring(as.character(dat$OriginSite[1]), 0,3))) #Check for 2009 data:
+  } )
+  
+  
+  
+                                              
+     #subTurfCommunity  
+     print("subturfcommunity")  
+    subspp<-cbind(dat[,c("turfID", "year", "subPlot")],dat[, (which(names(dat)=="recorder")+1):(which(names(dat)=="pleuro")-1) ])[dat$Measure!="Cover",]
+    unique(as.vector(sapply(subspp[, -(1:3)], as.character))) #oddity search
+    print(table(as.vector(sapply(subspp[, -(1:3)], as.character)))) #oddity search
+    
+    #Find oddities in datasett:
+    tmp<- sapply(subspp, function(z){a<-which(z=="f"); if(length(a)>0){subspp[a,1:3]} else NULL})
+    tmp[!sapply(tmp, is.null)]
+    spp0<-data.frame(turfID=NA, year=NA, subTurf=NA, species=NA, seedlings=NA, juvenile=NA,adult=NA,fertile=NA,vegetative=NA,dominant=NA, cf=NA)
+    spp0<-spp0[-1,]
+    lapply(4:ncol(subspp),function(nc){
+      sp<-subspp[,nc ]
+      spp2<-data.frame(turfID=subspp$turfID, year=subspp$year, subTurf=subspp$subPlot, species=names(subspp)[nc], seedlings=0, juvenile=0,adult=0,fertile=0,vegetative=0,dominant=0, cf=0)
+      spp2$cf[grep("cf",sp, ignore.case=T)]<-1
+      spp2$fertile[grep("F",sp, ignore.case=F)]<-1
+      spp2$dominant[grep("D",sp, ignore.case=T)]<-1       
+      spp2$vegetative[grep("V",sp, ignore.case=T)]<-1
+      spp2$seedlings[grep("S",sp, ignore.case=T)]<-1
+      for(i in 2:50){
+        spp2$seedlings[grep(paste("Sx",i,sep=""),sp, ignore.case=T)]<-i
+        spp2$seedlings[grep(paste(i,"xS",sep=""),sp, ignore.case=T)]<-i
+      }    
+      spp2$juvenile[grep("J",sp, ignore.case=T)]<-1
+      for(i in 2:50){
+        spp2$juvenile[grep(paste("Jx",i,sep=""),sp, ignore.case=T)]<-i
+         spp2$juvenile[grep(paste(i,"xJ",sep=""),sp, ignore.case=T)]<-i
+      }
+      spp2$adult[unique(c(grep("1",sp, ignore.case=T),grep("F",sp, ignore.case=FALSE),grep("V",sp, ignore.case=T),grep("D",sp, ignore.case=T))) ]<-1
+      spp2<-spp2[rowSums(spp2[,-(1:4)])>0,] #keep only rows with presences
+      spp2
+      #if(nrow(spp2)>0)sqlSave(db,spp2,"subTurfCommunity", rownames=F, append=T)
+      if(nrow(spp2)>0)spp0<<-rbind(spp0,spp2)
+      invisible()
+    })  
+    #euphrasia rule adults=adults+juvenile+seedling, j=j+s, s=s
+    seedlingSp<-c("Euph.fri", "Eup.fri","Eup.sp","Eup.str","Euph.fri","Euph.sp", "Euph.str","Euph.str.1", "Euph.wet", "Poa.ann","Thlaspi..arv","Com.ten","Gen.ten", "Rhi.min", "Cap.bur", "Mel.pra","Mel.sp","Mel.syl","Noc.cae","Ste.med","Thl.arv","Ver.arv")
+    #########more annuals?
+    
+    tmpSp<-spp0[spp0$species%in%seedlingSp,]
+      tmpSp$juvenile[tmpSp$juvenile==0&tmpSp$adult==1]<-1  
+      tmpSp$seedlings[tmpSp$seedlings==0&tmpSp$adult==1]<-1
+      tmpSp$seedlings[tmpSp$seedlings==0&tmpSp$juvenile==1]<-1
+    spp0[spp0$species%in%seedlingSp,]<-tmpSp
+    
+    
+    sqlSave(db,spp0,"subTurfCommunity", rownames=F, append=T)
+    
+    
+   #Check rows query for subTurfCommunity :
+  print(sum(sapply(subspp[,4:ncol(subspp)], function(x) as.character(x))!="", na.rm=T) )  #Check expected number of rows added  )
+  
+  print(if(dat$year[1]!=2009){
+    tmp<-sqlQuery(db, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN subTurfCommunity ON turfs.turfID = subTurfCommunity.turfID WHERE ( ((subTurfCommunity.year)=',dat$year[1],')); ', sep=""))
+     sum(tolower(substring(tmp, 0,3))==tolower(substring(as.character(dat$OriginSite[1]), 0,3)))#Check actual number of rows added for 2011 and 2012 data:
+    }else{
+    tmp<-sqlQuery(db, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.originPlotID) INNER JOIN subTurfCommunity ON turfs.turfID = subTurfCommunity.turfID WHERE ( ((subTurfCommunity.year)=',dat$year[1],')); ', sep=""))
+     sum(tolower(substring(tmp, 0,3))==tolower(substring(as.character(dat$OriginSite[1]), 0,3)))#Check actual number of rows added for 2009 data:
+  } ) 
+  
+  
+  
+    
+    
+  ############### Vigdis seedling problem #only for 2011 data     #############################
+  if(dat$year[1]==2011){
+    seed<-dat[dat$TTtreat!=""&dat$Measure!="Cover",c("turfID","subPlot", "year", "seedlings", "recorder")]  #get data.frame of seedlings      N1
+    seed$subPlot<-as.integer(as.character(seed$subPlot))
+    seed$turfID<-factor(seed$turfID)
+    seedsum<-sqlQuery(db,paste("select * from [number identified seedlings by subplot] where siteID='",dat$DestinationSite[1], "' and Year=2011", sep=""))     #sqlQuery database for number of seedlings per subplot N2
+    seed<-seed[order(seed$turfID, seed$subPlot),]
+  
+    head(seed)
+    head(seedsum)
+    identical(seed[,1:2], seedsum[,1:2])#$turfID)
+    identical(seed[,2], seedsum[,2])
+  
+    identical(seed[,1], seedsum[,1])
+    
+    seed<-seed[!paste(seed$turf, seed$subPlot)%in%setdiff(paste(seed$turf, seed$subPlot),paste(seedsum$turf, seedsum$subTurf)),]#   then remove any missing rows as they have no species
+    
+    seed$seedlings[is.na(seed$seedlings)]<-0
+  
+    seed$seedlings2<-seed$seedlings
+    seed$seedlings2[seed$recorder=="W"]<-seed$seedlings[seed$recorder=="W"]-seedsum$SumOfseedlings[seed$recorder=="W"]#for VV /W subplots n seedlings N1 =  N1 - N2
+  
+    data.frame(seed$recorder,seed$seedlings, seedsum$SumOfseedlings, seed$seedlings2)
+  
+    #insert N1 into subTurfCommunity as unident seedling
+  
+    seed<-seed[seed$seedlings2>0,]
+    seed<-data.frame(turfID=seed$turfID, year=seed$year, subTurf=seed$subPlot, species="seed.unid", seedlings=seed$seedlings2, juvenile=0,adult=0,fertile=0,vegetative=0,dominant=0, cf=1)
+    sqlSave(db,seed,"subTurfCommunity", rownames=F, append=T)
+  }
+  ######################### vigdis seedling problem fixed  #########################
+  
+  })                                                                                                      #uncomment to loop
+}
+
+#import.data(c(filelist2009,filelist2010,filelist2011,filelist2012,filelist2013))
+import.data(c(filelistall))     #run me
+#import.data(c(filelist2011))
+#import.data(c(filelist2012))
+#import.data(c(filelist2013))
+import.data(c(filelist2010))           #run me ####warning NA by coercion
+
+
+# Codes for deleting tables:
+wipe<-function(){
+    sqlQuery(db, "Delete * FROM new_TurfCommunity")
+    sqlQuery(db, "Delete * FROM newSubTurfCommunity")
+    sqlQuery(db, "Delete * FROM subTurfCommunity")                            
+    sqlQuery(db, "Delete * FROM subTurfEnvironment")
+    sqlQuery(db, "Delete * FROM turfCommunity")
+    sqlQuery(db, "Delete * FROM turfEnvironment")
+   #sqlQuery(db, "Delete * FROM turfs")
+    print("Database wiped. Hope you really wanted to do that!")
+}
+
+wipe()
+ 
+ 
+#replace mytable with a table you want to clean
+#duplicate lines as necessary to clean all tables
+#delete tables in the correct order or it won't work
+#Then just run wipe() to clean the database
+
+close(db)
+
+
+
+ dat$comment[order(nchar(as.character(dat$comment)))]
