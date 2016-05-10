@@ -1,11 +1,13 @@
 ####################
 #todo############
 #check species in taxon table before inserting
-#
+#merge subturf taxa
 ####################
 
 #for loop
-import.data<-function(filelist){
+import.data<-function(filelist, con){
+  require(dplyr)
+  require(plyr)
   sapply(filelist,function(n){     
   
                                                                               #uncomment to loop
@@ -82,28 +84,33 @@ import.data<-function(filelist){
     sqlAppendTable(con, turfEnv, "turfEnvironment", row.names=FALSE)
   nrow(turfEnv)   
   
+  #Mergedistionary
+  mergedictionary <- dbGetQuery(con,"SELECT * FROM mergedictionary")  
+  
     #TurfCommunity  
     spp <- cbind(dat[, c("turfID", "year")], dat[, (which(names(dat) == "recorder") + 1) : (which(names (dat) == "pleuro")-1) ])[dat$Measure == "Cover",]
+  notInMerged <- setdiff(names(spp), mergedictionary$oldID)
+  mergedictionary <- rbind(mergedictionary, cbind(notInMerged, notInMerged))
+  mergedNames <- mapvalues(names(spp), from = mergedictionary$oldID, to = mergedictionary$newID)
+  spp <- lapply(unique(mergedNames), function(n)rowSums(spp[, names(spp) == n, drop = FALSE]))
+  spp <- setNames(as.data.frame(spp), unique(mergedNames))
     unique(as.vector(sapply(spp[, -(1:2)], as.character)))    #oddity search
     table(as.vector(sapply(spp[, -(1:2)], as.character)), useNA = "ifany") 
 
-   sppT <- data.frame(turfID = NA, year = NA, species = NA, cover = NA, cf = NA)[-1,]
-    
-    lapply(3:ncol(spp),function(nc){
+  sppT <- ldply(as.list(3:ncol(spp)),function(nc){
       #print(names(spp)[nc])
       sp <- spp[, nc]
-      cf <- grep("cf",sp, ignore.case=T)
-      sp <- gsub("cf", "", sp, ignore.case=T)
-      sp <- gsub("\\*", "", sp, ignore.case=T)
+      cf <- grep("cf",sp, ignore.case = TRUE)
+      sp <- gsub("cf", "", sp, ignore.case = TRUE)
+      sp <- gsub("\\*", "", sp, ignore.case = TRUE)
       sp <- as.numeric(as.character(sp))
       spp2 <- data.frame(turfID = spp$turfID, year = spp$year, species = names(spp)[nc], cover = sp, cf = 0)
       spp2$cf[cf] <- 1
       spp2 <- spp2[!is.na(spp2$cover),]
       spp2 <- spp2[spp2$cover > 0,]
      # print(spp2)
-  #     write.table(spp2,"test.txt", sep="\t", quote=F, row.names=F) 
-      if(nrow(spp2) > 0) sppT <<- rbind(sppT, spp2)#sqlSave(db,spp2,"turfCommunity", rownames=F, append=T)
-      invisible()
+  #   write.table(spp2,"test.txt", sep="\t", quote=F, row.names=F) 
+      spp2
     })
     sqlAppendTable(con, sppT, "turfCommunity", row.names=FALSE)
   
@@ -134,7 +141,8 @@ import.data<-function(filelist){
     tmp[!sapply(tmp, is.null)]
     spp0 <- data.frame(turfID = NA, year = NA, subTurf = NA, species = NA, seedlings = NA, juvenile = NA, adult = NA, fertile = NA, vegetative = NA, dominant = NA, cf = NA)
     spp0 <- spp0[-1,]
-    lapply(4:ncol(subspp), function(nc){
+ 
+    spp0 <- ldply(as.list(4:ncol(subspp)), function(nc){
       sp <- subspp[,nc ]
       spp2 <- data.frame(turfID = subspp$turfID, year = subspp$year, subTurf = subspp$subPlot, species = names(subspp)[nc], seedlings = 0, juvenile = 0, adult = 0, fertile = 0, vegetative = 0, dominant = 0, cf = 0)
       spp2$cf[grep("cf",sp, ignore.case = TRUE)] <- 1
@@ -154,9 +162,6 @@ import.data<-function(filelist){
       spp2$adult[unique(c(grep("1", sp, ignore.case = TRUE), grep("F", sp, ignore.case = FALSE), grep("V", sp, ignore.case = TRUE), grep("D", sp, ignore.case = TRUE))) ] <- 1
       spp2<-spp2[rowSums(spp2[,-(1:4)])>0,] #keep only rows with presences
       spp2
-      #if(nrow(spp2)>0)sqlSave(db,spp2,"subTurfCommunity", rownames=F, append=T)
-      if(nrow(spp2) > 0)spp0 <<- rbind(spp0, spp2)
-      invisible()
     })  
     #euphrasia rule adults=adults+juvenile+seedling, j=j+s, s=s
     seedlingSp <- c("Euph.fri", "Eup.fri","Eup.sp","Eup.str","Euph.fri","Euph.sp", "Euph.str","Euph.str.1", "Euph.wet", "Poa.ann","Thlaspi..arv","Com.ten","Gen.ten", "Rhi.min", "Cap.bur", "Mel.pra","Mel.sp","Mel.syl","Noc.cae","Ste.med","Thl.arv","Ver.arv")
@@ -166,10 +171,9 @@ import.data<-function(filelist){
       tmpSp$juvenile[tmpSp$juvenile == 0 & tmpSp$adult == 1] <- 1  
       tmpSp$seedlings[tmpSp$seedlings == 0 & tmpSp$adult == 1] <- 1
       tmpSp$seedlings[tmpSp$seedlings == 0 & tmpSp$juvenile == 1] <- 1
-    spp0[spp0$species%in%seedlingSp,]<-tmpSp
+    spp0[spp0$species %in% seedlingSp,] <- tmpSp
     
-    
-    sqlAppendTable(con, spp0, "subTurfCommunity", row.names=FALSE)
+    sqlAppendTable(con, spp0, "subTurfCommunity", row.names = FALSE)
     
     
    #Check rows query for subTurfCommunity :
@@ -230,7 +234,7 @@ wipe <- function(){
   dbGetQuery(con, "Delete * FROM turfCommunity")
   dbGetQuery(con, "Delete * FROM turfEnvironment")
    #dbGetQuery(con, "Delete * FROM turfs")
-    print("Database wiped. Hope you really wanted to do that!")
+  message("Database wiped. Hope you really wanted to do that!")
 }
 
  
