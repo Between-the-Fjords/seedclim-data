@@ -11,4 +11,12 @@ ALTER TABLE mergedictionary ADD CONSTRAINT PRIMARY KEY(oldID);
 
 
 ALTER TABLE blocks ADD FOREIGN KEY(siteID) REFERENCES sites(siteID);
-ALTER TABLE blocks ADD FOREIGN KEY(siteID) REFERENCES sites(siteID);
+ALTER TABLE plots ADD FOREIGN KEY(blockID) REFERENCES blocks(blockID);
+ALTER TABLE turfs ADD FOREIGN KEY(originPlotID) REFERENCES plots(plotID);
+ALTER TABLE turfs ADD FOREIGN KEY(destinationPlotID) REFERENCES plots(plotID);
+ALTER TABLE turfCommunity ADD FOREIGN KEY(turfID) REFERENCES turfs(turfID);
+ALTER TABLE subTurfCommunity ADD FOREIGN KEY(turfID) REFERENCES turfs(turfID);
+ALTER TABLE subTurfEnvironment ADD FOREIGN KEY(turfID) REFERENCES turfs(turfID);
+ALTER TABLE turfEnvironment ADD FOREIGN KEY(turfID) REFERENCES turfs(turfID);
+ALTER TABLE taxon ADD FOREIGN KEY(species) REFERENCES turfCommunity(species);
+ALTER TABLE taxon ADD FOREIGN KEY(species) REFERENCES subTurfCommunity(species);
