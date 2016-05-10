@@ -10,7 +10,6 @@
 
 # RStudio files
 .Rproj.user/
-seedclimComm.Rproj
 .Rbuildignore
 
 # produced vignettes
