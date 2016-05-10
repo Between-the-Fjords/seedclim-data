@@ -6,7 +6,7 @@ FROM subTurfEnvironment where (subTurfEnvironment.year = new_TurfCommunity.year)
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
 INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN new_TurfCommunity ON turfs.turfID = new_TurfCommunity.turfID) INNER JOIN turfEnvironment ON (turfEnvironment.year = new_TurfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID)
 WHERE NOT turfs.TTtreat='' AND ((Not (new_TurfCommunity.Year)=2010));"
-cover.thin <- dbGetQuery(con,coverQ)
+cover.thin <- dbGetQuery(con, coverQ)
        
 head(cover.thin)
                                        
@@ -76,11 +76,11 @@ rm(cover.thin, siri.fix, stompingQ, siriQ, siriLOW, siri,coverQ)
 
 #John's corrections
 cover['111 TT2 137_2011', 'Agr.cap'] <- 25
-cover['32 TT3 109_2009',] <- cover['32 TT3 109_2009',] / 2
-cover['32 TT3 109_2012',] <- cover['32 TT3 109_2012',] * 2 / 3
-cover['33 TT2 58_2009',] <- cover['33 TT2 58_2009',] * 2 / 3
-cover['34 TT1 32_2009',] <- cover['34 TT1 32_2009',] / 2
-cover['40 TT2 62_2011',] <- cover['40 TT2 62_2011',] * 2 / 3 
+cover['32 TT3 109_2009', ] <- cover['32 TT3 109_2009', ] / 2
+cover['32 TT3 109_2012', ] <- cover['32 TT3 109_2012', ] * 2 / 3
+cover['33 TT2 58_2009', ] <- cover['33 TT2 58_2009', ] * 2 / 3
+cover['34 TT1 32_2009', ] <- cover['34 TT1 32_2009', ] / 2
+cover['40 TT2 62_2011', ] <- cover['40 TT2 62_2011', ] * 2 / 3 
 
 
 #set NID.seedling to  0/1
@@ -95,3 +95,4 @@ noNIDseedlings <- !names(cover) %in% c("NID.seedling")
 
 turfs$newTT <- turfs$TTtreat  #alternative TTtreat with combined controls
 levels(turfs$newTT)[1:2] <- "control"
+

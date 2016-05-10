@@ -1,8 +1,8 @@
 #load other data
 
 #traits
-traitsQ<-"SELECT taxon.*, [more traits].*, extraTraits.*
-FROM (taxon LEFT JOIN [more traits] ON taxon.species = [more traits].species) LEFT JOIN extraTraits ON taxon.species = extraTraits.speciescode
+traitsQ<-"SELECT taxon.*, moreTraits.*, extraTraits.*
+FROM (taxon LEFT JOIN moreTraits ON taxon.species = moreTraits.species) LEFT JOIN extraTraits ON taxon.species = extraTraits.speciescode
 ORDER BY taxon.species;"
 traits<-dbGetQuery(con, traitsQ) 
 traits$species.1 <- NULL
