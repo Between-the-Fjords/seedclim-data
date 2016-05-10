@@ -71,17 +71,17 @@ import.data<-function(filelist, con){
        bad = dat$missing[dat$Measure != "Cover"]
        bad[is.na(bad)] <- ""
       subturfEnv <- cbind(subturfEnv, bad = bad)
-    }else{
+    } else{
       subturfEnv <- cbind(subturfEnv, bad = "")    
     }
     subturfEnv 
-    sqlAppendTable(con, subturfEnv, "subTurfEnvironment", row.names=FALSE)
+    sqlAppendTable(con, subturfEnv, "subTurfEnvironment", row.names = FALSE)
     nrow(subturfEnv)
     
     #TurfEnv
     turfEnv <- dat[dat$Measure == "Cover", c("turfID","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular","totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment","recorder", "date")]
     if(any(nchar(as.character(turfEnv$comment)) > 255)) stop ("more than 255 characters in a comment field in turfEnv")
-    sqlAppendTable(con, turfEnv, "turfEnvironment", row.names=FALSE)
+    sqlAppendTable(con, turfEnv, "turfEnvironment", row.names = FALSE)
   nrow(turfEnv)   
   
   #Mergedistionary
