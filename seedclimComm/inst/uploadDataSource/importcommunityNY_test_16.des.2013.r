@@ -32,18 +32,6 @@ import.data<-function(filelist, con){
    
   print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
     
-    ##USB:
-    #file.choose()
-  #filelist<-dir(path="\\\\ustaoset.uib.no\\jha066\\SEEDCLIM\\Seedclim data 2009-2012\\Seed clim 2009 CSV files\\", full.names=T)    #uncomment to loop    #needs to be directory of just csv files
-  #sapply(filelist,function(n){                                                                                 #uncomment to loop
-    #n<-"O:\\data\\SEEDCLIM2014\\SeedClim 2013 fix CSV\\SeedClim Community 2013 VES corr. LCK,CP,Feb2014, sp.fix.csv"                   #comment to loop
-    #print(n)
-    #dat<-read.csv2(n, dec=".")
-    #dat<-dat[!is.na(dat$originPlotID),]
-    #head(dat)
-    #names(dat)
-    #dat$turfID<-trim(dat$turfID)
-     
     #extract turf data
     turf <- dat[,c("turfID", "TTtreat", "RTtreat", "GRtreat", "originPlotID", "destinationPlotID")]
     turf <- unique(turf)
@@ -61,7 +49,7 @@ import.data<-function(filelist, con){
     nrow(turf)
     nrow(newTurfs)
     
-    print("done turfs")                                  
+    message("done turfs")                                  
     
     
     #subTurf env
@@ -98,7 +86,6 @@ import.data<-function(filelist, con){
     table(as.vector(sapply(spp[, -(1:2)], as.character)), useNA = "ifany") 
 
   sppT <- ldply(as.list(3:ncol(spp)),function(nc){
-      #print(names(spp)[nc])
       sp <- spp[, nc]
       cf <- grep("cf",sp, ignore.case = TRUE)
       sp <- gsub("cf", "", sp, ignore.case = TRUE)
@@ -108,8 +95,6 @@ import.data<-function(filelist, con){
       spp2$cf[cf] <- 1
       spp2 <- spp2[!is.na(spp2$cover),]
       spp2 <- spp2[spp2$cover > 0,]
-     # print(spp2)
-  #   write.table(spp2,"test.txt", sep="\t", quote=F, row.names=F) 
       spp2
     })
     sqlAppendTable(con, sppT, "turfCommunity", row.names=FALSE)
@@ -131,17 +116,37 @@ import.data<-function(filelist, con){
   
                                               
      #subTurfCommunity  
-     print("subturfcommunity")  
+     message("subturfcommunity")  
     subspp <- cbind(dat[, c("turfID", "year", "subPlot")], dat[, (which(names(dat) == "recorder") + 1) : (which(names(dat) == "pleuro") -1) ])[dat$Measure != "Cover",]
+    subspp[subspp == 0] <- NA
+    subspp <- lapply(unique(mergedNames), function(sppname){
+      species <- subspp[, names(subspp) == sppname, drop = FALSE]
+      if (ncol(species) == 1) {
+        return(species)
+      } else {
+        apply (species, 1, function(r) {
+          occurence <- which(!is.na(r))
+          if(length(occurence) == 0) return(NA)
+          if(length(occurence) == 1) return(r[occurence])
+          else {
+            warning(paste("more than one species observation in same subplot!"))
+            write.csv(data.frame(filename = n, species = species, occurence = r[occurence]), file = "cooccurence_log.csv", append = TRUE)
+            return(r[occurence][1])
+          }
+        })
+      }
+    })
+    
+    
+    subspp <- setNames(as.data.frame(subspp), unique(mergedNames))
     unique(as.vector(sapply(subspp[, -(1:3)], as.character))) #oddity search
     print(table(as.vector(sapply(subspp[, -(1:3)], as.character)))) #oddity search
     
-    #Find oddities in datasett:
-    tmp <- sapply(subspp, function(z){a<-which(z == "f"); if(length(a) > 0){subspp[a, 1:3]} else NULL})
+    
+    #Find oddities in dataset:
+    tmp <- sapply(subspp, function(z){a <- which(z == "f"); if(length(a) > 0){subspp[a, 1:3]} else NULL})
     tmp[!sapply(tmp, is.null)]
-    spp0 <- data.frame(turfID = NA, year = NA, subTurf = NA, species = NA, seedlings = NA, juvenile = NA, adult = NA, fertile = NA, vegetative = NA, dominant = NA, cf = NA)
-    spp0 <- spp0[-1,]
- 
+
     spp0 <- ldply(as.list(4:ncol(subspp)), function(nc){
       sp <- subspp[,nc ]
       spp2 <- data.frame(turfID = subspp$turfID, year = subspp$year, subTurf = subspp$subPlot, species = names(subspp)[nc], seedlings = 0, juvenile = 0, adult = 0, fertile = 0, vegetative = 0, dominant = 0, cf = 0)
@@ -163,6 +168,8 @@ import.data<-function(filelist, con){
       spp2<-spp2[rowSums(spp2[,-(1:4)])>0,] #keep only rows with presences
       spp2
     })  
+    
+    
     #euphrasia rule adults=adults+juvenile+seedling, j=j+s, s=s
     seedlingSp <- c("Euph.fri", "Eup.fri","Eup.sp","Eup.str","Euph.fri","Euph.sp", "Euph.str","Euph.str.1", "Euph.wet", "Poa.ann","Thlaspi..arv","Com.ten","Gen.ten", "Rhi.min", "Cap.bur", "Mel.pra","Mel.sp","Mel.syl","Noc.cae","Ste.med","Thl.arv","Ver.arv")
     #########more annuals?
