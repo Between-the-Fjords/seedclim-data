@@ -236,10 +236,10 @@ import.data<-function(filelist, con){
 
 # Codes for deleting tables:
 wipe <- function(){
-  dbGetQuery(con, "Delete * FROM subTurfCommunity")                            
-  dbGetQuery(con, "Delete * FROM subTurfEnvironment")
-  dbGetQuery(con, "Delete * FROM turfCommunity")
-  dbGetQuery(con, "Delete * FROM turfEnvironment")
+  dbGetQuery(con, "Delete FROM subTurfCommunity")                            
+  dbGetQuery(con, "Delete FROM subTurfEnvironment")
+  dbGetQuery(con, "Delete FROM turfCommunity")
+  dbGetQuery(con, "Delete FROM turfEnvironment")
    #dbGetQuery(con, "Delete * FROM turfs")
   message("Database wiped. Hope you really wanted to do that!")
 }
