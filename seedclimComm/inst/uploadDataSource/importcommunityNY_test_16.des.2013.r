@@ -27,7 +27,7 @@ import.data<-function(filelist, con){
     dat <- dat[!is.na(dat$originPlotID),]
     head(dat)
     names(dat)
-    dat$turfID <- trim(dat$turfID)
+    dat$turfID <- trimws(dat$turfID)
  
    
   print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
@@ -45,7 +45,7 @@ import.data<-function(filelist, con){
     alreadyIn <- dbGetQuery(con,"select turfId from turfs")$turfId
     newTurfs <- turf[!as.character(turf$turfID) %in% alreadyIn,] #find which turfs IDs are not already in database
     
-    if(nrow(newTurfs) > 0) sqlAppendTable(con, newTurfs, "turfs", row.names = FALSE)
+    if(nrow(newTurfs) > 0) sqlAppendTable(con, "turfs", newTurfs, row.names = FALSE)
     nrow(turf)
     nrow(newTurfs)
     
@@ -63,41 +63,46 @@ import.data<-function(filelist, con){
       subturfEnv <- cbind(subturfEnv, bad = "")    
     }
     subturfEnv 
-    sqlAppendTable(con, subturfEnv, "subTurfEnvironment", row.names = FALSE)
+    sqlAppendTable(con, "subTurfEnvironment", subturfEnv, row.names = FALSE)
     nrow(subturfEnv)
     
     #TurfEnv
     turfEnv <- dat[dat$Measure == "Cover", c("turfID","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular","totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment","recorder", "date")]
-    if(any(nchar(as.character(turfEnv$comment)) > 255)) stop ("more than 255 characters in a comment field in turfEnv")
-    sqlAppendTable(con, turfEnv, "turfEnvironment", row.names = FALSE)
+    if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
+      stop ("more than 255 characters in a comment field in turfEnv")
+    }
+    sqlAppendTable(con, "turfEnvironment", turfEnv, row.names = FALSE)
   nrow(turfEnv)   
   
   #Mergedistionary
   mergedictionary <- dbGetQuery(con,"SELECT * FROM mergedictionary")  
   
     #TurfCommunity  
-    spp <- cbind(dat[, c("turfID", "year")], dat[, (which(names(dat) == "recorder") + 1) : (which(names (dat) == "pleuro")-1) ])[dat$Measure == "Cover",]
-  notInMerged <- setdiff(names(spp), mergedictionary$oldID)
-  mergedictionary <- rbind(mergedictionary, cbind(notInMerged, notInMerged))
-  mergedNames <- mapvalues(names(spp), from = mergedictionary$oldID, to = mergedictionary$newID)
-  spp <- lapply(unique(mergedNames), function(n)rowSums(spp[, names(spp) == n, drop = FALSE]))
-  spp <- setNames(as.data.frame(spp), unique(mergedNames))
+  spp <- cbind(dat[, c("turfID", "year")], dat[, (which(names(dat) == "recorder") + 1) : (which(names (dat) == "pleuro")-1) ])[dat$Measure == "Cover",]
+  spp[, 3 : ncol(spp)] <- colwise(as.numeric)(spp[, 3 : ncol(spp)])
+  notInMerged <- setdiff(names(spp)[-(1:2)], mergedictionary$oldID)
+  mergedictionary <- rbind(mergedictionary, cbind(oldID = notInMerged, newID = notInMerged))
+  mergedNames <- mapvalues(names(spp)[-(1:2)], from = mergedictionary$oldID, to = mergedictionary$newID, warn_missing = FALSE)
+  sppX <- lapply(unique(mergedNames), function(n){
+    rowSums(spp[, names(spp) == n, drop = FALSE])
+    })
+  sppX <- setNames(as.data.frame(sppX), unique(mergedNames))
+  spp <- cbind(spp[, 1:2], sppX)
     unique(as.vector(sapply(spp[, -(1:2)], as.character)))    #oddity search
     table(as.vector(sapply(spp[, -(1:2)], as.character)), useNA = "ifany") 
 
   sppT <- ldply(as.list(3:ncol(spp)),function(nc){
       sp <- spp[, nc]
-      cf <- grep("cf",sp, ignore.case = TRUE)
+      cf <- grep("cf", sp, ignore.case = TRUE)
       sp <- gsub("cf", "", sp, ignore.case = TRUE)
       sp <- gsub("\\*", "", sp, ignore.case = TRUE)
-      sp <- as.numeric(as.character(sp))
       spp2 <- data.frame(turfID = spp$turfID, year = spp$year, species = names(spp)[nc], cover = sp, cf = 0)
       spp2$cf[cf] <- 1
-      spp2 <- spp2[!is.na(spp2$cover),]
-      spp2 <- spp2[spp2$cover > 0,]
+      spp2 <- spp2[!is.na(spp2$cover), ]
+      spp2 <- spp2[spp2$cover > 0, ]
       spp2
     })
-    sqlAppendTable(con, sppT, "turfCommunity", row.names=FALSE)
+    sqlAppendTable(con, "turfCommunity", sppT, row.names=FALSE)
   
   
      #Check rows query for TurfCommunity :
@@ -119,7 +124,7 @@ import.data<-function(filelist, con){
      message("subturfcommunity")  
     subspp <- cbind(dat[, c("turfID", "year", "subPlot")], dat[, (which(names(dat) == "recorder") + 1) : (which(names(dat) == "pleuro") -1) ])[dat$Measure != "Cover",]
     subspp[subspp == 0] <- NA
-    subspp <- lapply(unique(mergedNames), function(sppname){
+    subsppX <- lapply(unique(mergedNames), function(sppname){
       species <- subspp[, names(subspp) == sppname, drop = FALSE]
       if (ncol(species) == 1) {
         return(species)
@@ -138,7 +143,8 @@ import.data<-function(filelist, con){
     })
     
     
-    subspp <- setNames(as.data.frame(subspp), unique(mergedNames))
+    subsppX <- setNames(as.data.frame(subsppX), unique(mergedNames))
+    subspp <- cbind(subspp[, 1:3], subsppX)
     unique(as.vector(sapply(subspp[, -(1:3)], as.character))) #oddity search
     print(table(as.vector(sapply(subspp[, -(1:3)], as.character)))) #oddity search
     
@@ -180,7 +186,7 @@ import.data<-function(filelist, con){
       tmpSp$seedlings[tmpSp$seedlings == 0 & tmpSp$juvenile == 1] <- 1
     spp0[spp0$species %in% seedlingSp,] <- tmpSp
     
-    sqlAppendTable(con, spp0, "subTurfCommunity", row.names = FALSE)
+    sqlAppendTable(con, "subTurfCommunity", spp0, row.names = FALSE)
     
     
    #Check rows query for subTurfCommunity :
@@ -226,7 +232,7 @@ import.data<-function(filelist, con){
   
     seed <- seed[seed$seedlings2 > 0,]
     seed <- data.frame(turfID = seed$turfID, year = seed$year, subTurf = seed$subPlot, species = "seed.unid", seedlings = seed$seedlings2, juvenile = 0,adult = 0,fertile = 0,vegetative = 0,dominant = 0, cf = 1)
-    sqlAppendTable(con, seed, "subTurfCommunity", row.names=FALSE)
+    sqlAppendTable(con, "subTurfCommunity", seed, row.names=FALSE)
   }
   ######################### vigdis seedling problem fixed  #########################
   
