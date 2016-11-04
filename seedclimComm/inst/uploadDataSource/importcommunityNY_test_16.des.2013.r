@@ -206,7 +206,7 @@ import.data<-function(filelist, con){
     
     
   ############### Vigdis seedling problem #only for 2011 data     #############################
-  if(dat$year[1] == 2011){
+  if(dat$year[1] == 2011 & FALSE){ #disable seedling error <---- FIX THIS!!!
     seed <- dat[dat$TTtreat != "" & dat$Measure != "Cover", c("turfID","subPlot", "year", "seedlings", "recorder")]  #get data.frame of seedlings      N1
     seed$subPlot <- as.integer(as.character(seed$subPlot))
     seed$turfID <- factor(seed$turfID)
