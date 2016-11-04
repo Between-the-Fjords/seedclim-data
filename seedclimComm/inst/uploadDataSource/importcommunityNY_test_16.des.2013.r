@@ -9,20 +9,21 @@ import.data<-function(filelist, con){
   require(dplyr)
   require(plyr)
   require(readr)
-  sapply(filelist,function(n){     
+  sapply(filelist,function(n){
+    #browser()
   
                                                                               #uncomment to loop
     #n<-"O:\\data\\SEEDCLIM2014\\Seedclim 2012 sp.fix CSV\\Lavisdalen2012 sp.fix.csv"                  #comment to loop
     print(n)
     chkft <- c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
-    es_MX <- locale("es", decimal_mark = ",")
+    es_MX <- locale("es", decimal_mark = ",", encoding = "Windows-1252")
     dat <- read_csv2(n, locale = es_MX)
     if(ncol(dat) > 1){
       if(any(sapply(dat[, chkft], class) == "character")) 
-        es_MX <- locale("es", decimal_mark = ".")
+        es_MX <- locale("es", decimal_mark = ".", encoding = "Windows-1252")
         dat <- read_csv2(n, locale = es_MX)  
     }else{
-      es_MX <- locale("es", decimal_mark = ".")
+      es_MX <- locale("es", decimal_mark = ".", encoding = "Windows-1252")
       dat <- read_csv(n, locale = es_MX)
      }
          
@@ -31,9 +32,7 @@ import.data<-function(filelist, con){
     names(dat)
     dat$turfID <- trimws(dat$turfID)
  
-   #taken out to bypass encoding issues
-  #print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
-    
+
     #extract turf data
     turf <- dat[,c("turfID", "TTtreat", "RTtreat", "GRtreat", "originPlotID", "destinationPlotID")]
     turf <- unique(turf)
@@ -70,9 +69,9 @@ import.data<-function(filelist, con){
     
     #TurfEnv
     turfEnv <- dat[dat$Measure == "Cover", c("turfID","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular","totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment","recorder", "date")]
-    #if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
-      #stop ("more than 255 characters in a comment field in turfEnv")
-    #}
+    if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
+      stop ("more than 255 characters in a comment field in turfEnv")
+    }
     sqlAppendTable(con, "turfEnvironment", turfEnv, row.names = FALSE)
   nrow(turfEnv)   
   
