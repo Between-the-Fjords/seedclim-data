@@ -31,8 +31,8 @@ import.data<-function(filelist, con){
     names(dat)
     dat$turfID <- trimws(dat$turfID)
  
-   
-  print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
+   #taken out to bypass encoding issues
+  #print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
     
     #extract turf data
     turf <- dat[,c("turfID", "TTtreat", "RTtreat", "GRtreat", "originPlotID", "destinationPlotID")]
@@ -70,9 +70,9 @@ import.data<-function(filelist, con){
     
     #TurfEnv
     turfEnv <- dat[dat$Measure == "Cover", c("turfID","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular","totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment","recorder", "date")]
-    if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
-      stop ("more than 255 characters in a comment field in turfEnv")
-    }
+    #if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
+      #stop ("more than 255 characters in a comment field in turfEnv")
+    #}
     sqlAppendTable(con, "turfEnvironment", turfEnv, row.names = FALSE)
   nrow(turfEnv)   
   
