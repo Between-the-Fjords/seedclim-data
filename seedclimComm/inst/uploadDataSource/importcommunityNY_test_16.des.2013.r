@@ -14,15 +14,16 @@ import.data<-function(filelist, con){
     #n<-"O:\\data\\SEEDCLIM2014\\Seedclim 2012 sp.fix CSV\\Lavisdalen2012 sp.fix.csv"                  #comment to loop
     print(n)
     chkft <- c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
-    dat <- read.csv2(n, dec=",")  
+    es_MX <- locale("es", decimal_mark = ",")
+    dat <- read_csv2(n, locale = es_MX)
     if(ncol(dat) > 1){
-      if(any(sapply(dat[, chkft], class) == "factor")) 
-        dat <- read.csv2(n, dec=".")  
+      if(any(sapply(dat[, chkft], class) == "character")) 
+        es_MX <- locale("es", decimal_mark = ".")
+        dat <- read_csv2(n, locale = es_MX)  
     }else{
-      dat <- read.csv(n, dec=".")
-      if(any(sapply(dat[, chkft], class) == "factor"))
-        dat <- read.csv(n, dec=",")
-     } 
+      es_MX <- locale("es", decimal_mark = ".")
+      dat <- read_csv(n, locale = es_MX)
+     }
          
     dat <- dat[!is.na(dat$originPlotID),]
     head(dat)
