@@ -8,6 +8,7 @@
 import.data<-function(filelist, con){
   require(dplyr)
   require(plyr)
+  require(readr)
   sapply(filelist,function(n){     
   
                                                                               #uncomment to loop
