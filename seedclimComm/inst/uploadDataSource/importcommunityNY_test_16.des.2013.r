@@ -33,7 +33,7 @@ import.data<-function(filelist, con){
     dat$turfID <- trimws(dat$turfID)
  
 
-    #extract turf data
+        #extract turf data
     turf <- dat[,c("turfID", "TTtreat", "RTtreat", "GRtreat", "originPlotID", "destinationPlotID")]
     turf <- unique(turf)
     turf$TTtreat <- trimws(turf$TTtreat) #  trim white spaces
