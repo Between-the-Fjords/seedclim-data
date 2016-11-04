@@ -31,8 +31,8 @@ import.data<-function(filelist, con){
     names(dat)
     dat$turfID <- trimws(dat$turfID)
  
-   
-  print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
+   #taken out to bypass encoding issues
+  #print(max(nchar(as.character(dat$comment)))) #how long is longest comment)
     
     #extract turf data
     turf <- dat[,c("turfID", "TTtreat", "RTtreat", "GRtreat", "originPlotID", "destinationPlotID")]
