@@ -8,8 +8,7 @@
 #turf
 #find species where abs(cover change) >thresh between years
 getturfcover<-function(firstyear, lastyear){
-  query<-paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, cover FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN new_TurfCommunity ON turfs.turfID = new_TurfCommunity.turfID  WHERE (Year=",firstyear," OR Year=",lastyear,");", sep="")
-    spp<-sqlQuery(con,query)
+  spp<-dbGetQuery(con, paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, cover FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN new_TurfCommunity ON turfs.turfID = new_TurfCommunity.turfID  WHERE (Year=",firstyear," OR Year=",lastyear,");", sep=""))
 
     year1<-xtabs(cover~turfID+species, data=spp[spp$Year==firstyear,])
     year2<-xtabs(cover~turfID+species, data=spp[spp$Year==lastyear,])
@@ -48,9 +47,9 @@ curious<-function(x, threshold=10, margin=1){
 #find species where abs(no subplots occupied) >thresh between years
 
 getsubturfcount<-function(firstyear, lastyear, site){
-  query<-paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, Count(subturf) as nsubturf FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN newSubTurfCommunity ON turfs.turfID = newSubTurfCommunity.turfID  GROUP BY sites.siteID, turfs.turfID, turfs.TTtreat, species, Year HAVING (Year=",firstyear," OR Year=",lastyear,");", sep="")
-    spp<-sqlQuery(con,query)
-print(names(spp))
+  spp<-dbGetQuery(con, paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, Count(subturf) as nsubturf FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN newSubTurfCommunity ON turfs.turfID = newSubTurfCommunity.turfID  GROUP BY sites.siteID, turfs.turfID, turfs.TTtreat, species, Year HAVING (Year=",firstyear," OR Year=",lastyear,");", sep=""))
+
+  print(names(spp))
 if(missing(site))keep<-TRUE
 else keep<-spp$siteID==site
     year1<-xtabs(nsubturf~turfID+species, data=spp[spp$Year==firstyear&keep,])
@@ -70,9 +69,8 @@ else keep<-spp$siteID==site
 
 #subplotmap
 getsubturfspecies<-function(turf, year, species){
-  query<-paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, subturf, seedlings, juvenile,adult, fertile, vegetative, dominant, cf
-    FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN newSubTurfCommunity ON turfs.turfID = newSubTurfCommunity.turfID where Year=",year," AND turfs.turfID='",turf,"' AND species='",species,"' ORDER BY subturf ASC;", sep="")
-    subturfsp<-sqlQuery(con,query)
+  subturfsp<-dbGetQuery(con, paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, subturf, seedlings, juvenile,adult, fertile, vegetative, dominant, cf
+    FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN newSubTurfCommunity ON turfs.turfID = newSubTurfCommunity.turfID where Year=",year," AND turfs.turfID='",turf,"' AND species='",species,"' ORDER BY subturf ASC;", sep=""))
     class(subturfsp)<-c("subturfsp","data.frame")
     subturfsp
 }
@@ -102,8 +100,6 @@ plot.subturfsp<-function(x){
 
 ########################################################################
 #Examples
-
-library(RODBC)
 
 #connect to database
 
