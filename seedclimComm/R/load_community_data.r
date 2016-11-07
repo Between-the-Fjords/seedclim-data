@@ -24,13 +24,13 @@
 
 
 load_community_data<-function(con, closeCon = TRUE, moss = FALSE){
-  source(file.path(system.file(package = "seedclimComm"), "importSource", "loadCover.r"))
-  source(file.path(system.file(package = "seedclimComm"), "importSource", "loadSubplotfreq.r"))
-  source(file.path(system.file(package = "seedclimComm"), "importSource", "loadOtherData.r"),encoding="UTF-8")
+  source("inst/importSource/loadCover.r")
+  source("inst/importSource/loadSubplotfreq.r")
+  source("inst/importSource/loadOtherData.r", encoding="UTF-8")
   if(moss){
-    source(file.path(system.file(package = "seedclimComm"), "importSource", "loadBryophytes.r"))
+    source("inst/importSource/loadBryophytes.r")
   }
-  source(file.path(system.file(package = "seedclimComm"), "importSource", "seedclimColours.r"))
+  source("inst/importSource/seedclimColours.r")
   
   if(closeCon){
     dbDisconnect(con)
