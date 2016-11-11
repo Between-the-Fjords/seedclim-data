@@ -7,13 +7,12 @@
 #for loop
 import.data<-function(filelist, con){
   require(dplyr)
-  require(plyr)
   require(readr)
   sapply(filelist,function(n){
     #browser()
   
                                                                               #uncomment to loop
-    #n<-"O:\\data\\SEEDCLIM2014\\Seedclim 2012 sp.fix CSV\\Lavisdalen2012 sp.fix.csv"                  #comment to loop
+    #n <- "/Users/fja062/Documents/seedclimComm/seedclimComm/rawdata/Alrust2011.sp.fix.vv.csv"                  #comment to loop
     print(n)
     chkft <- c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
     es_MX <- locale("es", decimal_mark = ",", encoding = "Windows-1252")
@@ -28,10 +27,14 @@ import.data<-function(filelist, con){
      }
          
     dat <- dat[!is.na(dat$originPlotID),]
+    names(dat) <- make.names(names(dat))
+    dat$turfID <- trimws(dat$turfID)
     head(dat)
     names(dat)
-    dat$turfID <- trimws(dat$turfID)
- 
+    Encoding(dat$comment) <- "latin1"
+    
+    #remove numeric suffix on duplicates
+    names(dat) <- gsub("_\\d$", "", names(dat))
 
         #extract turf data
     turf <- dat[,c("turfID", "TTtreat", "RTtreat", "GRtreat", "originPlotID", "destinationPlotID")]
@@ -46,7 +49,7 @@ import.data<-function(filelist, con){
     alreadyIn <- dbGetQuery(con,"select turfId from turfs")$turfId
     newTurfs <- turf[!as.character(turf$turfID) %in% alreadyIn,] #find which turfs IDs are not already in database
     
-    if(nrow(newTurfs) > 0) sqlAppendTable(con, "turfs", newTurfs, row.names = FALSE)
+    if(nrow(newTurfs) > 0) dbWriteTable(con, "turfs", newTurfs, row.names = FALSE, append = TRUE)
     nrow(turf)
     nrow(newTurfs)
     
@@ -64,7 +67,7 @@ import.data<-function(filelist, con){
       subturfEnv <- cbind(subturfEnv, bad = "")    
     }
     subturfEnv 
-    sqlAppendTable(con, "subTurfEnvironment", subturfEnv, row.names = FALSE)
+    dbWriteTable(con, "subTurfEnvironment", subturfEnv, row.names = FALSE, append = TRUE)
     nrow(subturfEnv)
     
     #TurfEnv
@@ -72,53 +75,51 @@ import.data<-function(filelist, con){
     if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
       stop ("more than 255 characters in a comment field in turfEnv")
     }
-    sqlAppendTable(con, "turfEnvironment", turfEnv, row.names = FALSE)
+    dbWriteTable(con, "turfEnvironment", turfEnv, row.names = FALSE, append = TRUE)
   nrow(turfEnv)   
   
-  #Mergedistionary
+  #Mergedictionary
   mergedictionary <- dbGetQuery(con,"SELECT * FROM mergedictionary")  
   
     #TurfCommunity  
+  
   spp <- cbind(dat[, c("turfID", "year")], dat[, (which(names(dat) == "recorder") + 1) : (which(names (dat) == "pleuro")-1) ])[dat$Measure == "Cover",]
-  spp[, 3 : ncol(spp)] <- colwise(as.numeric)(spp[, 3 : ncol(spp)])
+  spp[, 3 : ncol(spp)] <- plyr::colwise(as.numeric)(spp[, 3 : ncol(spp)])
   notInMerged <- setdiff(names(spp)[-(1:2)], mergedictionary$oldID)
   mergedictionary <- rbind(mergedictionary, cbind(oldID = notInMerged, newID = notInMerged))
-  mergedNames <- mapvalues(names(spp)[-(1:2)], from = mergedictionary$oldID, to = mergedictionary$newID, warn_missing = FALSE)
+  mergedNames <- plyr::mapvalues(names(spp)[-(1:2)], from = mergedictionary$oldID, to = mergedictionary$newID, warn_missing = FALSE)
   sppX <- lapply(unique(mergedNames), function(n){
     rowSums(spp[, names(spp) == n, drop = FALSE])
     })
   sppX <- setNames(as.data.frame(sppX), unique(mergedNames))
   spp <- cbind(spp[, 1:2], sppX)
-    unique(as.vector(sapply(spp[, -(1:2)], as.character)))    #oddity search
-    table(as.vector(sapply(spp[, -(1:2)], as.character)), useNA = "ifany") 
 
-  sppT <- ldply(as.list(3:ncol(spp)),function(nc){
+  table(as.vector(sapply(spp[, -(1:2)], as.character)), useNA = "ifany") #oddity search 
+
+  spplist <- unique(dbGetQuery(con,"SELECT newID FROM mergedictionary")$newID)
+  
+  newspp <- setdiff(names(spp)[-(1:2)], spplist)
+  if(length(newspp)>0){
+    stop("new taxa found: ", paste(newspp, collapse = " "))
+  }
+  
+  sppT <- plyr::ldply(3:ncol(spp), function(nc){
       sp <- spp[, nc]
       cf <- grep("cf", sp, ignore.case = TRUE)
       sp <- gsub("cf", "", sp, ignore.case = TRUE)
       sp <- gsub("\\*", "", sp, ignore.case = TRUE)
-      spp2 <- data.frame(turfID = spp$turfID, year = spp$year, species = names(spp)[nc], cover = sp, cf = 0)
+      spp2 <- data.frame(turfID = spp$turfID, year = spp$year, species = names(spp)[nc], cover = as.numeric(sp), cf = 0)
       spp2$cf[cf] <- 1
       spp2 <- spp2[!is.na(spp2$cover), ]
       spp2 <- spp2[spp2$cover > 0, ]
       spp2
     })
-    sqlAppendTable(con, "turfCommunity", sppT, row.names=FALSE)
-  
-  
+  #initial number of rows in turfCommunity
+  initTC <- dbGetQuery(con, "select count(*) as n from turfCommunity")$n
+  dbWriteTable(con, "turfCommunity", sppT, row.names=FALSE, append = TRUE)
+  postTC <- dbGetQuery(con, "select count(*) as n from turfCommunity")$n
+  stopifnot(nrow(sppT) == postTC - initTC)
      #Check rows query for TurfCommunity :
- print( sum(sapply(spp[,3:ncol(spp)], function(x) as.numeric(as.character(x)))>0, na.rm=TRUE))   #Check expected number of rows added
-   
-  print(
-  if(dat$year[1] != 2009){
-    tmp <- dbGetQuery(con, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID WHERE ( ((turfCommunity.year)=',dat$year[1],')); ', sep = ""))
-    sum(tolower(substring(tmp, 0,3)) == tolower(substring(as.character(dat$OriginSite[1]), 0,3)))#Check for 2011 and 2013 data: 
-  }else{
-    tmp <- dbGetQuery(con, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.originPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID WHERE ( ((turfCommunity.year)=',dat$year[1],')); ', sep = ""))
-    sum(tolower(substring(tmp, 0,3)) == tolower(substring(as.character(dat$OriginSite[1]), 0,3))) #Check for 2009 data:
-  } )
-  
-  
   
                                               
      #subTurfCommunity  
@@ -136,7 +137,7 @@ import.data<-function(filelist, con){
           if(length(occurence) == 1) return(r[occurence])
           else {
             warning(paste("more than one species observation in same subplot!"))
-            write.csv(data.frame(filename = n, species = species, occurence = r[occurence]), file = "cooccurence_log.csv", append = TRUE)
+            write.csv(data.frame(filename = n, species = sppname, occurence = r[occurence]), file = "cooccurence_log.csv", append = TRUE)
             return(r[occurence][1])
           }
         })
@@ -154,7 +155,7 @@ import.data<-function(filelist, con){
     tmp <- sapply(subspp, function(z){a <- which(z == "f"); if(length(a) > 0){subspp[a, 1:3]} else NULL})
     tmp[!sapply(tmp, is.null)]
 
-    spp0 <- ldply(as.list(4:ncol(subspp)), function(nc){
+    spp0 <- plyr::ldply(as.list(4:ncol(subspp)), function(nc){
       sp <- subspp[,nc ]
       spp2 <- data.frame(turfID = subspp$turfID, year = subspp$year, subTurf = subspp$subPlot, species = names(subspp)[nc], seedlings = 0, juvenile = 0, adult = 0, fertile = 0, vegetative = 0, dominant = 0, cf = 0)
       spp2$cf[grep("cf",sp, ignore.case = TRUE)] <- 1
@@ -187,21 +188,11 @@ import.data<-function(filelist, con){
       tmpSp$seedlings[tmpSp$seedlings == 0 & tmpSp$juvenile == 1] <- 1
     spp0[spp0$species %in% seedlingSp,] <- tmpSp
     
-    sqlAppendTable(con, "subTurfCommunity", spp0, row.names = FALSE)
-    
-    
-   #Check rows query for subTurfCommunity :
-  print(sum(sapply(subspp[,4:ncol(subspp)], function(x) as.character(x)) != "", na.rm=TRUE) )  #Check expected number of rows added  )
-  
-  print(if(dat$year[1] != 2009){
-    tmp <- dbGetQuery(con, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN subTurfCommunity ON turfs.turfID = subTurfCommunity.turfID WHERE ( ((subTurfCommunity.year)=',dat$year[1],')); ', sep = ""))
-     sum(tolower(substring(tmp, 0,3)) == tolower(substring(as.character(dat$OriginSite[1]), 0,3)))#Check actual number of rows added for 2011 and 2012 data:
-    } else{
-    tmp <- dbGetQuery(con, paste('SELECT sites.siteID FROM (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.originPlotID) INNER JOIN subTurfCommunity ON turfs.turfID = subTurfCommunity.turfID WHERE ( ((subTurfCommunity.year)=',dat$year[1],')); ', sep = ""))
-     sum(tolower(substring(tmp, 0,3)) == tolower(substring(as.character(dat$OriginSite[1]), 0,3)))#Check actual number of rows added for 2009 data:
-  } ) 
-  
-  
+    #check whether rows added successfully
+    initSTC <- dbGetQuery(con, "select count(*) as n from subTurfCommunity")$n
+    dbWriteTable(con, "subTurfCommunity", spp0, row.names = FALSE, append = TRUE)
+    postSTC <- dbGetQuery(con, "select count(*) as n from subTurfCommunity")$n
+    stopifnot(nrow(spp0) == postSTC - initSTC)
   
     
     
@@ -233,7 +224,7 @@ import.data<-function(filelist, con){
   
     seed <- seed[seed$seedlings2 > 0,]
     seed <- data.frame(turfID = seed$turfID, year = seed$year, subTurf = seed$subPlot, species = "seed.unid", seedlings = seed$seedlings2, juvenile = 0,adult = 0,fertile = 0,vegetative = 0,dominant = 0, cf = 1)
-    sqlAppendTable(con, "subTurfCommunity", seed, row.names=FALSE)
+    dbWriteTable(con, "subTurfCommunity", seed, row.names=FALSE, append = TRUE)
   }
   ######################### vigdis seedling problem fixed  #########################
   
