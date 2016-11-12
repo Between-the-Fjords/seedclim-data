@@ -1,4 +1,4 @@
-OriginSite,OriginBlock,originPlotID,TTtreat,destinationPlotID,turfID,RTtreat ,GRtreat,Old label (Treat),subPlot,year,date,Measure,recorder,Ach mil,Agr cap,Alc alp,Alc alp,Alc sp,Ant dio,Ant odo,Ave fle,Bis viv,Cam rot,Car Cap,Car lep,Car pal,Car pil ,Car vag,Cer alp,Cer fon,Des ces,Des fle,Epi ana,Fes ovi,Fes ovi,Fes rub,Fes viv,Gal sax,Gal uli,Hie pil,Hyp mac,Leo aut,Luz mul,Nar stri,Par pal,Phle alp,Poa alp,Poa pra,Pot cra,Pot ere,Rum ac-la,Ran acr,Rum ace,Sal her,Sil aca,Sol vir,Ste gra ,Tarax,Tha alp,Tri pra,Tri pra,Tri rep,Vac myr,Ver alp,Ver cha ,Ver off,Vio bif,Vio pal,Vio riv,Vio tri,Nid seedling,pleuro,acro,liver,lichen,litter,soil,rock,totalVascular,totalBryophytes,totalLichen,vegetationHeight,mossHeight,comment
+OriginSite,OriginBlock,originPlotID,TTtreat,destinationPlotID,turfID,RTtreat ,GRtreat,Old label (Treat),subPlot,year,date,Measure,recorder,Ach mil,Agr cap,Alc alp,Alc alp,Alc sp,Ant dio,Ant odo,Ave fle,Bis viv,Cam rot,Car cap,Car lep,Car pal,Car pil ,Car vag,Cer alp,Cer fon,Des ces,Des fle,Epi ana,Fes ovi,Fes ovi,Fes rub,Fes viv,Gal sax,Gal uli,Hie pil,Hyp mac,Leo aut,Luz mul,Nar stri,Par pal,Phle alp,Poa alp,Poa pra,Pot cra,Pot ere,Rum ac-la,Ran acr,Rum ace,Sal her,Sil aca,Sol vir,Ste gra ,Tarax,Tha alp,Tri pra,Tri pra,Tri rep,Vac myr,Ver alp,Ver cha ,Ver off,Vio bif,Vio pal,Vio riv,Vio tri,Nid seedling,pleuro,acro,liver,lichen,litter,soil,rock,totalVascular,totalBryophytes,totalLichen,vegetationHeight,mossHeight,comment
 Hogsete,1,101,TTC,101,101 TTC ,,,C,1,2009,31-Jul,Presence,KK,,1,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,1,,,F,1,,,,,,70,0,0,0,5,0,0,,,,,,
 Hogsete,1,101,TTC,101,101 TTC ,,,C,2,2009,31-Jul,Presence,KK,1,1,,,,,,,,,,,,,,,,,,,,,1,,1,,,,,,,,,,,,,,,,,,,,,,,,1,,,,1,,,,,,10,0,0,0,20,0,0,,,,,,
 Hogsete,1,101,TTC,101,101 TTC ,,,C,3,2009,31-Jul,Presence,KK,,1,,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,F,,,,,,30,0,0,0,10,0,0,,,,,,
@@ -159,7 +159,7 @@ Hogsete,2,106,TT4,220,106 TT4 220,,,C,22,2009,30-Jul,Presence,W,,1,,,,,,,,,,,1,,
 Hogsete,2,106,TT4,220,106 TT4 220,,,C,23,2009,30-Jul,Presence,W,1,1,,,,,,,,,,,,,,,,D,,,,,,,F,,,,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,,20,0,0,0,10,0,0,,,,6,,
 Hogsete,2,106,TT4,220,106 TT4 220,,,C,24,2009,30-Jul,Presence,W,,1,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,1,,,,S,,,65,0,0,0,10,0,0,,,,6,,
 Hogsete,2,106,TT4,220,106 TT4 220,,,C,25,2009,30-Jul,Presence,W,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1,,,,,,10,0,0,0,60,0,0,,,,7,,
-Hogsete,2,106,TT4,220,106 TT4 220,,,C,%,2009,30-Jul,Cover,W,5,10,,1,,,6,,,,,,3,,2,,,2,,,,,5,,1,,,,,1,,,,,3,,1,,,,,,,,,,,,1,,,6,30,,6,1,,,48.6,0,0,0,12.56,0,0,65,50,0,6,,"Fjerner 1 fra cover Vio tri, mangler subplot."
+"Hogsete,2,106,TT4,220,106 TT4 220,,,C,%,2009,30-Jul,Cover,W,5,10,,1,,,6,,,,,,3,,2,,,2,,,,,5,,1,,,,,1,,,,,3,,1,,,,,,,,,,,,1,,,6,30,,6,1,,,48.6,0,0,0,12.56,0,0,65,50,0,6,,""Fjerner 1 fra cover Vio tri, mangler subplot."""
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Hogsete,2,107,TT2,133,107 TT2 133,,,1,1,2009,30-Jul,Presence,W,1,1,,,,,,,,,,,,,,,,,1,,,1,,,1,,,,,,,,1,,,,,,,,,,,,,,,,,,,,1,,,,,,60,0,0,0,2,0,0,,,,,,
 Hogsete,2,107,TT2,133,107 TT2 133,,,1,2,2009,30-Jul,Presence,W,,1,,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,,D,,,,,,20,0,0,0,5,0,0,,,,,,
@@ -215,7 +215,7 @@ Hogsete,2,108,TT3,208,108 TT3 208,,,2,24,2009,30-Jul,Presence,W,1,,,,,,1,,,,,,,,
 Hogsete,2,108,TT3,208,108 TT3 208,,,2,25,2009,30-Jul,Presence,W,1,,,,,,1,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,,,,,,60,0,0,0,6,0,0,,,,10,,
 Hogsete,2,108,TT3,208,108 TT3 208,,,2,%,2009,30-Jul,Cover,W,2,20,,10,,,3,2,,1,,,2,,2,,,,,,,1,1,,1,,,,,1,,,,,2,,2,,,,,,,,,,,,,,,3,40,,,,,,30.2,0,0,0,10.56,0,0,80,30,0,7.5,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Hogsete,2,109,TT1,106,109 TT1 106,,,3,1,2009,31-Jul,Presence,W,,1,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,1,,F,,,,,,,,,,,,,,,"1,Scf",,,,,,,80,0,0,0,2,0,0,,,,,,
+"Hogsete,2,109,TT1,106,109 TT1 106,,,3,1,2009,31-Jul,Presence,W,,1,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,,1,,F,,,,,,,,,,,,,,,""1,Scf"",,,,,,,80,0,0,0,2,0,0,,,,,,"
 Hogsete,2,109,TT1,106,109 TT1 106,,,3,2,2009,31-Jul,Presence,W,,1,,,,,,,,,,,,,,,,D,,,,,,,,,,,,,,,,,,,F,,,,,,,,,,,,,,,1,,,,,,,30,0,0,0,50,0,0,,,,,,
 Hogsete,2,109,TT1,106,109 TT1 106,,,3,3,2009,31-Jul,Presence,W,1,F,,,,,,,,,,,,,1cf,,,D,,,,,,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,1,DF,,,,,,10,0,0,0,50,0,0,,,,,,
 Hogsete,2,109,TT1,106,109 TT1 106,,,3,4,2009,31-Jul,Presence,W,,F,,,,,,,,,,,,,1cf,,,D,,,,,1,,,,,,,,,,,,,,1,,,,,,,,,,,,,,,,1,,,,,,10,0,0,0,40,0,0,,,,,,
