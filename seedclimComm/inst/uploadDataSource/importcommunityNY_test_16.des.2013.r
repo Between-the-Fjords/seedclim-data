@@ -100,7 +100,8 @@ import.data<-function(filelist, con){
   
   newspp <- setdiff(names(spp)[-(1:2)], spplist)
   if(length(newspp)>0){
-    stop("new taxa found: ", paste(newspp, collapse = " "))
+    write.csv(data.frame(filename = n, species = newspp), file = "newspecies_log.csv", append = TRUE)
+    #stop("new taxa found: ", paste(newspp, collapse = " "))
   }
   
   sppT <- plyr::ldply(3:ncol(spp), function(nc){
