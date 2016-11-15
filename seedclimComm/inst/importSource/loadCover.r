@@ -1,12 +1,12 @@
 ###############################################
 ##cover data
-coverQ<-"SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subTurfEnvironment.bad) AS CountOfbad
-FROM subTurfEnvironment where (subTurfEnvironment.year = new_TurfCommunity.year) AND (subTurfEnvironment.turfID = new_TurfCommunity.turfID)
- AND ( (subTurfEnvironment.bad)='')) AS notbad, sites.Temperature_level, sites.Summertemperature_gridded as summerTemperature, sites.Annualprecipitation_gridded as annualPrecipitation, sites.Precipitation_level, new_TurfCommunity.Year, new_TurfCommunity.species, new_TurfCommunity.cover, turfEnvironment.recorder , dest_blocks.siteID as destSiteID
+cover.thin <- dbGetQuery(con, paste("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subTurfEnvironment.bad) AS CountOfbad
+FROM subTurfEnvironment where (subTurfEnvironment.year = turfCommunity.year) AND (subTurfEnvironment.turfID = turfCommunity.turfID)
+ AND ( (subTurfEnvironment.bad)='')) AS notbad, sites.Temperature_level, sites.Summertemperature_gridded as summerTemperature, sites.Annualprecipitation_gridded as annualPrecipitation, sites.Precipitation_level, turfCommunity.Year, turfCommunity.species, turfCommunity.cover, turfEnvironment.recorder , dest_blocks.siteID as destSiteID
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
-INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN new_TurfCommunity ON turfs.turfID = new_TurfCommunity.turfID) INNER JOIN turfEnvironment ON (turfEnvironment.year = new_TurfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID)
-WHERE NOT turfs.TTtreat='' AND ((Not (new_TurfCommunity.Year)=2010));"
-cover.thin <- dbGetQuery(con, coverQ)
+INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID) INNER JOIN turfEnvironment ON (turfEnvironment.year = turfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID)
+WHERE NOT turfs.TTtreat='' AND ((Not (turfCommunity.Year)=2010));"))
+
        
 head(cover.thin)
                                        
@@ -29,17 +29,17 @@ sort(cover.thin$cover, decreasing = TRUE)[1:10]
 cover.thin$cover[cover.thin$cover > 80] <- 80#stop doubtfully high values                                 
 
 #correct for botanist effects
+cover.thin$recorder[is.na(cover.thin$recorder)] <- "unknown botanist"
 #PM
-cover.thin$cover[cover.thin$recorder == "PM"]<-cover.thin$cover[cover.thin$recorder=="PM"]*1.20
+cover.thin$cover[cover.thin$recorder == "PM"] <- cover.thin$cover[cover.thin$recorder=="PM"]*1.20
 #Siri
-siriQ <- "SELECT turfs.turfID, new_TurfCommunity.Year, turfEnvironment.date, Sum(new_TurfCommunity.cover) AS SumOfcover, turfEnvironment.totalVascular, turfs.TTtreat, sites.Temperature_level
+siri <- dbGetQuery(con, paste("SELECT turfs.turfID, new_TurfCommunity.Year, turfEnvironment.date, Sum(new_TurfCommunity.cover) AS SumOfcover, turfEnvironment.totalVascular, turfs.TTtreat, sites.Temperature_level
 FROM ((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN ((turfs INNER JOIN turfEnvironment ON turfs.turfID = turfEnvironment.turfID) INNER JOIN new_TurfCommunity ON (new_TurfCommunity.Year = turfEnvironment.year) AND (turfs.turfID = new_TurfCommunity.turfID)) ON plots.plotID = turfs.destinationPlotID
 WHERE (((turfEnvironment.recorder)='Siri'))
 GROUP BY turfs.turfID, new_TurfCommunity.Year, turfEnvironment.date, turfEnvironment.totalVascular, turfs.TTtreat, sites.Temperature_level
 HAVING ((Not (turfs.TTtreat)=''))
-ORDER BY new_TurfCommunity.Year, turfEnvironment.date, Sum(new_TurfCommunity.cover) DESC;"
+ORDER BY new_TurfCommunity.Year, turfEnvironment.date, Sum(new_TurfCommunity.cover) DESC;"))
 
-siri <- dbGetQuery(con, siriQ)
 siriLOW <- siri[siri$SumOfcover/siri$totalV < 1.35,]
 siriLOW$turfID <- as.character(siriLOW$turfID)
 
@@ -84,7 +84,7 @@ cover['40 TT2 62_2011', ] <- cover['40 TT2 62_2011', ] * 2 / 3
 
 
 #set NID.seedling to  0/1
-cover$NID.seedling <- ifelse(cover$NID.seedling > 0,1,0)
+#cover$NID.seedling <- ifelse(cover$NID.seedling > 0,1,0) # leave this out for the moment
          
 table(cover.meta$turfID, cover.meta$Year)   
 table(cover.meta$Year, cover.meta$siteID, cover.meta$TTtreat)         
