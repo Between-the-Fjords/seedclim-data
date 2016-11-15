@@ -69,8 +69,7 @@ else keep<-spp$siteID==site
 
 #subplotmap
 getsubturfspecies<-function(turf, year, species){
-  subturfsp<-dbGetQuery(con, paste('SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, subturf, seedlings, juvenile,adult, fertile, vegetative, dominant, cf
-    FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN newSubTurfCommunity ON turfs.turfID = newSubTurfCommunity.turfID where Year=",year," AND turfs.turfID='",turf,"' AND species='",species,"' ORDER BY subturf ASC;', sep=""))
+  subturfsp<-dbGetQuery(con, paste('SELECT sites.siteID, turfs.turfID, turfs.TTtreat, species, Year, subturf, seedlings, juvenile,adult, fertile, vegetative, dominant, cf FROM ((sites INNER JOIN (blocks INNER JOIN plots ON blocks.blockID = plots.blockID) ON sites.siteID = blocks.siteID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN newSubTurfCommunity ON turfs.turfID = newSubTurfCommunity.turfID where Year=",year," AND turfs.turfID=",turf," AND species=",species," ORDER BY subturf ASC;', sep=""))
     class(subturfsp)<-c("subturfsp","data.frame")
     subturfsp
 }
