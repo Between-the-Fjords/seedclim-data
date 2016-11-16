@@ -71,7 +71,7 @@ turfs <- turfs[order(turfs$turfID),]
 all(paste(cover.meta$turfID, cover.meta$Year, sep = "_") == rownames(cover))
 
 #clear up
-rm(cover.thin, siri.fix, stompingQ, siriQ, siriLOW, siri,coverQ)
+rm(cover.thin, siri.fix, stompingQ, siriLOW, siri)
          
 
 #John's corrections
