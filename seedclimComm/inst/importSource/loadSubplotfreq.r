@@ -1,11 +1,10 @@
 #load data
 
-subturfQ<-"SELECT sites.siteID, blocks.blockID, turfs.TTtreat, turfs.turfID, newSubTurfCommunity.subTurf, newSubTurfCommunity.Year, newSubTurfCommunity.species, newSubTurfCommunity.species, dest_blocks.blockID AS destBlockID, subTurfEnvironment.bad, sites.Temperature_level, sites.Precipitation_level, turfEnvironment.recorder
+subturf.thin <- dbGetQuery(con, paste("SELECT sites.siteID, blocks.blockID, turfs.TTtreat, turfs.turfID, newSubTurfCommunity.subTurf, newSubTurfCommunity.Year, newSubTurfCommunity.species, newSubTurfCommunity.species, dest_blocks.blockID AS destBlockID, subTurfEnvironment.bad, sites.Temperature_level, sites.Precipitation_level, turfEnvironment.recorder
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) 
 INNER JOIN (newSubTurfCommunity INNER JOIN subTurfEnvironment ON (newSubTurfCommunity.Year = subTurfEnvironment.year) AND (newSubTurfCommunity.subTurf = subTurfEnvironment.subTurf)) ON (turfs.turfID = subTurfEnvironment.turfID) AND (turfs.turfID = newSubTurfCommunity.turfID)) INNER JOIN turfEnvironment ON (turfEnvironment.year = newSubTurfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID) 
-WHERE ((Not (turfs.TTtreat)='')) AND ((Not (newSubTurfCommunity.Year)=2010));"
+WHERE ((Not (turfs.TTtreat)='')) AND ((Not (newSubTurfCommunity.Year)=2010));"))
                                                                           
-subturf.thin <- dbGetQuery(con, subturfQ)                              
 head(subturf.thin)
        
 #fat       
