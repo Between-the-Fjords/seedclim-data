@@ -1,6 +1,6 @@
 ---
 title: "Subturf Maps"
-author: "Richard J. Telford"
+author: "Francesca Jaroszynska"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: pdf_document
 classoption: a4paper
@@ -36,7 +36,12 @@ con <- dbConnect(RMySQL::MySQL(), group = "seedclim")
 
 ```{r}
 #merge cover and subturf
-subturf_cover_thin <- left_join(my.GR.data, subturf.GR)
+subturf_cover_thin <- full_join(my.GR.data, subturf.GR)
+
+subturf_cover_thin$problems[is.na(subturf_cover_thin$cover)] <- "no cover"
+subturf_cover_thin$problems[is.na(subturf_cover_thin$subTurf)] <- "no subturf"
+subturf_cover_thin$problems[is.na(subturf_cover_thin$problems)] <- "ok"
+subturf_cover_thin$problems <- as.factor(subturf_cover_thin$problems)
 
 ```
 
@@ -45,13 +50,14 @@ subturf_cover_thin <- left_join(my.GR.data, subturf.GR)
 ```{r, fig.height=11, fig.width = 7}
 plyr::d_ply(subturf_cover_thin, .(turfID), function(df){
   print(
-  ggplot(df, aes(x = subTurf %/% 5, y = subTurf %% 5, fill = cover)) +
-    geom_tile(colour = "black") +
+  ggplot(df, aes(x = (subTurf - 1) %/% 5, y = (subTurf - 1) %% 5, fill = cover)) +
+    geom_tile(colour = "grey60") +
     facet_grid(species ~ Year) +
-    ggtitle(paste(df$turfID[1], "subturf map")) +
+    ggtitle(paste("Plot", df$turfID, "at", df$siteID)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
     scale_fill_distiller(type = "seq", palette = "Greens", direction = 1) + 
+    theme_bw() +
     theme(
       axis.text = element_blank(), 
       axis.title = element_blank(), 
@@ -63,3 +69,4 @@ plyr::d_ply(subturf_cover_thin, .(turfID), function(df){
     cat("\n")
 })
 ```
+

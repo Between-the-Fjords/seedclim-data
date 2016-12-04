@@ -17,8 +17,6 @@ stopifnot(
 #Correcting for species that have undergone rapid evolution
 
 
-
-
 plyr::a_ply(corrections, 1, function(r){
   if(is.na(r$old)){
     dbGetQuery(con, paste0("INSERT INTO turfCommunity (turfID, year, species, cover, cf) VALUES ('", r$turfID,"', ", r$year,", '", r$species,"', ", r$cover,", 0);" )) #check out blank
