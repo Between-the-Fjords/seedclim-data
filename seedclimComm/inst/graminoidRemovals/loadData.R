@@ -20,23 +20,20 @@ HAVING turfCommunity.Year>2009 AND (turfs.TTtreat='ttc' OR (turfs.GRtreat)='rtc'
 str(my.GR.data)
 head(my.GR.data)
 
-
 levels(my.GR.data$TTtreat) <- c(levels(my.GR.data$TTtreat),levels(my.GR.data$GRtreat))
 my.GR.data$TTtreat[my.GR.data$TTtreat == ""| is.na(my.GR.data$TTtreat)] <- my.GR.data$GRtreat[my.GR.data$TTtreat == ""| is.na(my.GR.data$TTtreat)]
 my.GR.data$GRtreat <- NULL
 my.GR.data$TTtreat <- factor(my.GR.data$TTtreat)
 my.GR.data <- my.GR.data[!(my.GR.data$blockID == "Gud5" & my.GR.data$Year == 2010), ]
-#graminoids <- my.GR.data[my.GR.data$functionalGroup == "graminoid",]
-#my.GR.data <- my.GR.data[!(my.GR.data$functionalGroup == "graminoid"),]
 my.GR.data$Year[my.GR.data$Year == 2010] <- 2011
 
 
 remsites <- c("Skj11", "Skj12", "Gud11", "Gud12", "Gud13")
+
 #Remove TTCs not included in the data set 
 my.GR.data <- my.GR.data[!my.GR.data$blockID %in% remsites,] 
 
 my.GR.data$ID <- as.factor(paste(my.GR.data$turfID, my.GR.data$Year, sep = "_"))
-my.GR.data$funID <- as.factor(paste(my.GR.data$turfID, my.GR.data$Year, my.GR.data$functionalgroup, sep = "_"))
 
 ## ---- my.GR.data.end ----
 
@@ -47,7 +44,6 @@ cover <- xtabs(cover ~ paste(turfID, Year, sep = "_") + species, data = my.GR.da
 cover <- as.data.frame(unclass(cover))
 cover <- cover[,colSums(cover > 0) > 0] #remove empty spp
 head(cover)
-
 
 #load from data base
 traits <- dbGetQuery(con, paste("SELECT taxon.* , Lower, Nem, BNem, SBor, MBor, NBor, LAlp, MAlp, HAlp, Upper
@@ -65,9 +61,7 @@ traits <- traits %>%
     ifelse(HAlp == 0 & MAlp == 0 & LAlp == 0 & Nem == 1, "lowland", 
            ifelse(abundance < 5.5, "generalist", "other")))))
 
-
-#head(traits)
-#nrow(traits)
+str(traits)
 
 identical(as.character(traits$species), names(cover)) #this should be identical
 
@@ -78,81 +72,39 @@ my.GR.data$Height <- traits$height[match(my.GR.data$species, traits$species)]
 my.GR.data$leafSize <- traits$leafSize[match(my.GR.data$species, traits$species)]
 my.GR.data$seedMass <- traits$seedMass[match(my.GR.data$species, traits$species)]
 
-
-###### generalists vs specialists ######
-funcover <- my.GR.data %>% group_by(ID, functionalgroup) %>% select(-species) %>% mutate(functcover = mean(cover)) %>% distinct(ID, functionalgroup, .keep_all = TRUE)
-
-funcover <- xtabs(cover ~ paste(turfID, functionalgroup, Year, sep = "_") + species, data = my.GR.data)
-funcover <- as.data.frame(unclass(funcover))
-funcover <- cover[,colSums(cover > 0) > 0] #remove empty spp
-head(funcover)
-
-weighted.means <- data.frame(matrix(nrow = nrow(my.GR.data), ncol = 4))
-colnames(weighted.means) <- c("Height", "leafSize", "seedMass", "SLA") # add later -> , "Minheight", "Maxheight"
-weighted.means$funID <- my.GR.data$funID
-weighted.means <- unique(weighted.means)
-
-head(weighted.means)
-
-for(i in levels(my.GR.data$funID)) {
-    weighted.means$Height[my.GR.data$funID == "i","Height"] <- weighted.mean(my.GR.data$Height[my.GR.data$funID == "i"], my.GR.data$cover[my.GR.data$funID == "i"], na.rm = TRUE)
-    weighted.means$leafSize[my.GR.data$funID == "i", "leafSize"] <- weighted.mean(my.GR.data$leafSize[my.GR.data$funID == "i"], my.GR.data$cover[my.GR.data$funID == "i"], na.rm = TRUE)
-    weighted.means$seedMass[my.GR.data$funID == "i", "seedMass"] <- weighted.mean(my.GR.data$seedMass[my.GR.data$funID == "i"], my.GR.data$cover[my.GR.data$funID == "i"], na.rm = TRUE)
-    weighted.means$SLA[my.GR.data$funID == "i", "SLA"] <- weighted.mean(my.GR.data$SLA[my.GR.data$funID == "i"], my.GR.data$cover[my.GR.data$funID == "i"], na.rm = TRUE)
-    
-}
+###### weighted means for whole community
+my.GR.data <- my.GR.data %>% 
+  group_by(ID) %>%
+  mutate(wmean_height = weighted.mean(Height, cover), wmean_leafSize = weighted.mean(leafSize, cover), wmean_seedMass = weighted.mean(seedMass, cover), wmean_SLA = weighted.mean(SLA, cover)) %>%
+  #select(-c(species)) %>%
+  #distinct(ID, functionalgroup, .keep_all = TRUE) %>%
+  as.data.frame()
 
 
-(my.GR.data[my.GR.data$functionalgroup == "graminoid", 14:17], weighted.mean, my.GR.data[my.GR.data$functionalgroup == "graminoid", "cover"], na.rm=TRUE)
+###### weighted means for functional groups
+my.GR.data <- my.GR.data %>% 
+  group_by(ID, functionalgroup) %>%
+  mutate(fwmean_height = weighted.mean(Height, cover), fwmean_leafSize = weighted.mean(leafSize, cover), fwmean_seedMass = weighted.mean(seedMass, cover), fwmean_SLA = weighted.mean(SLA, cover)) %>%
+  #select(-c(species)) %>%
+  #distinct(ID, functionalgroup, .keep_all = TRUE) %>%
+  as.data.frame()
 
-
-deltacalc <- sapply(1:nrow(cover.meta[cover.meta$TTtreat == "RTC",]), function(i){
-  R <- cover.meta[cover.meta$TTtreat == "RTC",][i,]
-  #browser()
-  cols <- c("richness","evenness","expdiversity","diversity","Height","SLA","leafSize","sumcover", "seedMass")
-  friend <- cover.meta$Year==R$Year & cover.meta$blockID == R$blockID & cover.meta$TTtreat == "TTC"
-  if(all (!friend)) {print(R$turfID)
-    return(rep(NA, length(cols)))}
-  stopifnot(sum(friend) == 1)
+###### weighted means by specialism
+my.GR.data <- my.GR.data %>%
+  group_by(ID, specialism) %>%
+  mutate(swmean_height = weighted.mean(Height, cover), swmean_leafSize = weighted.mean(leafSize, cover), swmean_seedMass = weighted.mean(seedMass, cover), swmean_SLA = weighted.mean(SLA, cover)) %>%
+  as.data.frame()
   
-  f <- cover.meta[friend,]
-  x <- R[,cols] - f[,cols]
-  unlist(x)
-})
 
 
-##### calculate weighted means #####
-weighted.means <- matrix(nrow = nrow(cover), ncol = 4)
-colnames(weighted.means) <- c("Height", "leafSize", "seedMass", "SLA") # add later -> , "Minheight", "Maxheight"
-head(weighted.means)
-cover[is.na(cover)] <- 0
-for (i in 1:nrow(cover)){
-  
-  weighted.means[i,1] <- weighted.mean(traits$height, unlist(cover[i,]), na.rm = TRUE)
-  weighted.means[i,2] <- weighted.mean(traits$leafSize, cover[i,], na.rm = TRUE)
-  weighted.means[i,3] <- weighted.mean(traits$seedMass, cover[i,], na.rm = TRUE)
-  weighted.means[i,4] <- weighted.mean(traits$SLA, cover[i,], na.rm = TRUE)
-  #weighted.means[i,5] <- weighted.mean(traits$Min.height, cover[i,], na.rm = TRUE)
-  #weighted.means[i,6] <- weighted.mean(traits$Max.height, cover[i,], na.rm = TRUE)
-}
-
-head(weighted.means)
-weighted.means <- as.data.frame(weighted.means)
-weighted.means$ID <- row.names(cover)
-
-my.GR.data <- full_join(my.GR.data, weighted.means, by = "ID")
-
-
-all.cover.meta$prec <- c(0.6,1.2,2.0,2.7)[all.cover.meta$Precipitation_level]
-all.cover.meta$temp <- c(6.5,8.5,10.5)[all.cover.meta$Temperature_level]
+my.GR.data$prec <- c(0.6,1.2,2.0,2.7)[my.GR.data$Precipitation_level]
+my.GR.data$temp <- c(6.5,8.5,10.5)[my.GR.data$Temperature_level]
 
 #Meta data  
 cover.meta <- unique(my.GR.data[,c("siteID", "TTtreat", "Year", "blockID", "turfID","Temperature_level", "Precipitation_level")])
 
-cover.meta <- cover.meta[order(paste(cover.meta$turfID, cover.meta$Year)),] #make sure plots are in the same order as the cover data 
-all(paste(cover.meta$turfID, cover.meta$Year, sep = "_") == rownames(cover)) #if everything is correct, this should be TRUE! 
 
-cover.meta$TTtreat <- factor(as.character(cover.meta$TTtreat), levels = c("TTC", "RTC"))
+my.GR.data$TTtreat <- factor(as.character(my.GR.data$TTtreat), levels = c("TTC", "RTC"))
 
 
 
@@ -168,7 +120,9 @@ diversity.freq <- data.frame(richness = diversity.freq, diversity = diversity(co
 
 #Species evenness
 diversity.freq <- cbind(diversity.freq, evenness = diversity.freq$diversity/log(diversity.freq$richness), expdiversity = exp(diversity.freq$diversity))
-cover.meta <- cbind(cover.meta, diversity.freq)
+my.GR.data$evenness <- diversity.freq$evenness[match(my.GR.data$species, traits$species)]
+my.GR.data$specialism <- traits$specialism[match(my.GR.data$species, traits$species)]
+my.GR.data$specialism <- traits$specialism[match(my.GR.data$species, traits$species)]
 head(cover.meta)
 
 
@@ -289,41 +243,6 @@ timedelta <- cbind((cover.meta[cover.meta$Year != 2011,]), timedeltacalc)
 
 
 ##### UNUSED CODE #####
-
-my.GR.data <- merge(my.GR.data, traits, by = "species")
-
-
-for (i in 1:nrow(my.GR.data)){
-  
-  weighted.means[i,1] <- weighted.mean(traits$height, my.GR.data$cover[i,], na.rm = TRUE)
-  weighted.means[i,2] <- weighted.mean(traits$leafSize, my.GR.data$cover[i,], na.rm = TRUE)
-  weighted.means[i,3] <- weighted.mean(traits$seedMass, my.GR.data$cover[i,], na.rm = TRUE)
-  weighted.means[i,4] <- weighted.mean(traits$SLA, my.GR.data$cover[i,], na.rm = TRUE)
-  
-}
-
-
-################## CALCULATING TRAITS DELTA ###################
-cover.meta$sumcover <- rowSums(cover)
-
-deltacalc <- sapply(1:nrow(my.GR.data[my.GR.data$TTtreat == "RTC",]), function(i){
-  R <- my.GR.data[my.GR.data$TTtreat == "RTC",][i,]
-  #browser()
-  cols <- c("Height", "SLA", "leafSize", "seedMass")
-  friend <- my.GR.data$Year == R$Year & my.GR.data$blockID == R$blockID & my.GR.data$TTtreat == "TTC"
-  if(all (!friend)) {print(R$turfID)
-    return(rep(NA, length(cols)))}
-  stopifnot(sum(friend) == 1)
-  
-  f <- my.GR.data[friend,]
-  x <- R[,cols] - f[,cols]
-  unlist(x)
-})
-deltacalc <- as.data.frame(t(deltacalc))
-colnames(deltacalc) <- paste0("delta", colnames(deltacalc))
-rtcmeta <- cbind((cover.meta[cover.meta$TTtreat == "RTC",]), deltacalc)
-#rtcmeta<-rtcmeta[rtcmeta$Year!=2011,]
-
 
 
 #Correcting small mistakes where spp have switched: head(cover)
