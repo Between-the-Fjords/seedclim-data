@@ -72,43 +72,13 @@ my.GR.data$Height <- traits$height[match(my.GR.data$species, traits$species)]
 my.GR.data$leafSize <- traits$leafSize[match(my.GR.data$species, traits$species)]
 my.GR.data$seedMass <- traits$seedMass[match(my.GR.data$species, traits$species)]
 
-###### weighted means for whole community
-my.GR.data <- my.GR.data %>% 
-  group_by(ID) %>%
-  mutate(wmean_height = weighted.mean(Height, cover), wmean_leafSize = weighted.mean(leafSize, cover), wmean_seedMass = weighted.mean(seedMass, cover), wmean_SLA = weighted.mean(SLA, cover)) %>%
-  #select(-c(species)) %>%
-  #distinct(ID, functionalgroup, .keep_all = TRUE) %>%
-  as.data.frame()
-
-
-###### weighted means for functional groups
-my.GR.data <- my.GR.data %>% 
-  group_by(ID, functionalgroup) %>%
-  mutate(fwmean_height = weighted.mean(Height, cover), fwmean_leafSize = weighted.mean(leafSize, cover), fwmean_seedMass = weighted.mean(seedMass, cover), fwmean_SLA = weighted.mean(SLA, cover)) %>%
-  #select(-c(species)) %>%
-  #distinct(ID, functionalgroup, .keep_all = TRUE) %>%
-  as.data.frame()
-
-###### weighted means by specialism
-my.GR.data <- my.GR.data %>%
-  group_by(ID, specialism) %>%
-  mutate(swmean_height = weighted.mean(Height, cover), swmean_leafSize = weighted.mean(leafSize, cover), swmean_seedMass = weighted.mean(seedMass, cover), swmean_SLA = weighted.mean(SLA, cover)) %>%
-  as.data.frame()
-  
-
-
 my.GR.data$prec <- c(0.6,1.2,2.0,2.7)[my.GR.data$Precipitation_level]
 my.GR.data$temp <- c(6.5,8.5,10.5)[my.GR.data$Temperature_level]
-
-#Meta data  
-cover.meta <- unique(my.GR.data[,c("siteID", "TTtreat", "Year", "blockID", "turfID","Temperature_level", "Precipitation_level")])
-
 
 my.GR.data$TTtreat <- factor(as.character(my.GR.data$TTtreat), levels = c("TTC", "RTC"))
 
 
-
-############### CALCULATING DIVERSITY MEASURES ###############
+############### DIVERSITY MEASURES ###############
 
 #Species richness
 library(vegan)
@@ -116,18 +86,48 @@ library(vegan)
 diversity.freq <- rowSums(cover > 0)
 
 #Shannon's diversity index
-diversity.freq <- data.frame(richness = diversity.freq, diversity = diversity(cover, index = "shannon")) #requires vegan
+diversity.freq <- data.frame(richness = diversity.freq, diversity = diversity(cover, index = "shannon")) 
+diversity.freq$ID <- rnames
 
 #Species evenness
 diversity.freq <- cbind(diversity.freq, evenness = diversity.freq$diversity/log(diversity.freq$richness), expdiversity = exp(diversity.freq$diversity))
-my.GR.data$evenness <- diversity.freq$evenness[match(my.GR.data$species, traits$species)]
-my.GR.data$specialism <- traits$specialism[match(my.GR.data$species, traits$species)]
-my.GR.data$specialism <- traits$specialism[match(my.GR.data$species, traits$species)]
-head(cover.meta)
+my.GR.data$evenness <- diversity.freq$evenness[match(my.GR.data$ID, diversity.freq$ID)]
+my.GR.data$richness <- diversity.freq$richness[match(my.GR.data$ID, diversity.freq$ID)]
+my.GR.data$diversity <- diversity.freq$diversity[match(my.GR.data$ID, diversity.freq$ID)]
+my.GR.data$expdiversity <- diversity.freq$expdiversity[match(my.GR.data$ID, diversity.freq$ID)]
+
+head(my.GR.data)
+
+
+############## WEIGHTED MEANS ###############
+
+###### weighted means for whole community
+wholecom <- my.GR.data %>% 
+  group_by(ID) %>%
+  mutate(wmean_height = weighted.mean(Height, cover), wmean_leafSize = weighted.mean(leafSize, cover), wmean_seedMass = weighted.mean(seedMass, cover), wmean_SLA = weighted.mean(SLA, cover)) %>%
+  distinct(ID, .keep_all = TRUE) %>%
+  select(-(Temperature_level:seedMass), -(fwmean_height:swmean_SLA), -species) %>%
+  as.data.frame()
+
+###### weighted means for functional groups
+functionals <- my.GR.data %>% 
+  group_by(ID, functionalgroup) %>%
+  mutate(fwmean_height = weighted.mean(Height, cover), fwmean_leafSize = weighted.mean(leafSize, cover), fwmean_seedMass = weighted.mean(seedMass, cover), fwmean_SLA = weighted.mean(SLA, cover)) %>%
+  distinct(ID, functionalgroup, .keep_all = TRUE) %>%
+  select(-(SLA:wmean_SLA), -(swmean_height:swmean_SLA), -(Temperature_level:specialism), -species) %>%
+  as.data.frame()
+
+###### weighted means by specialism
+specialism <- my.GR.data %>%
+  group_by(ID, specialism) %>%
+  mutate(swmean_height = weighted.mean(Height, cover), swmean_leafSize = weighted.mean(leafSize, cover), swmean_seedMass = weighted.mean(seedMass, cover), swmean_SLA = weighted.mean(SLA, cover)) %>%
+  distinct(ID, functionalgroup, .keep_all = TRUE) %>%
+  select(-(SLA:wmean_SLA), -(swmean_height:swmean_SLA), -(Temperature_level:specialism), -species) %>%
+  as.data.frame()
 
 
 ################## CALCULATING TRAITS DELTA ###################
-cover.meta$sumcover <- rowSums(cover)
+my.GR.data$sumcover <- rowSums(cover)
 
 deltacalc <- sapply(1:nrow(cover.meta[cover.meta$TTtreat == "RTC",]), function(i){
   R <- cover.meta[cover.meta$TTtreat == "RTC",][i,]
