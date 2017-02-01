@@ -32,51 +32,116 @@ diversity.data.new<-rbind(diversity.data.2011,diversity.data.2012) #NB! Note tha
 
 ######################################################################################
 
-rtcmeta$Year <- factor(rtcmeta$Year)
 
 #And finally - analyses!
 
 library(lme4)
+library(psych)
 library(car)
+library(broom)
+library(hypervolume)
+
+
+my.GR.data.clean <- my.GR.data %>%
+  select(-Temperature_level, -Precipitation_level, -plotID)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+############### Hypervolume analysis ###############
+
+## ---- hypervolume start ---- 
+
+# checking out what the deal is with the hypervolume package
+forbs <- forbs[complete.cases(forbs[,20:24]),]
+forbs <- forbs %>%
+  filter(TTtreat == "RTC")
+
+hv1 <- hypervolume(subset(forbs, Year == 2011 & temp == 6.5)[,14:17], bandwidth = estimate_bandwidth(forbs[,14:15]), name = '2011_alpine')
+hv2 <- hypervolume(subset(forbs, Year == 2016 & temp == 6.5)[,14:17], bandwidth = estimate_bandwidth(forbs[,14:15]), name = '2016_alpine')
+hv3 <- hypervolume(subset(forbs, Year == 2011 & temp == 10.5)[,14:17], bandwidth = estimate_bandwidth(forbs[,14:15]), name = '2011_lowland')
+hv4 <- hypervolume(subset(forbs, Year == 2016 & temp == 10.5)[,14:17], bandwidth = estimate_bandwidth(forbs[,14:15]), name = '2016_lowland')
+
+hv2 <- hypervolume(subset(forbs, specialism == "alpine")[,14:17], bandwidth = 0.25, name = 'alpines')
+hv3 <- hypervolume(subset(forbs, specialism == "lowland")[,14:17], bandwidth = 0.25, name = 'lowlands')
+
+hv_all <- hypervolume_join(hv1, hv2)
+plot(hv_all)
+
+species_list = as.character(unique(forbs$Year))
+num_species = length(species_list)  
+trait_axes <- c("SLA_mean","Height_mean","LDMC_mean","LA_mean")
+
+# compute hypervolumes for each species  
+hv_specialism_list = new("HypervolumeList")
+hv_specialism_list@HVList = vector(mode="list",length=num_species)
+for (i in 1:num_species)
+  {
+ # keep the trait data 
+data_this_specialism = forbs[forbs$Year==species_list[i],trait_axes]
+# log-transform to rescale
+# data_this_species_log <- log10(data_this_species)
+
+# make a hypervolume using auto-bandwidth
+hv_specialism_list@HVList[[i]] <- hypervolume(data_this_specialism, bandwidth = estimate_bandwidth(data_this_specialism), name = as.character(species_list[i]), warn = FALSE)
+}
+
+# compute all pairwise overlaps
+overlap = matrix(NA, nrow = num_species, ncol = num_species)
+dimnames(overlap) = list(species_list, species_list)
+for (i in 1:num_species)
+  {
+  for (j in i:num_species)
+    {
+    if (i!=j)
+      {
+      # compute set operations on each pair
+      this_set = hypervolume_set(hv_specialism_list@HVList[[i]], hv_specialism_list@HVList[[j]], check_memory = FALSE)
+      # calculate a Sorensen overlap index (2 x shared volume / sum of |hv1| + |hv2|)
+      overlap[i,j] = hypervolume_sorensen_overlap(this_set)
+    }
+  }   
+  }
+
+# show all hypervolumes
+plot(hv_specialism_list)
+
+# show pairwise overlaps - note that actually very few species overlap in four dimensions
+  +   op <- par(mar=c(10,10,1,1))
++   image(x=1:nrow(overlap), y=1:nrow(overlap), z=overlap,axes=F,xlab='',ylab='',col=rainbow(5))
++   box()
++   axis(side=1, at=1:(length(dimnames(overlap)[[1]])),dimnames(overlap)[[1]],las=2,cex.axis=0.75)
++   axis(side=2, at=1:(length(dimnames(overlap)[[2]])),dimnames(overlap)[[2]],las=1,cex.axis=0.75)
++   par(op)
+
+
+## ---- hypervolume end ---- 
 
 #correlations
-panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)  {
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  r <- abs(cor(x, y))
-  txt <- format(c(r, 0.123456789), digits=digits)[1]
-  txt <- paste(prefix, txt, sep="")
-  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
-  text(0.5, 0.5, txt, cex = cex.cor * r)
+
+pairs.panels(wholecom)
+
+vif.mer <- function (fit) {
+  ## adapted from rms::vif
+  v <- vcov(fit)
+  nam <- names(fixef(fit))
+  ## exclude intercepts
+  ns <- sum(1 * (nam == "Intercept" | nam == "(Intercept)"))
+  if (ns > 0) {
+    v <- v[-(1:ns), -(1:ns), drop = FALSE]
+    nam <- nam[-(1:ns)]
+  }
+  d <- diag(v)^0.5
+  v <- diag(solve(v/(d %o% d)))
+  names(v) <- nam
+  v
 }
-panel.hist<- function(x, ...) {
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(usr[1:2], 0, 1.5) )
-  h <- hist(x, plot = FALSE)
-  breaks <- h$breaks; nB <- length(breaks)
-  y <- h$counts; y <- y/max(y)
-  rect(breaks[-nB], 0, breaks[-1], y, col="white", ...)
-}
 
-pairs(rtcmeta[,c("deltadiversity","deltarichness","deltaevenness","deltaSLA", "temp", "prec", "Year")],
-      lower.panel=panel.cor,cex.labels=3)
-pairs(rtcmeta[,c("deltadiversity","deltarichness","deltaevenness","deltaSLA", "temp", "prec", "Year")],
-      lower.panel=panel.cor,cex.labels=3,upper.panel=panel.smooth)
-pairs(rtcmeta[,c("deltadiversity","deltarichness","deltaevenness","deltaSLA", "temp", "prec", "Year")],
-      lower.panel=panel.cor,cex.labels=1.25,upper.panel=panel.smooth,diag.panel=panel.hist, main = "")
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+############### Diversity analysis ###############
 
-pairs(timedelta[,c("deltadiversity","deltarichness","deltaevenness","deltaSLA", "temp", "prec", "Year")],
-      lower.panel=panel.cor,cex.labels=3)
-pairs(timedelta[,c("deltadiversity","deltarichness","deltaevenness","deltaSLA", "temp", "prec", "Year")],
-      lower.panel=panel.cor,cex.labels=3,upper.panel=panel.smooth)
-pairs(timedelta[,c("deltadiversity","deltarichness","deltaevenness","deltaSLA", "temp", "prec", "Year")],
-      lower.panel=panel.cor,cex.labels=1.25,upper.panel=panel.smooth,diag.panel=panel.hist, main = "")
+## ---- diversity start ---- 
 
-
-
-####### Diversity #########
 # base
-model.div.ba<-lmer(diversity ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
+model.div.ba <- lmer(diversity ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data = wholecom)
 drop1(model.div.ba, test = "Chisq")
 model.div.ba <- update(model.div.ba, .~. - TTtreat:temp)
 summary(model.div.ba); Anova(model.div.ba) #this may not be a great method to get variable significances
@@ -85,13 +150,29 @@ plot(model.div.ba)
 #final model: diversity ~ TTtreat + temp + prec + sYear + (1 | siteID/blockID/turfID) +  temp:prec + TTtreat:sYear + prec:sYear
 
 # treatment delta
-model.div.tr<-lmer(deltadiversity ~ temp*prec*Year + (1|siteID/blockID), na.action=na.omit, REML=F, data=rtcmeta)
+model.div.tr<-lmer(deltadiversity ~ prec*Year + temp + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data=rtcmeta)
+vif.mer(model.div.tr)
+#model.div.tr <- update(model.div.tr, .~. - temp)
+vif.mer(model.div.tr)
 drop1(model.div.tr, test = "Chisq")
-model.div.tr <- update(model.div.tr, .~. - temp)
 summary(model.div.tr); Anova(model.div.tr) #this may not be a great method to get variable significances.
 qqnorm(residuals(model.div.tr)); qqline(residuals(model.div.tr))
 plot(model.div.tr)
-#final model: diversity ~ TTtreat + temp + prec + sYear + (1 | siteID/blockID/turfID) +  temp:prec + TTtreat:sYear + prec:sYear
+df <- augment(model.div.tr)
+
+
+ggplot(df, aes(x = temp, y = deltadiversity)) +
+  geom_point() +
+  geom_raster(aes(fill = .mu))
+
+  geom_boxplot() +
+  ggtitle(paste("Delta diversity across precipitation gradient")) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_colour_manual(values = cbPalette) +
+  facet_grid(as.formula(.~ Year)) +
+  theme_bw() +
+  axis.dim + precip.lab
+#final model: diversity ~ prec + sYear + (1 | siteID/blockID/turfID) +  temp:prec + TTtreat:sYear + prec:sYear
 
 # time delta
 model.div.ti<-lmer(deltadiversity ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
@@ -102,8 +183,11 @@ qqnorm(residuals(model.div.ti)); qqline(residuals(model.div.ti))
 plot(model.div.ti)
 #final model: diversity ~ TTtreat + temp + prec + sYear + (1 | siteID/blockID/turfID) +  temp:prec + TTtreat:sYear + prec:sYear
 
+## ---- diversity end ---- 
 
-####### Richness #########
+
+## ---- richness start ---- 
+
 # base
 model.rich.ba<-lmer(richness ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
 drop1(model.rich.ba, test = "Chisq")
@@ -130,9 +214,10 @@ summary(model.rich.ti); Anova(model.rich.ti) #this may not be a great method to 
 qqnorm(residuals(model.rich.ti)); qqline(residuals(model.rich.ti))
 plot(model.rich.ti)
 
+## ---- richness end ---- 
 
 
-####### Evenness #########
+## ---- evenness start ---- 
 # base
 model.eve.ba<-lmer(evenness ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
 drop1(model.eve.ba, test = "Chisq")
@@ -157,29 +242,50 @@ summary(model.eve.ti); Anova(model.eve.ti) #this may not be a great method to ge
 qqnorm(residuals(model.eve.ti)); qqline(residuals(model.eve.ti))
 plot(model.eve.ti)
 
+## ---- evenness end ---- 
 
 
-######### SLA ##########
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+############### Traits analysis ###############
+
+## ---- SLA start ---- 
+
 # base
-model.sla.ba<-lmer(SLA ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
+model.sla.ba<-lmer(deltasumcover ~ temp*Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data=rtcforbs)
+vif.mer(model.sla.ba)
 drop1(model.sla.ba, test = "Chisq")
-model.sla.ba <- update(model.sla.ba, .~. - temp:scale(Year))
+model.sla.ba <- update(model.sla.ba, .~. - Year)
+drop1(model.sla.ba, test = "Chisq")
+model.sla.ba <- update(model.sla.ba, .~. - TTtreat:prec)
+drop1(model.sla.ba, test = "Chisq")
+model.sla.ba <- update(model.sla.ba, .~. - TTtreat:temp)
+drop1(model.sla.ba, test = "Chisq")
+model.sla.ba <- update(model.sla.ba, .~. - prec)
+drop1(model.sla.ba, test = "Chisq")
+
 summary(model.sla.ba); Anova(model.sla.ba) #this may not be a great method to get variable significances
 qqnorm(residuals(model.sla.ba)); qqline(residuals(model.sla.ba))
 plot(model.sla.ba)
 
 #treatment delta
-model.sla.tr<-lmer(deltaSLA~temp*prec*Year + (1|siteID/blockID), na.action=na.omit, REML=FALSE, data=rtcmeta)
+model.sla.tr <- lmer(deltawmean_SLA_local ~ temp*Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data = rtcforbs)
+vif.mer(model.sla.tr)
 drop1(model.sla.tr, test="Chisq")
-model.sla.tr <- update(model.sla.tr, .~. - Year)
+model.sla.tr <- update(model.sla.tr, .~. - temp)
 summary(model.sla.tr); Anova(model.sla.tr)
 qqnorm(residuals(model.sla.tr)); qqline(residuals(model.sla.tr))
 plot(model.sla.tr)
+sla.tr <- augment(model.sla.tr)
+
+ggplot(sla.tr, aes(x = .fitted, y = deltawmean_SLA_local)) +
+  #geom_point() +
+  geom_raster(aes(fill = .mu))
 
 #time delta
-model.sla.ti<-lmer(deltaSLA~TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=FALSE, data=timedelta)
+model.sla.ti <- lmer(deltawmean_LDMC_local ~ prec*Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data = rtcforbs)
+vif.mer(model.sla.ti)
 drop1(model.sla.ti, test="Chisq")
-model.sla.ti <- update(model.sla.ti, .~. - temp:scale(Year))
+model.sla.ti <- update(model.sla.ti, .~. - Year)
 summary(model.sla.ti); Anova(model.sla.ti)
 qqnorm(residuals(model.sla.ti)); qqline(residuals(model.sla.ti))
 plot(model.sla.ti)
