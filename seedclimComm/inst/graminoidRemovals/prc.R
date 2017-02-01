@@ -1,34 +1,101 @@
 ######## PCR plotting ##########
-source("/Users/fja062/Desktop/New Folder With Items/data prep.R")
+source("/inst/graminoidRemovals/loadData.R")
+source("/Users/fja062/Documents/seedclimComm/seedclimComm/inst/graminoidRemovals/multiplot_function.R")
+library(ggvegan)
+##### SITE BY SITE BASIS #######
 
-site <- "Ulvhaugen"
+ulv <- my.GR.data %>%
+  filter(functionalgroup != "graminoid")  #%>%  & specialism == "alpine" to filter by specialism
 
-sapply(levels(cover.meta$siteID), function(site){
-  species <- cover[cover.meta$siteID == site, ]
-  species <- species[, colSums(species)>0]
+scores <- numeric(0)
+plots <- list()
+siteID <- unique(ulv$siteID)
+#temp <- unique(ulv$temp)
+#prec <- unique(ulv$prec)
+
+for (i in siteID) {
+  df <- filter(ulv, siteID == i) %>%
+    mutate(turfID = as.factor(turfID))
   
-  year <- as.factor(subset(cover.meta, siteID == site, Year)[, 1])
-  treatment <- as.factor(subset(cover.meta, siteID == site, TTtreat)[,1])
+  spp <- xtabs(cover ~ paste(turfID, Year, sep = "_") + species, data = df)
+  spp <- as.data.frame(unclass(spp))
+  spp <- spp[,colSums(spp > 0) > 0] #remove empty spp
   
-  prc1 <- prc(response = sqrt(species), treatment = treatment, time = year)
-  abundance <- as.data.frame(colSums(species)) # to select spp above k abundance
-  plot(prc1, select = abundance > 10, main = site)
-})
+  ulv_env <- distinct(df, ID, .keep_all = TRUE)
+  
+  year <- ulv_env$Year
+  treat <- ulv_env$TTtreat
+  
+  prc1 <- prc(response = spp, treat, year)
+  abundance <- as.data.frame(colSums(spp)) # to select spp above k abundance
+  
+  scores <- c(scores, prc1$CCA$biplot[,2])
+  #par(mfrow = c(3,4))
+  p1 <- plot(prc1, select = abundance > 10)#autoplot(prc1, leg.pos = "", label = spp) + labs(title = i)
+  plots[[i]] <- p1 #add each plot to the empty list
 
-summary(prc1, axis = 1, scaling = 2, digits = 4)
+}
 
-rda1 <- rda(species ~ treatment * year + Condition(year))
-coef(rda1)
+multiplot(plotlist = plots, cols = 3)  
 
+#alrust = lotus cor
+#arhelleren = potentilla ere
+#fauske = alchemilla sp
+#gudmedalen = viola bif
+#hogsete = achillea mil
+#lavisdalen = silene aca
+#ovstedal = potentilla ere
+#rambera = potentilla ere
+#skjellingahaugen = silene aca
+#ulvhaugen = achillea mil
+#veskre = hieracium pil
+#vikesland = galium ver
+
+scores <- as.data.frame(cbind(scores,
+      rep(c(2011,2012,2013,2015,2016),3),
+      rep(siteID,each=5)
+))
+
+colnames(scores) <- c('scores', 'year', 'sites')
+rownames(scores) <- NULL
+scores$scores <- as.numeric(paste(scores$scores))
+scores$year <- as.numeric(paste(scores$year))
+#scores$temp <- as.factor(paste(scores$temp))
+#scores$prec <- as.factor(paste(scores$prec))
+
+# prc plot all sites forbs
+ggplot(scores, aes(x = year, y = scores, colour = sites)) +
+  geom_line() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_bw() +
+  scale_color_brewer(palette = "Dark2")
+
+
+
+rda1 <- rda(spp ~ TTtreat * Year, data = ulv_env)
+coef1 <- coef(summary(rda1, axis = 1, scaling = "species", digits = 4))
+  
 ctrl <- how(within = Within(type = "series"), #, constant = TRUE <- is this necessary?
-            plots = Plots(strata = explan$blockID),
-            blocks = explan$siteID)
+            plots = Plots(strata = ulv_env$blockID),
+            blocks = ulv_env$siteID)
 anova(prc1, permutations = ctrl)
+  
 
 
-mod <-rda(sqrt(species)~treatment, subset = year==2015)
-plot(mod)
-anova(mod)
+rda1 <- rda(spp ~ TTtreat * Year, data = ulv_env)
+coefs <- as.data.frame(coef(rda1))
+  
+
+
+out <- NULL
+for (i in levels(year)) {
+  take_spec <- spp[year == i, ]
+  take_dose <- treatment[year == i]
+  out[[i]] <- anova(rda(take_spec ~ take_dose), by = "terms", step = 1000)
+}
+sapply(out, function(x) x[1, 5])
+
+
 
 #Coefficients for explan$TTtreat + explan$Year:explan$TTtreat interaction
 #which are contrasts to explan$TTtreat TTC 
@@ -63,18 +130,4 @@ sapply(levels(explan$siteID), function(siteID){
 #Plotting
 plot(prc1, axis=1, cex.axis=1.5, cex.lab=1.5, type="b", pch=19, lwd=2, lty=c(1,5,1,5,1,5,1), legpos=NA, xlab="Year", ylab="PRC1", cex=1.2) #  select=abundance>25, col=c("black","red","red", "green","green","blue","blue")
 legend("topleft", inset=.05, c("Control","Warming", "Nutrient addition","Warming + Nutrient addition", "", "Solid line = herbivore exclosure", "Dashed line = herbivores present"), pch=19, col=c(1, 2, 3, 4, 0, 0,0),horiz=FALSE,bty="n",cex=1,pt.cex=c(1.2,1.2,1.2,1.2))
-
-
-
-Q
-par(mar=c(3,3,1,1), mgp=c(1.5,.5,0))
-x11();
-hp("Hogsete", dat=freqsubturf)
-
-sapply(levels(cover.meta$siteID), function(siteID){
-  x11();
-  hp(siteID, dat=cover, ord=metaMDS)
-  title(main=siteID)
-})
-
 
