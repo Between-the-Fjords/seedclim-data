@@ -1,36 +1,39 @@
 #For the analyses I have chosen to work with the subplot frequency data rather than cover data, as the cover data has observer bias
 
 
-############### DIVERSITY MEASURES AND TRAITS ###############
-######################### leave this section for the moment ##################################
-
-#Remove some plots so that 2011 values can be subtracted from the 2012 and 2013 data 
-diversity.data.2011<-diversity.data[diversity.data$Year==2011,]
-diversity.data.2011<-diversity.data.2011[-48,]
-dim(diversity.data.2011)
-diversity.data.2012<-diversity.data[diversity.data$Year==2012,]
-diversity.data.2012<-diversity.data.2012[-c(70,94:95),]
-dim(diversity.data.2012)
-diversity.data.2013<-diversity.data[diversity.data$Year==2013,]
-diversity.data.2013<-diversity.data.2013[-c(70,94:95),]
-dim(diversity.data.2013)
-
-#Check if plot ID matches
-diversity.data.2012[,5] == diversity.data.2013[,5] #should be TRUE
-diversity.data.2011[,5] == diversity.data.2012[,5] #here you'll get a couple of FALSEs due to different naming of the same plots... 
-
-#Do the subtraction
-rich.div.12<-diversity.data.2012[,12] - diversity.data.2011[,12]
-rich.div.13<-diversity.data.2013[,12] - diversity.data.2011[,12]
-
-#Put it all back together
-diversity.data.2011<-cbind(diversity.data.2011,rich.div.12)
-colnames(diversity.data.2011)[17]<-"rich.div"
-diversity.data.2012<-cbind(diversity.data.2012,rich.div.13)
-colnames(diversity.data.2012)[17]<-"rich.div"
-diversity.data.new<-rbind(diversity.data.2011,diversity.data.2012) #NB! Note that the years now say 2011 and 2012 in stead of 2012 and 2013. It doesn't matter for the analyses, but it's good to be aware of
 
 ######################################################################################
+#function for QAICc. NB, phi is the scaling parameter from the quasi-family model. If using e.g. a poisson family, phi=1 and QAICc returns AICc, or AIC if QAICc=FALSE.
+QAICc <- function(mod, scale, QAICc = TRUE) {
+  ll <- as.numeric(logLik(mod))
+  df <- attr(logLik(mod), "df")
+  n <- length(resid(mod))
+  if (QAICc)
+    qaic = as.numeric(-2 * ll/scale + 2 * df + 2 * df * (df + 1)/(n - df - 1))
+  else qaic = as.numeric(-2 * ll/scale + 2 * df)
+  qaic
+}
+
+
+## code for model selection. First fit mod01, then run this code.
+modsel <- function(mods,x){	
+  phi=1
+  dd <- data.frame(Model=1:length(mods), K=1, QAIC=1)
+  for(j in 1:length(mods)){
+    dd$K[j] = attr(logLik(mods[[j]]),"df")
+    dd$QAIC[j] = QAICc(mods[[j]],phi)
+  }
+  dd$delta.i <- dd$QAIC - min(dd$QAIC)
+  dd <- subset(dd,dd$delta.i<x)
+  dd$re.lik <- round(exp(-0.5*dd$delta.i),3)
+  sum.aic <- sum(exp(-0.5*dd$delta.i))
+  wi <- numeric(0)
+  for (i in 1:length(dd$Model)){wi[i] <- round(exp(-0.5*dd$delta.i[i])/sum.aic,3)}; dd$wi<-wi
+  print(dds <- dd[order(dd$QAIC), ])
+  assign("mstable",dd,envir=.GlobalEnv)
+}
+
+modsel(list(mod01,mod02,mod03,mod04,mod05,mod06,mod07,mod08,mod09,mod10),1000)
 
 
 #And finally - analyses!
@@ -44,6 +47,11 @@ library(hypervolume)
 
 my.GR.data.clean <- my.GR.data %>%
   select(-Temperature_level, -Precipitation_level, -plotID)
+
+
+summary(lm(summer_precip ~ summer_temp, data = my.GR.data))
+ggplot(rtcforbs, aes(y = summer_temp, x = annPrecip, colour = Year)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ############### Hypervolume analysis ###############
@@ -150,7 +158,8 @@ plot(model.div.ba)
 #final model: diversity ~ TTtreat + temp + prec + sYear + (1 | siteID/blockID/turfID) +  temp:prec + TTtreat:sYear + prec:sYear
 
 # treatment delta
-model.div.tr<-lmer(deltadiversity ~ prec*Year + temp + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data=rtcmeta)
+qqp(rtcmeta$deltadiversity, "norm")
+model.div.tr<-lmer(deltadiversity ~ annPrecip*Year*summer_temp + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data = rtcforbs)
 vif.mer(model.div.tr)
 #model.div.tr <- update(model.div.tr, .~. - temp)
 vif.mer(model.div.tr)
@@ -186,27 +195,42 @@ plot(model.div.ti)
 ## ---- diversity end ---- 
 
 
-## ---- richness start ---- 
+## ---- richness start ---- is interannual variability more important than treatment effect???
+forbcomfilter <- forbcom %>%
+  filter(richness != "NA")
+
+poisson <- fitdistr(forbcomfilter$richness, "Poisson")
+qqp(forbcomfilter$richness, "pois", poisson$estimate)
+
+ggplot(forbcom, aes(x = summer_temp, y = richness, colour = Year, linetype = TTtreat)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+ggplot(forbcom, aes(x = annPrecip, y = richness, colour = Year, linetype = TTtreat)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+
+
+model.rich.tr <- glmer(richness ~ summer_temp + annPrecip + Year + TTtreat + (1|siteID/blockID), na.action = na.omit, data = forbcom, family = "poisson")
 
 # base
-model.rich.ba<-lmer(richness ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
-drop1(model.rich.ba, test = "Chisq")
-model.rich.ba <- update(model.rich.ba, .~. - temp:scale(Year))
-summary(model.rich.ba); Anova(model.rich.ba) #this may not be a great method to get variable significances
-qqnorm(residuals(model.rich.ba)); qqline(residuals(model.rich.ba))
-plot(model.rich.ba)
-
 # treatment delta
-model.rich.tr<-lmer(deltarichness~temp*prec*Year + (1|siteID/blockID), na.action=na.omit, REML=F, data=rtcmeta)
+model.rich.tr <- glmer(deltarichness ~ summer_temp*annPrecip*Year + (1|siteID/blockID), na.action = na.omit, data = rtcforbs, family = "poisson")
 drop1(model.rich.tr, test="Chisq")
-model.rich.tr <- update(model.rich.tr, .~. - Year)
-#final model = richness ~ TTtreat + temp + prec + TTtreat:temp + (1 | Year) + (1 | siteID/blockID/turfID)
+model.rich.tr <- update(model.rich.tr, .~. - summer_temp:annPrecip:Year)
+drop1(model.rich.tr, test="Chisq")
+model.rich.tr <- update(model.rich.tr, .~. - summer_temp:Year)
+drop1(model.rich.tr, test="Chisq")
+model.rich.tr <- update(model.rich.tr, .~. - summer_temp:annPrecip)
+drop1(model.rich.tr, test="Chisq")
+model.rich.tr <- update(model.rich.tr, .~. - summer_temp)
+drop1(model.rich.tr, test="Chisq")
+model.rich.tr <- update(model.rich.tr, .~. - annPrecip:Year)
+drop1(model.rich.tr, test="Chisq")
+model.rich.tr <- update(model.rich.tr, .~. - annPrecip)
+drop1(model.rich.tr, test="Chisq")
+#final model = deltarichness ~ summer_temp + annPrecip + Year + (1 | siteID/blockID) + annPrecip:Year
 summary(model.rich.tr); Anova(model.rich.tr) #this may not be a great method to get variable significance
 qqnorm(residuals(model.rich.tr)); qqline(residuals(model.rich.tr))
 plot(model.rich.tr)
 
 # time delta
-model.rich.ti<-lmer(deltarichness~TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
+model.rich.ti<-lmer(deltarichness~TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data = timeforbs)
 drop1(model.rich.ti, test="Chisq")
 model.rich.ti <- update(model.rich.ti, .~. - TTtreat:scale(Year))
 #final model = richness ~ TTtreat + temp + prec + TTtreat:temp + (1 | Year) + (1 | siteID/blockID/turfID)
@@ -217,68 +241,52 @@ plot(model.rich.ti)
 ## ---- richness end ---- 
 
 
-## ---- evenness start ---- 
-# base
-model.eve.ba<-lmer(evenness ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
-drop1(model.eve.ba, test = "Chisq")
-model.eve.ba <- update(model.eve.ba, .~. - temp)
-summary(model.eve.ba); Anova(model.eve.ba) #this may not be a great method to get variable significances
-qqnorm(residuals(model.eve.ba)); qqline(residuals(model.eve.ba))
-plot(model.eve.ba)
-
-# model treatment delta
-model.eve.tr<-lmer(deltaevenness~temp*prec*Year+(1|siteID/blockID), na.action=na.omit, REML=F, data=rtcmeta)
-drop1(model.eve.tr, test="Chisq")
-model.eve.tr <- update(model.eve.tr, .~. - Year)
-summary(model.eve.tr); Anova(model.eve.tr) #this may not be a great method to get variable significance
-qqnorm(residuals(model.eve.tr)); qqline(residuals(model.eve.tr))
-plot(model.eve.tr)
-
-# model time delta
-model.eve.ti<-lmer(deltaevenness~TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
-drop1(model.eve.ti, test="Chisq")
-model.eve.ti <- update(model.eve.ti, .~. - temp)
-summary(model.eve.ti); Anova(model.eve.ti) #this may not be a great method to get variable significance
-qqnorm(residuals(model.eve.ti)); qqline(residuals(model.eve.ti))
-plot(model.eve.ti)
-
-## ---- evenness end ---- 
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ############### Traits analysis ###############
 
-## ---- SLA start ---- 
+## ---- SumCover start ---- 
+qqp(rtcforbs$deltasumcover, "norm")
+ggplot(rtcforbs, aes(x = summer_temp, y = deltasumcover, colour = Year)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+ggplot(rtcforbs, aes(x = annPrecip, y = deltasumcover, colour = Year)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
 
 # base
-model.sla.ba<-lmer(deltasumcover ~ temp*Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data=rtcforbs)
-vif.mer(model.sla.ba)
-drop1(model.sla.ba, test = "Chisq")
-model.sla.ba <- update(model.sla.ba, .~. - Year)
-drop1(model.sla.ba, test = "Chisq")
-model.sla.ba <- update(model.sla.ba, .~. - TTtreat:prec)
-drop1(model.sla.ba, test = "Chisq")
-model.sla.ba <- update(model.sla.ba, .~. - TTtreat:temp)
-drop1(model.sla.ba, test = "Chisq")
-model.sla.ba <- update(model.sla.ba, .~. - prec)
-drop1(model.sla.ba, test = "Chisq")
+model.dsc.ba <- lmer(deltasumcover ~ summer_temp + annPrecip + Year + summer_temp:Year + annPrecip:Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data=rtcforbs)
+vif.mer(model.dsc.ba)
+step(model.dsc.ba)
 
-summary(model.sla.ba); Anova(model.sla.ba) #this may not be a great method to get variable significances
-qqnorm(residuals(model.sla.ba)); qqline(residuals(model.sla.ba))
-plot(model.sla.ba)
+model.dsc.ba <- update(model.dsc.ba, .~. - annPrecip:Year)
+model.dsc.ba <- update(model.dsc.ba, .~. - annPrecip)
+
+anova(model.sla.ba, model.sla.ba.int)
+anova(model.sla.ba, model.sla.ba.temp)
+anova(model.sla.ba, model.sla.ba.yr)
+
+qqnorm(residuals(model.dsc.ba)); qqline(residuals(model.dsc.ba))
+plot(model.dsc.ba)
+
+ggplot(sla.ba, aes(x = Year, y = summer_temp, z = deltasumcover)) +
+  geom_raster(aes(fill = deltasumcover), interpolate = TRUE) +
+  scale_fill_distiller(palette = "Spectral") +
+  geom_point(aes(deltasumcover))
+
+  
+
 
 #treatment delta
-model.sla.tr <- lmer(deltawmean_SLA_local ~ temp*Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data = rtcforbs)
+model.sla.tr <- lmer(deltawmean_SLA_local ~ summer_precip*summer_temp*Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data = rtcforbs)
 vif.mer(model.sla.tr)
 drop1(model.sla.tr, test="Chisq")
-model.sla.tr <- update(model.sla.tr, .~. - temp)
+model.sla.tr <- update(model.sla.tr, .~. - summer_precip:summer_temp:Year)
+drop1(model.sla.tr, test="Chisq")
+model.sla.tr <- update(model.sla.tr, .~. - summer_temp:Year)
+drop1(model.sla.tr, test="Chisq")
 summary(model.sla.tr); Anova(model.sla.tr)
 qqnorm(residuals(model.sla.tr)); qqline(residuals(model.sla.tr))
 plot(model.sla.tr)
 sla.tr <- augment(model.sla.tr)
 
 ggplot(sla.tr, aes(x = .fitted, y = deltawmean_SLA_local)) +
-  #geom_point() +
+  geom_point() +
   geom_raster(aes(fill = .mu))
 
 #time delta
@@ -292,14 +300,20 @@ plot(model.sla.ti)
 
 
 
-######### sum of cover ##########
+######### SLA ##########
 # base
-model.sum.ba<-lmer(sumcover ~ TTtreat*temp*scale(prec)*scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
-drop1(model.sum.ba, test = "Chisq")
-model.sum.ba <- update(model.sum.ba, .~. - temp:scale(prec))
-summary(model.sum.ba); Anova(model.sum.ba) #this may not be a great method to get variable significances
-qqnorm(residuals(model.sum.ba)); qqline(residuals(model.sum.ba))
-plot(model.sum.ba)
+qqp(rtcforbs$deltawmean_SLA_global)
+model.sla.ba <- lmer(deltawmean_SLA ~ summer_temp + annPrecip + Year + summer_temp:Year + annPrecip:Year + (1|siteID/blockID), na.action=na.omit, REML = TRUE, data = rtcforbs)
+
+vif.mer(model.sla.ba)
+step(model.sla.ba)
+
+model.sla.ba <- update(model.sla.ba, .~. - summer_temp:Year)
+model.sla.ba <- update(model.sla.ba, .~. - summer_temp)
+
+summary(model.sla.ba); Anova(model.sla.ba) #this may not be a great method to get variable significances
+qqnorm(residuals(model.sla.ba)); qqline(residuals(model.sla.ba))
+plot(model.sla.ba)
 
 #treatment delta
 model.sum.tr<-lmer(deltasumcover~temp*prec*Year + (1|siteID/blockID), na.action=na.omit, REML=FALSE, data=rtcmeta)
@@ -518,57 +532,3 @@ mytext.cca(m02, dis = "bp", arrow.mul = 3.4, adj=1, font=2, labels=c("Height", "
 ###########################################################################
 # hogsete plot
 
-hp<-function(site,dat=freqsubturf,ord=nmds, ...){
-
-  keep<-cover.meta$siteID==site
-
-  TT<-cover.meta$TTtreat[keep]
-  year<-cover.meta$Year[keep]
-  blockID<-cover.meta$blockID[keep]
-  siteID<-cover.meta$siteID[keep]
-  
-  
-  dat<-dat[keep,]
-#browser()  
-  #run ord
-  mod<-ord(dat, ...)
-  
-  #rotate? so temperature on Y axis 
-  #plot analysis   #expect missing values
-  plot(mod, display="sites",type="n")
-  
-  plotsubset<-function(TTtreat, col=1, pch=20){
-    points(mod, choices=1:2,display="sites",select=TT==TTtreat, col=col, pch=pch)
-    sapply(unique(blockID), function(bID){
-      k=TT==TTtreat&blockID==bID
-      if(sum(k)>0){
-        points(mod, choices=1:2,display="sites",select=k, col=col, type="l")
-        points(mod, choices=1:2,display="sites",select=k&year==2012, col=col, type="p", pch=pch, cex=1.5)
-      }
-    })
-  }
-  
-  plotsubset(TTtreat="TTC",col="grey70", pch=20 )
-  plotsubset(TTtreat="RTC",col="red", pch=20 )
-  #plotsubset(TTtreat="TT2",col="red" )
-  #plotsubset(TTtreat="TT3",col="blue" )
-  #plotsubset(TTtreat="TT4",col="purple" )
-  
-}
-
-
-Q
-par(mar=c(3,3,1,1), mgp=c(1.5,.5,0))
-x11();
-hp("Hogsete", dat=freqsubturf)
-
-sapply(levels(cover.meta$siteID), function(siteID){
-  x11();
-  hp(siteID, dat=cover, ord=metaMDS)
-  title(main=siteID)
-})
-
-
-hogsete <- cover.meta[cover.meta$siteID=="Hogsete",]
-p <- ggplot(hogsete, aes(x=fyear, y=diversity))
-p + geom_boxplot()

@@ -22,6 +22,9 @@ HAVING turfCommunity.Year>2009 AND (turfs.TTtreat='ttc' OR (turfs.GRtreat)='rtc'
 str(my.GR.data)
 head(my.GR.data)
 
+my.GR.data$ID <- as.factor(paste(my.GR.data$turfID, my.GR.data$Year, sep = "_"))
+my.GR.data <- my.GR.data[!my.GR.data$ID == "506 TTC_2010",]
+
 levels(my.GR.data$TTtreat) <- c(levels(my.GR.data$TTtreat),levels(my.GR.data$GRtreat))
 my.GR.data$TTtreat[my.GR.data$TTtreat == ""| is.na(my.GR.data$TTtreat)] <- my.GR.data$GRtreat[my.GR.data$TTtreat == ""| is.na(my.GR.data$TTtreat)] # merge the GRtreat and TTtreat into one column
 my.GR.data$GRtreat <- NULL
@@ -31,12 +34,21 @@ my.GR.data <- my.GR.data[!(my.GR.data$blockID == "Gud5" & my.GR.data$Year == 201
 my.GR.data$Year[my.GR.data$Year == 2010] <- 2011
 my.GR.data$Year <- droplevels(my.GR.data$Year)
 my.GR.data$turfID <- plyr::mapvalues(my.GR.data$turfID, from = "Ram4RTCx", to = "Ram4RTC")
+my.GR.data$turfID <- plyr::mapvalues(my.GR.data$turfID, from = "Ram5RTCx", to = "Ram5RTC")
 
 #Remove TTCs not included in the data set 
 remsites <- c("Skj11", "Skj12", "Gud11", "Gud12", "Gud13")
 my.GR.data <- my.GR.data[!my.GR.data$blockID %in% remsites,] 
 
-my.GR.data$ID <- as.factor(paste(my.GR.data$turfID, my.GR.data$Year, sep = "_"))
+
+
+#gridded temperature etc
+source("inst/graminoidRemovals/weather.R")
+
+
+my.GR.data <- my.GR.data %>%
+  left_join(weather) 
+
 
 ## ---- my.GR.data.end ----
 
@@ -69,7 +81,7 @@ traits <- traits %>%
   mutate(specialism = factor(ifelse(
     Nem == 0 & BNem == 0 & SBor == 0 & LAlp == 1, "alpine", 
     ifelse(HAlp == 0 & MAlp == 0 & LAlp == 0 & Nem == 1, "lowland", 
-           ifelse(abundance > 5.5, "generalist", "other"))))) %>% # assigning specialisms to species based on range limits
+           ifelse(abundance > 5.5, "generalist", "other"))))) %>% # assign specialisms to species based on range limits
   select(species, functionalgroup, height:SLA, specialism, Max_height, Min_height)
 
 head(traits)
@@ -78,12 +90,12 @@ identical(as.character(traits$species), names(cover)) #this should be identical
 
 # adding traits to my.GR.data
 my.GR.data <- my.GR.data %>%
-  full_join(traits, by = "species") %>%
+  left_join(traits, by = "species") %>%
   left_join(traitdata, by = c("species", "siteID")) %>%
   mutate(biomass = Height_mean*cover)
   
-my.GR.data$prec <- as.factor(c(0.6,1.2,2.0,2.7)[my.GR.data$Precipitation_level])
-my.GR.data$temp <- c(6.5,8.5,10.5)[my.GR.data$Temperature_level]
+my.GR.data$Precipitation_level <- as.factor(c(0.6,1.2,2.0,2.7)[my.GR.data$Precipitation_level])
+my.GR.data$Temperature_level <- c(6.5,8.5,10.5)[my.GR.data$Temperature_level]
 
 #comment these out depending on the analysis you want to run
 my.GR.data$TTtreat <- factor(as.character(my.GR.data$TTtreat), levels = c("TTC", "RTC"))
@@ -143,8 +155,24 @@ diversity <- diversity[rowSums(is.na(diversity)) != ncol(diversity),]
 ###### weighted means for whole community
 wholecom <- my.GR.data %>% 
   group_by(ID, functionalgroup) %>%
-  mutate(wmean_height = weighted.mean(height, cover, na.rm = TRUE), wmean_leafSize = weighted.mean(LA_mean, cover, na.rm = TRUE), wmean_seedMass = weighted.mean(seedMass, cover, na.rm = TRUE), wmean_SLA = weighted.mean(SLA_mean, cover, na.rm = TRUE), wmean_maxheight = weighted.mean(Max_height, cover, na.rm = TRUE), wmean_minheight = weighted.mean(Min_height, cover, na.rm = TRUE), Year = Year, biomass = sqrt(biomass), sumcover = sum(cover)) %>%
-  mutate(wmean_LDMC_local = weighted.mean(LDMC_mean, cover, na.rm = TRUE), wmean_SLA_local = weighted.mean(SLA_mean, cover, na.rm = TRUE), wmean_LTH_local = weighted.mean(Lth_mean, cover, na.rm = TRUE), wmean_LA_local = weighted.mean(LA_mean, cover, na.rm = TRUE), wmean_height_local = weighted.mean(Height_mean, cover, na.rm = TRUE)) %>%
+  mutate(wmean_height = weighted.mean(height, cover, na.rm = TRUE),
+         wmean_leafSize = weighted.mean(leafSize, cover, na.rm = TRUE),
+         wmean_seedMass = weighted.mean(seedMass, cover, na.rm = TRUE),
+         wmean_SLA = weighted.mean(SLA, cover, na.rm = TRUE),
+         wmean_maxheight = weighted.mean(Max_height, cover, na.rm = TRUE),
+         wmean_minheight = weighted.mean(Min_height, cover, na.rm = TRUE),
+         biomass = sqrt(biomass),
+         sumcover = sum(cover),
+         wmean_LDMC_local = weighted.mean(LDMC_mean, cover, na.rm = TRUE),
+         wmean_SLA_local = weighted.mean(SLA_mean, cover, na.rm = TRUE),
+         wmean_LTH_local = weighted.mean(Lth_mean, cover, na.rm = TRUE),
+         wmean_LA_local = weighted.mean(LA_mean, cover, na.rm = TRUE),
+         wmean_height_local = weighted.mean(Height_mean, cover, na.rm = TRUE),
+         wmean_LDMC_global = weighted.mean(LDMC_mean_global, cover, na.rm = TRUE),
+         wmean_SLA_global = weighted.mean(SLA_mean_global, cover, na.rm = TRUE),
+         wmean_LTH_global = weighted.mean(Lth_mean_global, cover, na.rm = TRUE),
+         wmean_LA_global = weighted.mean(LA_mean_global, cover, na.rm = TRUE),
+         wmean_height_global = weighted.mean(Height_mean_global, cover, na.rm = TRUE)) %>%
   select(-(Temperature_level:Precipitation_level), -(SLA:seedMass), -species, -specialism) %>%
   filter(!(functionalgroup == "graminoid" & Year == 2012) & !(functionalgroup == "graminoid" & Year == 2013) & !(functionalgroup == "graminoid" & Year == 2015) & !(functionalgroup == "graminoid" & Year == 2016)) %>%
   distinct(ID, functionalgroup, .keep_all = TRUE) %>%
@@ -156,6 +184,8 @@ wholecom <- wholecom %>%
 
 wholecom$funYear <- as.factor(paste(wholecom$functionalgroup, wholecom$Year, sep = "_"))
 
+forbcom <- wholecom %>%
+  filter(functionalgroup == "forb")  
 
 ###### weighted means by specialism
 specialism <- my.GR.data %>%
@@ -181,7 +211,7 @@ specialism$specYear <- as.factor(paste(specialism$specialism, specialism$Year, s
 deltacalc <- sapply(1:nrow(wholecom[wholecom$TTtreat == "RTC",]), function(i){
   R <- wholecom[wholecom$TTtreat == "RTC",][i,]
   #browser()
-  cols <- c("wmean_height","wmean_SLA","wmean_leafSize", "sumcover", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "biomass", "wmean_LDMC_local", "wmean_SLA_local", "wmean_LTH_local", "wmean_LA_local", "wmean_height_local")
+  cols <- c("wmean_height","wmean_SLA","wmean_leafSize", "sumcover", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "biomass", "wmean_LDMC_local", "wmean_SLA_local", "wmean_LTH_local", "wmean_LA_local", "wmean_height_local", "wmean_LDMC_global", "wmean_SLA_global", "wmean_LTH_global", "wmean_LA_global", "wmean_height_global")
   friend <- wholecom$Year == R$Year & wholecom$blockID == R$blockID & wholecom$functionalgroup == R$functionalgroup & wholecom$TTtreat == "TTC"
   if(all (!friend)) {print(R$turfID)
     return(rep(NA, length(cols)))}
@@ -248,3 +278,17 @@ special <- cbind((specialism[specialism$TTtreat == "RTC",]), special)
 source("inst/graminoidRemovals/Seedlings.R")
 
 ## ---- Seedling.data.end ---- 
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+###### BOTANIST CHECK ########
+
+## ---- botanist.data.import ---- 
+
+botanists <- dbGetQuery(con, paste("SELECT sites.siteID, turfs.turfID, turfs.TTtreat, turfEnvironment.recorder, Sum(new_TurfCommunity.cover) AS SumOfcover, new_TurfCommunity.Year, turfs.GRtreat, Count(new_TurfCommunity.species) AS CountOfSpp
+FROM ((((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.destinationPlotID) INNER JOIN new_TurfCommunity ON turfs.turfID = new_TurfCommunity.turfID) INNER JOIN turfEnvironment ON (turfEnvironment.year = new_TurfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID)
+                                   GROUP BY sites.siteID, turfs.turfID, turfs.TTtreat, turfEnvironment.recorder, new_TurfCommunity.Year, sites.Temperature_level, sites.Precipitation_level
+                                   HAVING new_TurfCommunity.Year>2009 AND (turfs.TTtreat='ttc' OR (turfs.GRtreat)='rtc' OR (turfs.GRtreat)='ttc');"
+))
+
+## ---- botanist.data.end ---- 

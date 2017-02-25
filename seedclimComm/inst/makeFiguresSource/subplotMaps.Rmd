@@ -48,7 +48,7 @@ subturf_cover_thin$problems <- as.factor(subturf_cover_thin$problems)
 #Subturf maps
 
 ```{r, fig.height=11, fig.width = 7}
-plyr::d_ply(subturf_cover_thin, .(turfID), function(df){
+plyr::d_ply(my.GR.data, .(turfID), function(df){
   print(
   ggplot(df, aes(x = (subTurf - 1) %/% 5, y = (subTurf - 1) %% 5, fill = cover)) +
     geom_tile(colour = "grey60") +

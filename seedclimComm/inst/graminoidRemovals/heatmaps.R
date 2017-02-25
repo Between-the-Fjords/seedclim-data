@@ -1,12 +1,12 @@
 # making model coefficient heat maps
 
 
-test<-lmer(diversity ~ temp + scale(prec) + scale(Year) + temp:scale(prec) + temp:scale(Year) + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=timedelta)
+test<-lmer(deltarichness ~ temp + Year + temp:Year + (1|siteID/blockID/turfID), na.action=na.omit, REML=F, data=rtcmeta)
 
 coefs <- data.frame(coef(test)[3])
 coefs$ranef.intercept <- ranef(test)$siteID[1]
 
-coef(test)$siteID[,"temp:scale(prec)"]
+coef(test)$siteID[,"temp"]
 
 ggplot(coefs, aes(x = precp, y= tempr, fill = Intercept)) +
   geom_tile()
