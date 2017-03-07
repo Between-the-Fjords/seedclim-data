@@ -28,6 +28,7 @@ vignettes/*.pdf
 *.gif
 *.bmp
 *.png
+*.tiff
 
 # output files
 *.doc
