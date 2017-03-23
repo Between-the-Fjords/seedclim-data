@@ -6,7 +6,7 @@ library("lubridate")
 library("mosaic")
 
 #### Load trait data ####
-traits <-read.csv("Innsamlet data/leaftraits2016csv.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+traits <-read.csv("Traits/data/leaftraits2016csv.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
 #head(traits)
 #str(traits)
 
@@ -32,7 +32,7 @@ traits <- traits %>%
 
 #### Load leaf area data ####
 
-LA <- read.csv2("Innsamlet data/Leaf area.csv", stringsAsFactors = FALSE)
+LA <- read.csv2("Traits/data/Leaf area.csv", stringsAsFactors = FALSE)
 
 
 LA<-transform(LA, Leaf_area = as.numeric(Leaf_area))
@@ -75,8 +75,8 @@ traitdata <- traits %>%
 
 #### Load CN data ####
 
-CN <- read.csv2("Innsamlet data/CNratio.csv", dec=".", sep=";")
-dict_CN <- read.csv2("Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
+CN <- read.csv2("Traits/data/CNratio.csv", dec=".", sep=";")
+dict_CN <- read.csv2("Traits/data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
 dict_Site <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
   "old new
@@ -99,7 +99,10 @@ CN<-CN %>%
   mutate(Individual = substr(Name, 7,8))%>%
   mutate(Species = plyr::mapvalues(Species, from = dict_CN$CN_ab, to = dict_CN$Species))%>%
   mutate(Site = plyr::mapvalues(Site, from = dict_Site$old, to = dict_Site$new))%>%
-  mutate(ID = paste0(Site, "_", Species, "_", Individual, ".jpg"))
+  mutate(ID = paste0(Site, "_", Species, "_", Individual, ".jpg"))%>%
+  mutate(N_weight = (N../100)*Weight)%>%
+  mutate(C_weight = (C../100)*Weight)%>%
+  filter(!(Name=="VECAR101"))
 
 
 #### Merge the trait data and the CN data ####
@@ -108,18 +111,20 @@ traitdata <- traitdata %>%
   full_join(CN, by=c("ID"="ID"))
 
 traitdata<-traitdata%>%
-  select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -Site.y, -Species.y) %>%
+  select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -Site.y, -Species.y, -Individual.y, -N.., -C.., -N.Area, -C.Area) %>%
   rename(Site = Site.x, Species = Species.x)%>%
   group_by(Site, Species) %>%
   mutate(CN_ratio_mean = mean(CN.ratio, na.rm = TRUE))%>%
   ungroup()
 
+
+
 #### Add info about species ####
 
-species_info<- read.csv2("species_info.csv", sep=";")
+species_info<- read.csv2("Traits/data/species_info.csv", sep=";")
 
 species_info <- species_info %>%
-  select(species, family, functionalGroup, lifeSpan) %>%
+  select(species, family, functionalGroup, lifeSpan, occurrence, occurrence.2) %>%
   mutate(species=gsub("\\.", "_", species))
 
 traitdata <- traitdata %>%
@@ -134,11 +139,29 @@ traitdata <- traitdata %>%
   #filter(Lth_ave > 60) %>%
   #filter(traitdata, SLA>750)
 
+LDMC_mistakes<- traitdata%>%
+  group_by(Individual.x)%>%
+  filter(Dry_mass>Wet_mass)
+
+# I am not sure that I trust all of these measurements as they are super large. The once who actually are succulents are okay, or rolled leaves. But there might just be some of the leaf thickness measurement people who didn't do it correctly
+Succulents<-traitdata%>%
+  filter(Lth_ave>0.5)
+
+
+bla<-traitdata%>%
+  filter(SLA>600)
+bla <- bla%>%
+  select(Site, Species, Individual.x, Wet_mass, Dry_mass, Leaf_area, SLA)
+
+#There are som mistakes in here... Arh_Ant_odo_5 probably does not have a so big leaf area.. Ram_Hie_pil_1 burde kanskje fjernes da den er helt ødelagt..
+
+
+
 #### WEIGHTED MEANS ####
 
 # Reading in and cleaning the community data so that it is ready to be used only for cover
 
-community <-read.csv2("Innsamlet data/funcab_composition_2016.csv", header=TRUE, sep=";", stringsAsFactors = FALSE)
+community <-read.csv2("Traits/data/funcab_composition_2016.csv", header=TRUE, sep=";", stringsAsFactors = FALSE)
 
 community<-community %>%
   filter(Site!="")%>%
@@ -156,7 +179,7 @@ community_cover<-community%>%
 
 
 community_cover<-community_cover%>%
-  group_by(Site, Species)%>%
+  group_by(Site, species)%>%
   mutate(mean_cover=mean(cover, na.rm=TRUE))
 #If you want the turf data use mutate, if you want the site data use summarise
 
@@ -187,15 +210,7 @@ community_cover<-community_cover%>%
         
 #### Joining the datasets and making that ready for analysis ####
 
-wcommunity <- full_join(community_cover, traitdata_test, by=c( "Site"="Site", "Species"="Species"))
-
-#Making a dictonary to translate the names of the species when they are different in one dataset compared to the other one
-
-#k<-wcommunity_df %>% filter(is.na(mean_cover)) %>% ungroup() %>%select(species) %>% count(species) %>% arrange(desc(n))
-#This will make a list of all the names we have in the traitsdataset and is not in the community dataset
-
-#l<-wcommunity %>% filter(is.na(SLA_mean)) %>% ungroup() %>%select(species) %>% count(species) %>% arrange(desc(n))
-#This will make a list of all the names we have in the community dataset which doesn't have a values for SLA (which could be because the names are different, or because we don't have a value for SLA)
+wcommunity <- full_join(community_cover, traitdata, by=c( "Site"="Site", "species"="Species"))
 
 dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
 "old new
@@ -228,12 +243,14 @@ wcommunity_df <- wcommunity %>%
             Wmean_Lth= weighted.mean(Lth_mean, cover, na.rm=TRUE),
             Wmean_LA= weighted.mean(LA_mean, cover, na.rm=TRUE),
             Wmean_SLA= weighted.mean(SLA_mean, cover, na.rm=TRUE),
-            Wmean_Height= weighted.mean(Height_mean, cover, na.rm=TRUE))%>%
+            Wmean_Height= weighted.mean(Height_mean, cover, na.rm=TRUE),
+            Wmean_CN = weighted.mean(CN_ratio_mean, cover, na.rm=TRUE))%>%
   mutate(P_level = recode(Site, Ulv = "1", Alr = "1", Fau = "1", Lav = "2", Hog = "2", Vik = "2", Gud = "3", Ram = "3", Arh = "3", Skj = "4", Ves = "4", Ovs = "4")) %>%
   mutate(T_level = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Sub-alpine", Hog = "Sub-alpine", Ram = "Sub-alpine", Ves = "Sub-alpine", Fau = "Boreal", Vik = "Boreal", Arh = "Boreal", Ovs = "Boreal"))%>%
+  ungroup()
   
 wcommunity_df <-wcommunity_df %>%  
-mutate(Species = plyr::mapvalues(Species, from = dict_com$old, to = dict_com$new))
+mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))
 
 
 
