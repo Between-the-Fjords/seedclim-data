@@ -85,7 +85,7 @@ plot(traitdata$T_level, traitdata$CN_ratio_mean)
 plot(traitdata$P_level, traitdata$CN_ratio_mean)
 
 
-#### Functional Groups ####
+## Functional Groups
 par(mfrow = c(2, 3))
 plot(traitdata$functionalGroup, traitdata$CN_ratio_mean, main = "C:N ratio")
 plot(traitdata$functionalGroup, traitdata$LA_mean, main = "Leaf area")
@@ -93,9 +93,21 @@ plot(traitdata$functionalGroup, traitdata$SLA_mean, main = "SLA")
 plot(traitdata$functionalGroup, traitdata$LDMC_mean, main = "LDMC")
 plot(traitdata$functionalGroup, traitdata$Lth_mean, main = "Leaf thickness")
 plot(traitdata$functionalGroup, traitdata$Height_mean, main = "Height")
+par(mfrow = c(1, 1))
 
 
-#### Lifespan ####
+
+par(mfrow = c(2, 3))
+plot(wcommunity_df$functionalGroup, wcommunity_df$Wmean_CN, main = "C:N ratio")
+plot(wcommunity_df$functionalGroup, wcommunity_df$Wmean_LA, main = "Leaf area")
+plot(wcommunity_df$functionalGroup, wcommunity_df$Wmean_SLA, main = "SLA")
+plot(wcommunity_df$functionalGroup, wcommunity_df$Wmean_LDMC, main = "LDMC")
+plot(wcommunity_df$functionalGroup, wcommunity_df$Wmean_Lth, main = "Leaf thickness")
+plot(wcommunity_df$functionalGroup, wcommunity_df$Wmean_Height, main = "Height")
+par(mfrow = c(1, 1))
+
+
+## Lifespan ##
 
 par(mfrow = c(2, 3))
 plot(traitdata$lifeSpan, traitdata$CN_ratio_mean, main = "C:N ratio")
@@ -104,13 +116,35 @@ plot(traitdata$lifeSpan, traitdata$SLA_mean, main = "SLA")
 plot(traitdata$lifeSpan, traitdata$LDMC_mean, main = "LDMC")
 plot(traitdata$lifeSpan, traitdata$Lth_mean, main = "Leaf thickness")
 plot(traitdata$lifeSpan, traitdata$Height_mean, main = "Height")
-
-#### Precipitation ####
+par(mfrow = c(1, 1))
 
 par(mfrow = c(2, 3))
-ggplot(traitdata, aes(x = Precip, y = log(CN.ratio))) +
-  geom_point()+
-  geom_smooth(method='lm')
+plot(wcommunity_df$lifeSpan, wcommunity_df$Wmean_CN, main = "C:N ratio")
+plot(wcommunity_df$lifeSpan, wcommunity_df$Wmean_LA, main = "Leaf area")
+plot(wcommunity_df$lifeSpan, wcommunity_df$Wmean_SLA, main = "SLA")
+plot(wcommunity_df$lifeSpan, wcommunity_df$Wmean_LDMC, main = "LDMC")
+plot(wcommunity_df$lifeSpan, wcommunity_df$Wmean_Lth, main = "Leaf thickness")
+plot(wcommunity_df$lifeSpan, wcommunity_df$Wmean_Height, main = "Height")
+par(mfrow = c(1, 1))
+
+## Specialist or generalist
+
+par(mfrow = c(2, 3))
+plot(traitdata$occurrence, traitdata$CN_ratio_mean, main = "C:N ratio")
+plot(traitdata$occurrence, traitdata$LA_mean, main = "Leaf area")
+plot(traitdata$occurrence, traitdata$SLA_mean, main = "SLA")
+plot(traitdata$occurrence, traitdata$LDMC_mean, main = "LDMC")
+plot(traitdata$occurrence, traitdata$Lth_mean, main = "Leaf thickness")
+plot(traitdata$occurrence, traitdata$Height_mean, main = "Height")
+par(mfrow = c(1, 1))
+
+
+## Precipitation
+
+
+ggplot(traitdata, aes(x = Precip, y = CN.ratio, colour = Site)) +
+  geom_jitter()+
+  geom_smooth(aes(group = 1), method='lm')
 
 ggplot(traitdata, aes(x = Precip, y = log(Leaf_area))) +
   geom_point()+
@@ -132,36 +166,61 @@ ggplot(traitdata, aes(x = Precip, y = log(Height))) +
   geom_point()+
   geom_smooth(method='lm')
 
-#### Temperature ####
+## Temperature
 
 ggplot(traitdata, aes(x = Temp, y = log(CN.ratio))) +
   geom_point()+
   geom_smooth(method='lm')
 
+CN.lm<-lm(CN.ratio~Temp, data=traitdata)
+anova(CN.lm)
+summary(CN.lm)
+
 ggplot(traitdata, aes(x = Temp, y = log(Leaf_area))) +
   geom_point()+
   geom_smooth(method='lm')
+
+LA.lm<-lm(Leaf_area~Temp, data=traitdata)
+anova(LA.lm)
+summary(LA.lm)
 
 ggplot(traitdata, aes(x = Temp, y = log(SLA))) +
   geom_point()+
   geom_smooth(method='lm')
 
+SLA.lm<-lm(log(SLA)~Temp, data=traitdata)
+anova(SLA.lm)
+summary(SLA.lm)
+
 ggplot(traitdata, aes(x = Temp, y = log(LDMC))) +
   geom_point()+
   geom_smooth(method='lm')
+
+LDMC.lm<-lm(LDMC~Temp, data=traitdata)
+anova(LDMC.lm)
+summary(LDMC.lm)
 
 ggplot(traitdata, aes(x = Temp, y = log(Lth_ave))) +
   geom_point()+
   geom_smooth(method='lm')
 
+Lth.lm<-lm(Lth_ave~Temp, data=traitdata)
+anova(Lthlm)
+summary(Lth.lm)
+
 ggplot(traitdata, aes(x = Temp, y = log(Height))) +
   geom_point()+
   geom_smooth(method='lm')
 
+Height.lm<-lm(Height~Temp, data=traitdata)
+anova(Height.lm)
+summary(Height.lm)
+
+
 
 #Linear test
 
-CN.lm<-lm(CN.ratio~T_level, data=traitdata)
+CN.lm<-lm(CN.ratio~Temp, data=traitdata)
 anova(CN.lm)
 summary(CN.lm)
 
@@ -176,6 +235,8 @@ summary(TukeyCN)
 CN.lm <- lm(CN.ratio~Temp, data=traitdata)
 summary(CN.lm)
 
+CNP.lm <- lm(CN.ratio~Precip, data=traitdata)
+summary(CNP.lm)
 
 #### WEIGHTED MEANS ####
 
@@ -334,8 +395,94 @@ pairs_traits<-wcommunity_df%>%
   select(-Site, -Site_sp, -Species, -mean_cover, -T_level, -P_level, -Wmean_LDMC, -Wmean_Lth, -Wmean_LA, -Wmean_SLA)
 
 pairs_traits1<-traitdata%>%
-  select(Height, Wet_mass, Dry_mass, LDMC, Lth_ave, Leaf_area, SLA, N.., C.., CN.ratio, Temp, Precip)
+  select(Height, Wet_mass, Dry_mass, LDMC, Lth_ave, Leaf_area, SLA, CN.ratio)
+
+pairs_traits2<-wcommunity_df%>%
+  select(Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN)
 
 pairs(log(pairs_traits1), gap=0)
+pairs(log(pairs_traits2), gap=0)
 
 GGally::ggpairs(pairs_traits1)
+GGally::ggpairs(pairs_traits2)
+
+hist(log(wcommunity_df$Wmean_SLA))
+
+hist(log(traitdata$Leaf_area))
+
+t<-traitdata%>%
+  filter(Leaf_area<0.2)
+
+car::qqp(traitdata$Leaf_area, "gamma")
+
+
+ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass), col= lifeSpan)) +
+  geom_point()+
+  geom_abline(data = Wet_mass/Dry_mass)
+
+#SLA and LDMC are supposed to have a negative correlation
+
+ggplot(traitdata, aes(x = log(SLA), y = log(LDMC))) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+#LDMC and Lth are supposed to say something about the same thing, should be a similar trend
+
+
+
+ggplot(traitdata, aes(x = LDMC, y = Lth_ave)) +
+  geom_point()
+
+ggplot(traitdata, aes(x = log(LDMC), y = log(Lth_ave))) +
+  geom_point()
+
+#Found this in an article and tried it out
+
+ggplot(traitdata, aes(x = ((SLA_mean*LDMC_mean)^-1), y = Lth_mean)) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+ggplot(traitdata, aes(x = ((SLA*LDMC)^-1), y = Lth_ave)) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+
+
+ggplot(traitdata, aes(x = log(SLA), y = log(Lth_ave))) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+ggplot(traitdata, aes(x = log(Height), y = log(Leaf_area ))) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+ggplot(traitdata, aes(x = log(LDMC), y = log(CN.ratio))) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+ggplot(traitdata, aes(x = log(SLA), y = log(CN.ratio))) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+ggplot(traitdata, aes(x = log(Lth_ave), y = log(CN.ratio))) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+#### Ordination ####
+
+Env_var<-wcommunity_df %>%
+  distinct(turfID, .keep_all=TRUE)%>%
+  arrange(turfID)%>%
+  filter(!is.na(SLA_mean))%>%
+  select(SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN.ratio)
+
+
+cover <- wcommunity_df%>%
+  filter(!is.na(SLA_mean))
+cover <- xtabs(cover ~ turfID + species, data = wcommunity_df)
+cover <- as.data.frame(unclass(cover))
+cover <- cover[,colSums(cover > 0) > 0] #remove empty spp
+
+library(vegan)
+
+x<- rda(cover~ SLA_mean, Lth_mean, Height_mean, LDMC_mean, data = Env_var)
