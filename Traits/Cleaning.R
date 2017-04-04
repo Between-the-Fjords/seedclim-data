@@ -131,7 +131,9 @@ traitdata <- traitdata %>%
   left_join(species_info, by = c("Species"="species"))
 
 
-# Finding errors
+#### Finding errors ####
+
+
 #traitdata %>%
   #filter(Dry_mass > 8.5)%>%
   #filter(is.na(Site))%>% 
@@ -155,6 +157,10 @@ bla <- bla%>%
 
 #There are som mistakes in here... Arh_Ant_odo_5 probably does not have a so big leaf area.. Ram_Hie_pil_1 burde kanskje fjernes da den er helt ødelagt..
 
+ggplot(traitdata, aes(x = log(Dry_mass), y = log(Leaf_area))) +
+  geom_point()
+
+#Looking at the relationships between leaf area and dry mass. This looks ok, maybe some of the smaller leaves are a little bit strange, think about cutting out leaves at a higher threshold then 0.0002.
 
 
 #### WEIGHTED MEANS ####
@@ -182,6 +188,7 @@ community_cover<-community_cover%>%
   group_by(Site, species)%>%
   mutate(mean_cover=mean(cover, na.rm=TRUE))
 #If you want the turf data use mutate, if you want the site data use summarise
+
 
 #### Making means of the trait data set ####
 
