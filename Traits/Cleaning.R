@@ -13,7 +13,6 @@ traits <-read.csv("Traits/data/leaftraits2016csv.csv", header=TRUE, sep = ";", s
 
 #### Cleaning the trait data ####
 
-#head(traits)
 
 traits <- traits %>%
   rename(Height=Height..mm., Lth_1=Lth.1..mm., Lth_2= Lth.2..mm., Lth_3= Lth.3..mm., Wet_mass=Wet.mass..g., Dry_mass=Dry.mass..g., Site=Location) %>%
@@ -38,6 +37,7 @@ LA <- read.csv2("Traits/data/Leaf area.csv", stringsAsFactors = FALSE)
 LA<-transform(LA, Leaf_area = as.numeric(Leaf_area))
 LA <- LA %>%
   filter(Leaf_area > 0.1)
+
 
 #### Merge the trait data and the leaf area data and make the means ####
 
@@ -93,6 +93,8 @@ dict_Site <- read.table(header = TRUE, stringsAsFactors = FALSE, text =
   FA Fau
   RA Ram")
 
+
+
 CN<-CN %>%
   mutate(Site= substr(Name, 1,2))%>%
   mutate(Species = substr(Name, 3,6)) %>%
@@ -107,8 +109,10 @@ CN<-CN %>%
 
 #### Merge the trait data and the CN data ####
 
+
 traitdata <- traitdata %>%
   full_join(CN, by=c("ID"="ID"))
+
 
 traitdata<-traitdata%>%
   select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -Site.y, -Species.y, -Individual.y, -N.., -C.., -N.Area, -C.Area) %>%
@@ -121,14 +125,19 @@ traitdata<-traitdata%>%
 
 #### Add info about species ####
 
+
 species_info<- read.csv2("Traits/data/species_info.csv", sep=";")
+
 
 species_info <- species_info %>%
   select(species, family, functionalGroup, lifeSpan, occurrence, occurrence.2) %>%
   mutate(species=gsub("\\.", "_", species))
 
+
 traitdata <- traitdata %>%
   left_join(species_info, by = c("Species"="species"))
+
+
 
 
 #### Finding errors ####
@@ -145,13 +154,17 @@ LDMC_mistakes<- traitdata%>%
   group_by(Individual.x)%>%
   filter(Dry_mass>Wet_mass)
 
+ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass), col= lifeSpan)) +
+  geom_point()+
+  geom_abline(data = Wet_mass/Dry_mass)
+
 # I am not sure that I trust all of these measurements as they are super large. The once who actually are succulents are okay, or rolled leaves. But there might just be some of the leaf thickness measurement people who didn't do it correctly
 Succulents<-traitdata%>%
   filter(Lth_ave>0.5)
 
 
 bla<-traitdata%>%
-  filter(SLA>600)
+  filter(SLA>500)
 bla <- bla%>%
   select(Site, Species, Individual.x, Wet_mass, Dry_mass, Leaf_area, SLA)
 
@@ -169,10 +182,14 @@ ggplot(traitdata, aes(x = log(Dry_mass), y = log(Leaf_area))) +
 
 community <-read.csv2("Traits/data/funcab_composition_2016.csv", header=TRUE, sep=";", stringsAsFactors = FALSE)
 
+
+
 community<-community %>%
   filter(Site!="")%>%
   mutate(Site= substr(Site, 1,3))%>%
   filter(Measure == "Cover")
+
+
 
 community_cover<-community%>%
   select(-subPlot, -year, -date, -Measure, -recorder, -Nid.herb, -Nid.gram, -Nid.rosett, -Nid.seedling, -liver, -lichen, -litter, -soil, -rock, -X.Seedlings) %>%
@@ -184,13 +201,17 @@ community_cover<-community%>%
   mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))
 
 
+
+
 community_cover<-community_cover%>%
   group_by(Site, species)%>%
   mutate(mean_cover=mean(cover, na.rm=TRUE))
 #If you want the turf data use mutate, if you want the site data use summarise
 
 
+
 #### Making means of the trait data set ####
+
 
 #Use this code when you need to have this for every individual
 #traitdata_test<-traitdata%>%
@@ -201,6 +222,7 @@ community_cover<-community_cover%>%
   #mutate(LDMC_mean=mean(LDMC))%>%
   #mutate(LA_mean=mean(Leaf_area))%>%
   #transform(Species = as.character(Species))
+
 
 
 #This was used to calculate the means before I put it in the code further up
@@ -217,7 +239,9 @@ community_cover<-community_cover%>%
         
 #### Joining the datasets and making that ready for analysis ####
 
+
 wcommunity <- full_join(community_cover, traitdata, by=c( "Site"="Site", "species"="Species"))
+
 
 dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
 "old new
@@ -240,6 +264,7 @@ dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text =
   Salix_sp Sal_sp")
 
 
+
 #### Weighting the traits data by the community ####
 
 
@@ -256,6 +281,7 @@ wcommunity_df <- wcommunity %>%
   mutate(T_level = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Sub-alpine", Hog = "Sub-alpine", Ram = "Sub-alpine", Ves = "Sub-alpine", Fau = "Boreal", Vik = "Boreal", Arh = "Boreal", Ovs = "Boreal"))%>%
   ungroup()
   
+
 wcommunity_df <-wcommunity_df %>%  
 mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))
 
