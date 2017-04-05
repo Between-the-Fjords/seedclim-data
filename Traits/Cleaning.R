@@ -111,10 +111,7 @@ CN<-CN %>%
 
 
 traitdata <- traitdata %>%
-  full_join(CN, by=c("ID"="ID"))
-
-
-traitdata<-traitdata%>%
+  full_join(CN, by=c("ID"="ID"))%>%
   select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -Site.y, -Species.y, -Individual.y, -N.., -C.., -N.Area, -C.Area) %>%
   rename(Site = Site.x, Species = Species.x)%>%
   group_by(Site, Species) %>%
@@ -126,7 +123,7 @@ traitdata<-traitdata%>%
 #### Add info about species ####
 
 
-species_info<- read.csv2("Traits/data/species_info.csv", sep=";")
+species_info<- read.csv2("Traits/data/species_info.csv", sep=";", stringsAsFactors = FALSE)
 
 
 species_info <- species_info %>%
@@ -198,71 +195,44 @@ community_cover<-community%>%
   mutate(cover = as.numeric(cover))%>%
   filter(!is.na(cover))%>%  #Takes out the species that is not present in the dataset
   mutate(species=gsub("\\.", "_", species))%>%
-  mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))
+  mutate(Site = as.character(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))
 
+
+dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
+                         "old new
+                       Nar_stri Nar_str
+                       Tarax Tar_sp
+                       Euph_sp Eup_sp
+                       Phle_alp Phl_alp
+                       Rhin_min Rhi_min
+                       Rum_ac_la Rum_acl
+                       Trien_eur Tri_eur
+                       Rub_idae Rub_ida
+                       Saus_alp Sau_alp
+                       Ave__pub Ave_pub
+                       Car_atra Car_atr
+                       Hypo_rad Hyp_rad
+                       Bart_alp Bar_alp
+                       Car_pulic Car_pul
+                       Carex_sp Car_sp
+                       Hier_sp Hie_sp
+                       Salix_sp Sal_sp
+                       Vio_can Vio_riv")
 
 
 
 community_cover<-community_cover%>%
   group_by(Site, species)%>%
-  mutate(mean_cover=mean(cover, na.rm=TRUE))
-#If you want the turf data use mutate, if you want the site data use summarise
+  mutate(mean_cover=mean(cover, na.rm=TRUE))%>% #If you want the turf data use mutate, if you want the site data use summarise
+  ungroup()%>%
+  mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))
 
-
-
-#### Making means of the trait data set ####
-
-
-#Use this code when you need to have this for every individual
-#traitdata_test<-traitdata%>%
-  #group_by(Site, Species)%>%
-  #mutate(SLA_mean=mean(SLA))%>%
-  #mutate(Lth_mean=mean(Lth_ave))%>%
-  #mutate(Height_mean=mean(Height))%>%
-  #mutate(LDMC_mean=mean(LDMC))%>%
-  #mutate(LA_mean=mean(Leaf_area))%>%
-  #transform(Species = as.character(Species))
-
-
-
-#This was used to calculate the means before I put it in the code further up
-#traitdata_test <- traitdata %>%
-  #group_by(Site, Species) %>%
-  #summarise(
-    #SLA_mean = mean(SLA, na.rm = TRUE),
-    #Lth_mean = mean(Lth_ave, na.rm = TRUE),
-    #Height_mean = mean(Height, na.rm = TRUE),
-    #LDMC_mean = mean(LDMC, na.rm = TRUE),
-    #LA_mean = mean(Leaf_area, na.rm = TRUE)
-  #)
 
         
 #### Joining the datasets and making that ready for analysis ####
 
 
 wcommunity <- full_join(community_cover, traitdata, by=c( "Site"="Site", "species"="Species"))
-
-
-dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
-"old new
-  Nar_stri Nar_str
-  Tarax Tar_sp
-  Euph_sp Eup_sp
-  Phle_alp Phl_alp
-  Rhin_min Rhi_min
-  Rum_ac_la Rum_acl
-  Trien_eur Tri_eur
-  Rub_idae Rub_ida
-  Saus_alp Sau_alp
-  Ave__pub Ave_pub
-  Car_atra Car_atr
-  Hypo_rad Hyp_rad
-  Bart_alp Bar_alp
-  Car_pulic Car_pul
-  Carex_sp Car_sp
-  Hier_sp Hie_sp
-  Salix_sp Sal_sp
-  Vio_can Vio_riv")
 
 
 
@@ -283,8 +253,7 @@ wcommunity_df <- wcommunity %>%
   ungroup()
   
 
-wcommunity_df <-wcommunity_df %>%  
-mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))
+
 
 #### Checking that I have 85% of the community ####
 
@@ -301,8 +270,9 @@ uncomplete_turf <- check_community_df%>%
   #group_by(Site, turfID)%>%
   mutate(sumcover= sum(cover_100))%>%
   filter(sumcover<80) %>% distinct(turfID)
-  
- 
+
+
+
 #### Checking which species I need to do ####
 
 NA_community <- wcommunity_df %>%
