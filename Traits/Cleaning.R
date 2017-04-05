@@ -261,7 +261,8 @@ dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text =
   Car_pulic Car_pul
   Carex_sp Car_sp
   Hier_sp Hie_sp
-  Salix_sp Sal_sp")
+  Salix_sp Sal_sp
+  Vio_can Vio_riv")
 
 
 
@@ -285,6 +286,37 @@ wcommunity_df <- wcommunity %>%
 wcommunity_df <-wcommunity_df %>%  
 mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))
 
+#### Checking that I have 85% of the community ####
+
+check_community_df <- wcommunity_df %>%
+  group_by(Site, species, turfID)%>%
+  select(Site, turfID, species, cover, SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN_ratio_mean)%>%
+  unique()%>%
+  group_by(Site, turfID)%>%
+  mutate(cover_100 = (cover/(sum(cover)))*100)%>%
+  filter(!is.na(SLA_mean))
+
+
+uncomplete_turf <- check_community_df%>%
+  #group_by(Site, turfID)%>%
+  mutate(sumcover= sum(cover_100))%>%
+  filter(sumcover<80) %>% distinct(turfID)
+  
+ 
+#### Checking which species I need to do ####
+
+NA_community <- wcommunity_df %>%
+  group_by(Site, species, turfID)%>%
+  select(Site, turfID, species, cover, SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN_ratio_mean)%>%
+  unique()%>%
+  group_by(Site, turfID)%>%
+  mutate(cover_100 = (cover/(sum(cover)))*100)%>%
+  filter(is.na(SLA_mean))%>%
+  semi_join( uncomplete_turf, by="turfID")%>%
+  ungroup()%>%
+  select(-SLA_mean, -Lth_mean, -Height_mean, -LDMC_mean, -LA_mean, -CN_ratio_mean)%>%
+  group_by(Site, turfID)%>%
+  mutate(sumcover=sum(cover_100))
 
 
 #### Tried a new way to make the P-level and T-level, but it was not working the second time around, but here is the code  
