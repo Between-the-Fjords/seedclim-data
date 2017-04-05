@@ -178,7 +178,7 @@ summary(LAP.lm)
 
 
 
-plot3 <- ggplot(traitdata, aes(x = Precip, y = log(SLA))) +
+plot3 <- ggplot(traitdata, aes(x = Precip, y = SLA)) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -188,7 +188,7 @@ summary(SLAP.lm)
 
 
 
-plot4 <- ggplot(traitdata, aes(x = Precip, y = log(LDMC))) +
+plot4 <- ggplot(traitdata, aes(x = Precip, y = LDMC)) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -198,7 +198,7 @@ summary(LDMCP.lm)
 
 
 
-plot5<- ggplot(traitdata, aes(x = Precip, y = log(Lth_ave))) +
+plot5<- ggplot(traitdata, aes(x = Precip, y = Lth_ave)) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -234,7 +234,7 @@ summary(CN.lm)
 
 
 
-T_plot2<- ggplot(traitdata, aes(x = Temp, y = Leaf_area)) +
+T_plot2<- ggplot(traitdata, aes(x = Temp, y = log(Leaf_area))) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -278,7 +278,7 @@ summary(Lth.lm)
 
 
 
-T_plot6<- ggplot(traitdata, aes(x = Temp, y = Height)) +
+T_plot6<- ggplot(traitdata, aes(x = Temp, y = log(Height))) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -488,6 +488,128 @@ TukeyHSD(anova_LA_T)
 anova_LA_P<-aov(Wmean_LA~P_level, wcommunity_df)
 summary(anova_LA_P)
 TukeyHSD(anova_LA_P)
+
+#### Mixed effect model ####
+
+library(lme4)
+
+#### Temperature ####
+
+## SLA ##
+
+MEMSLA1<-lmer(SLA~Temp+(1|Site), data=traitdata)
+MEMSLA0<-lmer(SLA~1+(1|Site), data=traitdata)
+
+summary(MEMSLA1)
+
+AIC(MEMSLA1, MEMSLA0)
+
+
+## Height ##
+
+MEMHeight1<-lmer(log(Height)~Temp+(1|Site), data=traitdata)
+MEMHeight0<-lmer(log(Height)~1+(1|Site), data=traitdata)
+summary(MEMHeight1)
+
+AIC(MEMHeight1, MEMHeight0)
+
+
+## Leaf Area ##
+
+MEM_LA_1<-lmer(log(Leaf_area)~Temp+(1|Site), data=traitdata)
+MEM_LA_0<-lmer(log(Leaf_area)~1+(1|Site), data=traitdata)
+summary(MEM_LA_1)
+
+AIC(MEM_LA_1, MEM_LA_0)
+
+
+## LDMC ##
+
+MEM_LDMC_1<-lmer(LDMC~Temp+(1|Site), data=traitdata)
+MEM_LDMC_0<-lmer(LDMC~1+(1|Site), data=traitdata)
+summary(MEM_LDMC_1)
+
+AIC(MEM_LDMC_1, MEM_LDMC_0)
+
+
+## CN ratio ##
+
+MEM_CN_1<-lmer(CN.ratio~Temp+(1|Site), data=traitdata)
+MEM_CN_0<-lmer(CN.ratio~1+(1|Site), data=traitdata)
+summary(MEM_CN_1)
+
+AIC(MEM_CN_1, MEM_CN_0)
+
+
+## Leaf thickness ##
+
+MEM_Lth_1<-lmer(Lth_ave~Temp+(1|Site), data=traitdata)
+MEM_Lth_0<-lmer(Lth_ave~1+(1|Site), data=traitdata)
+summary(MEM_Lth_1)
+
+AIC(MEM_Lth_1, MEM_Lth_0)
+
+
+
+#### Precipitation ####
+
+
+
+## SLA ##
+
+MEMSLA1_P<-lmer(SLA~Precip+(1|Site), data=traitdata)
+MEMSLA0<-lmer(SLA~1+(1|Site), data=traitdata)
+
+summary(MEMSLA1_P)
+
+AIC(MEMSLA1_P, MEMSLA0)
+
+
+## Height ##
+
+MEMHeight1_P<-lmer(log(Height)~Precip+(1|Site), data=traitdata)
+MEMHeight0<-lmer(log(Height)~1+(1|Site), data=traitdata)
+summary(MEMHeight1_P)
+
+AIC(MEMHeight1_P, MEMHeight0)
+
+
+## Leaf Area ##
+
+MEM_LA_1_P<-lmer(log(Leaf_area)~Precip+(1|Site), data=traitdata)
+MEM_LA_0<-lmer(log(Leaf_area)~1+(1|Site), data=traitdata)
+summary(MEM_LA_1_P)
+
+AIC(MEM_LA_1_P, MEM_LA_0)
+
+
+## LDMC ##
+
+MEM_LDMC_1_P<-lmer(LDMC~Precip+(1|Site), data=traitdata)
+MEM_LDMC_0<-lmer(LDMC~1+(1|Site), data=traitdata)
+summary(MEM_LDMC_1_P)
+
+AIC(MEM_LDMC_1_P, MEM_LDMC_0)
+
+
+## CN ratio ##
+
+MEM_CN_1_P<-lmer(CN.ratio~Precip+(1|Site), data=traitdata)
+MEM_CN_0<-lmer(CN.ratio~1+(1|Site), data=traitdata)
+summary(MEM_CN_1)
+
+AIC(MEM_CN_1_P, MEM_CN_0)
+
+
+## Leaf thickness ##
+
+MEM_Lth_1_P<-lmer(Lth_ave~Precip+(1|Site), data=traitdata)
+MEM_Lth_0<-lmer(Lth_ave~1+(1|Site), data=traitdata)
+summary(MEM_Lth_1)
+
+AIC(MEM_Lth_1_P, MEM_Lth_0)
+
+
 
 
 #### Plotte traits mot hverandre ####
