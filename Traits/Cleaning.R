@@ -18,7 +18,6 @@ traits <- traits %>%
   rename(Height=Height..mm., Lth_1=Lth.1..mm., Lth_2= Lth.2..mm., Lth_3= Lth.3..mm., Wet_mass=Wet.mass..g., Dry_mass=Dry.mass..g., Site=Location) %>%
   select(-Lth.average..mm.)%>%
   mutate(Date = mdy(Date))%>%
-  #mutate(Dry_mass = ifelse(Dry_mass == 0,yes = min(Dry_mass[Dry_mass > 0], na.rm = TRUE), no = Dry_mass)) %>% #accounting for zero recorded balance weight
   mutate(Site = as.character(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
   mutate(T_level = recode(Site, Ulv = "1", Lav = "1",  Gud = "1", Skj = "1", Alr = "2", Hog = "2", Ram = "2", Ves = "2", Fau = "3", Vik = "3", Arh = "3", Ovs = "3")) %>%
   mutate(Temp = recode(Site, Ulv=6.17, Lav=6.45, Gud=5.87, Skj=6.58, Alr=9.14, Hog=9.17, Ram=8.77, Ves=8.67, Fau=10.3, Vik=10.55, Arh=10.60, Ovs=10.78))%>%
@@ -26,7 +25,7 @@ traits <- traits %>%
   mutate(P_level = recode(Site, Ulv = "1", Alr = "1", Fau = "1", Lav = "2", Hog = "2", Vik = "2", Gud = "3", Ram = "3", Arh = "3", Skj = "4", Ves = "4", Ovs = "4")) %>%
   mutate(LDMC=Dry_mass/Wet_mass)%>%
   mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
-  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0002, NA)) # this is the equivalent of the error/uncertainty in the balance.
+  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA)) # this is the equivalent of the error/uncertainty in the balance.
 
 
 #### Load leaf area data ####
@@ -43,6 +42,7 @@ LA <- LA %>%
 
 traitdata <- traits %>%
   mutate(ID = paste0(Site, "_", Species, "_", Individual, ".jpg")) %>%
+  filter(!(ID=="Ves_Leo_aut_6.jpg"))%>%
   mutate(Site_sp=paste0(Site,"_", Species)) %>%
   full_join(LA, by=c("ID"="Image_file")) %>%
   mutate(SLA=Leaf_area/Dry_mass) %>%
@@ -76,8 +76,11 @@ traitdata <- traits %>%
 #### Load CN data ####
 
 CN <- read.csv2("Traits/data/CNratio.csv", dec=".", sep=";")
+
+#Making a dictionary for the CN name abreviations
 dict_CN <- read.csv2("Traits/data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
+#Making a dictionary for the site names in the CN file
 dict_Site <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
   "old new
   AR Arh
@@ -197,7 +200,7 @@ community_cover<-community%>%
   mutate(species=gsub("\\.", "_", species))%>%
   mutate(Site = as.character(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))
 
-
+#Adding a dictionary to make the names in the traits dataset and the community datafram match
 dict_com <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                          "old new
                        Nar_stri Nar_str
