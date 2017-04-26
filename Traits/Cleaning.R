@@ -67,12 +67,6 @@ traitdata <- traits %>%
   ungroup()
 
 
-#This was used to see which of the leaves in the leaf area dataset was not present in the traits dataset
-#traitdata %>%
-#filter(is.na(Location))%>%
-#select(ID, Leaf_area)
-
-
 #### Load CN data ####
 
 CN <- read.csv2("Traits/data/CNratio.csv", dec=".", sep=";")
@@ -142,14 +136,6 @@ traitdata <- traitdata %>%
 
 #### Finding errors ####
 
-
-#traitdata %>%
-  #filter(Dry_mass > 8.5)%>%
-  #filter(is.na(Site))%>% 
-  #filter(Dry_mass > 8.5) %>%
-  #filter(Lth_ave > 60) %>%
-  #filter(traitdata, SLA>750)
-
 LDMC_mistakes<- traitdata%>%
   group_by(Individual.x)%>%
   filter(Dry_mass>Wet_mass)
@@ -164,8 +150,7 @@ Succulents<-traitdata%>%
 
 
 bla<-traitdata%>%
-  filter(SLA>500)
-bla <- bla%>%
+  filter(SLA>500)%>%
   select(Site, Species, Individual.x, Wet_mass, Dry_mass, Leaf_area, SLA)
 
 #There are som mistakes in here... Arh_Ant_odo_5 probably does not have a so big leaf area.. Ram_Hie_pil_1 burde kanskje fjernes da den er helt ødelagt..
