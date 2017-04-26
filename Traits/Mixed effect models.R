@@ -8,12 +8,17 @@ library(lmerTest)
 
 ## SLA ##
 
-model_SLA_1<-glmer(SLA~scale(Precip)+Temp+Temp:scale(Precip)+(1|Site/Species), data=traitdata, family="gamma")
-model_SLA_0<-glmer(SLA~1+(1|Site/Species), data=traitdata, family="gamma")
+model_SLA_1<-lmer(SLA~scale(Precip)+Temp+Temp:scale(Precip)+(1|Site/Species), data=traitdata)
+
+model_SLA_1p<-lmer(SLA~scale(Precip)+Temp+(1|Site/Species), data=traitdata)
+
+model_SLA_x<-lmer(SLA~Temp+(1|Site/Species), data=traitdata)
+
+model_SLA_0<-lmer(SLA~1+(1|Site/Species), data=traitdata)
 
 summary(MEMSLA1_P)
 
-AIC(model_SLA_1, model_SLA_0)
+AIC(model_SLA_1, model_SLA_1p)
 
 qqnorm(resid(model_SLA_1))
 
@@ -55,12 +60,31 @@ klm<-klm%>%
   mutate(Temp=scale_Temp*1.774107+8.433835) #Getting the real temperature back
   
 TheLucky15%>%  
-  ggplot(aes(x=Temp, y=SLA, color=T_level))+
+  ggplot(aes(x=Temp, y=SLA, color=P_level))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_line(aes(x=Temp, y=.fixed), data=klm, inherit.aes = FALSE)
   
 
+model<-lmer(SLA ~Temp + (1|Site), data=TheLucky15[TheLucky15$Species=="Ach_mil",])
+
+NewData <- expand.grid(temp = seq(5,11, 0.1))
+X <- model.matrix(~ temp,data = NewData)
+NewData$fit <- X %*% fixef(model)
+#head(NewData,15)     # checking
+NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+NewData$up <- NewData$fit + (1.96 * NewData$SE )
+#head(NewData,15)    # checking
+
+
+TheLucky15%>%  
+  ggplot(aes(x=Temp, y=SLA, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_line(aes(x=temp, y=fit), data=NewData, inherit.aes = FALSE)+
+  geom_line(aes(x=temp, y=lo), data=NewData, inherit.aes = FALSE)+
+  geom_line(aes(x=temp, y=up), data=NewData, inherit.aes = FALSE)
 
 
 
