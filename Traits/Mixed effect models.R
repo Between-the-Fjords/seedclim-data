@@ -6,7 +6,7 @@ library(lmerTest)
 devtools::source_gist("https://gist.github.com/phipsgabler/91a81883a82a54bb6a92", filename="qqline.r")
 
 
-#### Precipitation ####
+#### Temperature ####
 
 
 
@@ -28,6 +28,7 @@ AIC(model_SLA_1, model_SLA_1p)
 
 qqnorm(resid(model_SLA_1))
 
+#The mixed effect model with the temperature and the precip, and the interaction betweent hem is the better model
 
 
 
@@ -41,6 +42,8 @@ qqnorm(resid(model_SLA_1))
 
 #summary(SLA_model)
 
+#The gaussion log model was not good. Using just normal gaussian distribution therefore using lmer instead of glmer.
+
 
 ## Making something to see which species I have collected from at most sites ##
 
@@ -51,11 +54,14 @@ qqnorm(resid(model_SLA_1))
 #  arrange(-number)
 
 
+#The 15 species that have been collected at the most sites, SLA
+
 TheLucky15<-traitdata %>%
   filter(Species %in% c("Agr_cap", "Ant_odo", "Cam_rot", "Des_ces", "Ver_off", "Ave_fle", "Luz_mul", "Bis_viv", "Pot_ere", "Alc_alp", "Tri_rep", "Tha_alp", "Ach_mil", "Nar_str", "Rum_ace"))
 
 scalevalues<- scale(TheLucky15$Temp) #Finding the values to scale the temperature back with
 #attributes(scalevalues)
+
 
 klm<-TheLucky15%>%
   mutate(scale_Temp=scale(Temp))%>%
@@ -71,17 +77,6 @@ klm<-TheLucky15%>%
      })%>%
   mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
 
-klm2<-TheLucky15%>%
-mutate(scale_Temp=scale(Temp))%>%
-group_by(Species)%>%
-do(augment(lmer(SLA ~scale_Temp + (1|Site), data= .)))
-
-klm2%>%
-  ggplot(aes(sample=.resid))+
-  geom_qq()+
-  facet_wrap(~Species, ncol=5, scales="free")+
-  stat_qqline(color="red")
-
   
 TheLucky15%>%  
   ggplot(aes(x=Temp, y=SLA, color=P_level))+
@@ -91,45 +86,20 @@ TheLucky15%>%
   geom_line(aes(x=temp, y=fit), data=klm, inherit.aes = FALSE)
   
 
-model<-lmer(SLA ~Temp + (1|Site), data=TheLucky15[TheLucky15$Species=="Ach_mil",])
 
-NewData <- expand.grid(temp = seq(5,11, 0.1))
-X <- model.matrix(~ temp,data = NewData)
-NewData$fit <- X %*% fixef(model)
-#head(NewData,15)     # checking
-NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
-NewData$lo <- NewData$fit - (1.96 * NewData$SE )
-NewData$up <- NewData$fit + (1.96 * NewData$SE )
-#head(NewData,15)    # checking
+## All the species, to figure out how the different species SLAs are reacting to temperature change
 
+scalevalues1<- scale(traitdata$Temp)
 
-TheLucky15%>%  
-  ggplot(aes(x=Temp, y=SLA, color=P_level))+
-  geom_jitter(height=0)+
-  facet_wrap( ~ Species, ncol=5)+
-  geom_line(aes(x=temp, y=fit), data=NewData, inherit.aes = FALSE)+
-  geom_line(aes(x=temp, y=lo), data=NewData, inherit.aes = FALSE)+
-  geom_line(aes(x=temp, y=up), data=NewData, inherit.aes = FALSE)
-
-
-
-##Making all the models one by one ##
-library("broom")
-
-predict(SLA_model_Ant, interval="confidence", level=0.95)
-SLA_model_Ant<- lmer(SLA ~scale(Temp)+scale(Precip)+scale(Temp):scale(Precip) + (1|Site), data= traitdata, subset=Species=="Ant_odo")
-
-
-SLA_model_Cam<- lmer(SLA ~scale(Temp)+scale(Precip)+scale(Temp):scale(Precip) + (1|Site), data= traitdata, subset=Species=="Cam_rot")
-
-
-SLA_model_Des<- lmer(SLA ~scale(Temp)+scale(Precip)+scale(Temp):scale(Precip) + (1|Site), data= traitdata, subset=Species=="Des_ces")
-
-
-SLA_model_Ver<- lmer(SLA ~scale(Temp)+scale(Precip)+scale(Temp):scale(Precip) + (1|Site), data= traitdata, subset=Species=="Ver_off")
-
-
-
-traitdata$MEM_SLA <- predict(SLA_model, na.action = na.exclude)
-
+FransOrder<-traitdata%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species, functionalGroup)%>%
+  filter(n_distinct(T_level)>=2, n_distinct(Site)>2)%>%
+  do({print(.$Species[1])
+    tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
+  filter(term=="scale_Temp")%>%
+  mutate(estimate=estimate*attr(scalevalues1, which = "scaled:scale"), std.error=std.error/attr(scalevalues1, which = "scaled:scale"))
+  
+ggplot(FransOrder, aes(x=estimate, fill=functionalGroup))+
+  geom_histogram()
 
