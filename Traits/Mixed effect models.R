@@ -94,12 +94,70 @@ scalevalues1<- scale(traitdata$Temp)
 FransOrder<-traitdata%>%
   mutate(scale_Temp=scale(Temp))%>%
   group_by(Species, functionalGroup)%>%
+  filter(!is.na(SLA))%>%
   filter(n_distinct(T_level)>=2, n_distinct(Site)>2)%>%
-  do({print(.$Species[1])
-    tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
+  do({tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
   filter(term=="scale_Temp")%>%
-  mutate(estimate=estimate*attr(scalevalues1, which = "scaled:scale"), std.error=std.error/attr(scalevalues1, which = "scaled:scale"))
+  mutate(estimate=estimate/attr(scalevalues1, which = "scaled:scale"), std.error=std.error/attr(scalevalues1, which = "scaled:scale"))
   
 ggplot(FransOrder, aes(x=estimate, fill=functionalGroup))+
   geom_histogram()
 
+
+
+## All the traits ##
+
+MixTrait<-traitdata%>%
+  mutate(scale_Temp=scale(Temp), Site=as.factor(Site))%>%
+  select(Site, Species, SLA, Lth_ave, Height, LDMC, CN.ratio, functionalGroup, scale_Temp, T_level)%>%
+  gather(key= collected_traits, value = measurement, c(SLA, Lth_ave, Height, LDMC, CN.ratio))%>%
+  group_by(collected_traits, Species)%>%
+  filter(!is.na(measurement))%>%
+  filter(n_distinct(Site)>2, n_distinct(T_level)>=2)%>%
+  do({model<-lmer(measurement~scale_Temp + (1|Site), data= .)
+  NewData <- expand.grid(temp = seq(min(.$scale_Temp)*1.1,max(.$scale_Temp)*1.1, length=100))
+  X <- model.matrix(~ temp,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })%>%
+  mutate(temp=temp*attr(scalevalues1, which = "scaled:scale")+attr(scalevalues1, which = "scaled:center"))
+
+
+Hyp<-subset(traitdata, Species=="Hyp_mac")
+
+Hyp%>%  
+  ggplot(aes(x=Temp, y=Height))+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  #geom_jitter(height=0)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=MixTrait, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=MixTrait, inherit.aes = FALSE)
+
+
+MixTrait_est<-traitdata%>%
+  mutate(scale_Temp=scale(Temp), Site=as.factor(Site))%>%
+  select(Site, Species, SLA, Lth_ave, Height, LDMC, CN.ratio, functionalGroup, scale_Temp, T_level)%>%
+  gather(key= collected_traits, value = measurement, c(SLA, Lth_ave, Height, LDMC, CN.ratio))%>%
+  group_by(collected_traits, Species)%>%
+  filter(!is.na(measurement))%>%
+  filter(n_distinct(Site)>2, n_distinct(T_level)>=2)%>%
+  do({tidy(lmer(measurement~scale_Temp + (1|Site), data= .))})%>%
+  filter(term=="scale_Temp")%>%
+  mutate(estimate=estimate/attr(scalevalues1, which = "scaled:scale"))
+
+
+
+FransOrder<-traitdata%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species, functionalGroup)%>%
+  filter(n_distinct(T_level)>=2, n_distinct(Site)>2)%>%
+  do({tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
+  filter(term=="scale_Temp")%>%
+  mutate(estimate=estimate/attr(scalevalues1, which = "scaled:scale"), std.error=std.error/attr(scalevalues1, which = "scaled:scale"))
+
+
+ggplot(MixTrait_est, aes(x=estimate))+
+  geom_histogram()+
+  facet_wrap(~collected_traits, scales="free")
