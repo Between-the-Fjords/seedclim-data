@@ -25,7 +25,8 @@ traits <- traits %>%
   mutate(P_level = recode(Site, Ulv = "1", Alr = "1", Fau = "1", Lav = "2", Hog = "2", Vik = "2", Gud = "3", Ram = "3", Arh = "3", Skj = "4", Ves = "4", Ovs = "4")) %>%
   mutate(LDMC=Dry_mass/Wet_mass)%>%
   mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
-  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA)) # this is the equivalent of the error/uncertainty in the balance.
+  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))%>% # this is the equivalent of the error/uncertainty in the balance.
+  filter(!Species=="Hyp_mac" & Site=="Alr")
 
 
 #### Load leaf area data ####
