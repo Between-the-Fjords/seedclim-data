@@ -82,10 +82,9 @@ TheLucky15%>%
   ggplot(aes(x=Temp, y=SLA, color=P_level))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
-  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=klm, inherit.aes= FALSE, alpha=0.5)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=klm, inherit.aes= FALSE, alpha=0.4)+
   geom_line(aes(x=temp, y=fit), data=klm, inherit.aes = FALSE)
   
-
 
 ## All the species, to figure out how the different species SLAs are reacting to temperature change
 
@@ -126,21 +125,11 @@ MixTrait<-traitdata%>%
   mutate(temp=temp*attr(scalevalues1, which = "scaled:scale")+attr(scalevalues1, which = "scaled:center"))
 
 
-Hyp<-subset(traitdata, Species=="Hyp_mac")
-
-Hyp%>%  
-  ggplot(aes(x=Temp, y=Height))+
-  #facet_wrap( ~ collected_traits, ncol=5)
-  #geom_jitter(height=0)+
-  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=MixTrait, inherit.aes= FALSE, alpha=0.5)+
-  geom_line(aes(x=temp, y=fit), data=MixTrait, inherit.aes = FALSE)
-
-
 MixTrait_est<-traitdata%>%
   mutate(scale_Temp=scale(Temp), Site=as.factor(Site))%>%
   select(Site, Species, SLA, Lth_ave, Height, LDMC, CN.ratio, functionalGroup, scale_Temp, T_level)%>%
   gather(key= collected_traits, value = measurement, c(SLA, Lth_ave, Height, LDMC, CN.ratio))%>%
-  group_by(collected_traits, Species)%>%
+  group_by(collected_traits, Species, functionalGroup)%>%
   filter(!is.na(measurement))%>%
   filter(n_distinct(Site)>2, n_distinct(T_level)>=2)%>%
   do({tidy(lmer(measurement~scale_Temp + (1|Site), data= .))})%>%
@@ -149,15 +138,181 @@ MixTrait_est<-traitdata%>%
 
 
 
-FransOrder<-traitdata%>%
-  mutate(scale_Temp=scale(Temp))%>%
-  group_by(Species, functionalGroup)%>%
-  filter(n_distinct(T_level)>=2, n_distinct(Site)>2)%>%
-  do({tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
-  filter(term=="scale_Temp")%>%
-  mutate(estimate=estimate/attr(scalevalues1, which = "scaled:scale"), std.error=std.error/attr(scalevalues1, which = "scaled:scale"))
-
-
-ggplot(MixTrait_est, aes(x=estimate))+
+ggplot(MixTrait_est, aes(x=estimate, fill=functionalGroup))+
   geom_histogram()+
   facet_wrap(~collected_traits, scales="free")
+
+
+#### Testing different species ####
+
+## Height ##
+
+## Hypericum macilatum ##
+
+Hyp<-subset(traitdata, Species=="Hyp_mac")
+Mix_Hyp<-subset(MixTrait, Species=="Hyp_mac")
+Mix_Hyp<-subset(Mix_Hyp, collected_traits=="Height")
+
+Hyp%>%  
+  ggplot(aes(x=Temp, y=Height))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Hyp, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Hyp, inherit.aes = FALSE)
+
+# Decided te remove Hypericum macilatum from Alrust
+
+
+
+## CN ratio ##
+
+CN.ratio<-subset(MixTrait_est, collected_traits=="CN.ratio")
+CN.ratio%>%
+  filter(estimate<0)
+
+
+## Rumex acetosella ##
+
+Mix_Rum_acl<-filter(MixTrait, Species=="Rum_acl", collected_traits=="CN.ratio")
+
+filter(traitdata, Species=="Rum_acl", !is.na(CN.ratio))%>%  
+  ggplot(aes(x=Temp, y=CN.ratio))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Rum_acl, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Rum_acl, inherit.aes = FALSE)
+
+
+## Veronica offisinalis ##
+
+Mix_Ver_off<-filter(MixTrait, Species=="Ver_off", collected_traits=="CN.ratio")
+
+filter(traitdata, Species=="Ver_off", !is.na(CN.ratio))%>%  
+  ggplot(aes(x=Temp, y=CN.ratio, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Ver_off, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Ver_off, inherit.aes = FALSE)
+
+
+## Carex pallescens ##
+
+Mix_Car_pal<-filter(MixTrait, Species=="Car_pal", collected_traits=="CN.ratio")
+
+filter(traitdata, Species=="Car_pal", !is.na(CN.ratio))%>%  
+  ggplot(aes(x=Temp, y=CN.ratio, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Car_pal, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Car_pal, inherit.aes = FALSE)
+
+## LDMC ##
+
+LDMC_mem<-subset(MixTrait_est, collected_traits=="LDMC")
+LDMC_mem%>%
+  filter(estimate < -0.05)
+
+## Trifolium pratense ##
+
+Mix_Tri_pra<-filter(MixTrait, Species=="Tri_pra", collected_traits=="LDMC")
+
+filter(traitdata, Species=="Tri_pra", !is.na(LDMC))%>%  
+  ggplot(aes(x=Temp, y=LDMC, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Tri_pra, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Tri_pra, inherit.aes = FALSE)
+
+# This must be one of the LDMC mistakes - check after fixing those mistakes
+
+## Alchemilla alpina ##
+
+Mix_Alc_alp<-filter(MixTrait, Species=="Alc_alp", collected_traits=="LDMC")
+
+filter(traitdata, Species=="Alc_alp", !is.na(LDMC))%>%  
+  ggplot(aes(x=Temp, y=LDMC, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Alc_alp, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Alc_alp, inherit.aes = FALSE)
+
+# I was checking one that was on the 0 to see how it looks like
+
+## Leaf thickness ##
+
+Lth_mem<-subset(MixTrait_est, collected_traits=="Lth_ave")
+Lth_mem%>%
+  filter(estimate > 0.0250)
+
+## Rumex acetosella ##
+
+Mix_Rum_acl_Lth<-filter(MixTrait, Species=="Rum_acl", collected_traits=="Lth_ave")
+
+filter(traitdata, Species=="Rum_acl", !is.na(Lth_ave))%>%  
+  ggplot(aes(x=Temp, y=Lth_ave, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Rum_acl_Lth, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Rum_acl_Lth, inherit.aes = FALSE)
+
+
+## Knautia arvensis ##
+
+Mix_Kna_arv<-filter(MixTrait, Species=="Kna_arv", collected_traits=="Lth_ave")
+
+filter(traitdata, Species=="Kna_arv", !is.na(Lth_ave))%>%  
+  ggplot(aes(x=Temp, y=Lth_ave, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Kna_arv, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Kna_arv, inherit.aes = FALSE)
+
+# A wierd trend, but it looks ok
+
+
+## Hypericum macilatum ##
+
+Mix_Hyp_mac<-filter(MixTrait, Species=="Hyp_mac", collected_traits=="Lth_ave")
+
+filter(traitdata, Species=="Hyp_mac", !is.na(Lth_ave))%>%  
+  ggplot(aes(x=Temp, y=Lth_ave, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Hyp_mac, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Hyp_mac, inherit.aes = FALSE)
+
+# A wierd trend, but it looks ok
+
+
+## Viola riviniana ##
+
+Mix_Vio_riv<-filter(MixTrait, Species=="Vio_riv", collected_traits=="Lth_ave")
+
+filter(traitdata, Species=="Vio_riv", !is.na(Lth_ave))%>%  
+  ggplot(aes(x=Temp, y=Lth_ave, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Vio_riv, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Vio_riv, inherit.aes = FALSE)
+
+# A wierd trend, but it looks ok
+
+
+## SLA ##
+
+SLA_mem<-subset(MixTrait_est, collected_traits=="SLA")
+SLA_mem%>%
+  filter(estimate > 40)
+
+## Rumex acetosella ##
+
+Mix_Rum_acl<-filter(MixTrait, Species=="Rum_acl", collected_traits=="SLA")
+
+filter(traitdata, Species=="Rum_acl", !is.na(SLA))%>%  
+  ggplot(aes(x=Temp, y=SLA, color=Site))+
+  geom_jitter(height=0)+
+  #facet_wrap( ~ collected_traits, ncol=5)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Mix_Rum_acl, inherit.aes= FALSE, alpha=0.5)+
+  geom_line(aes(x=temp, y=fit), data=Mix_Rum_acl, inherit.aes = FALSE)
+
+#One point is kind of wierd, but it is not wierd enough to change
