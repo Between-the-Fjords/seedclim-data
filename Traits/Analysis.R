@@ -497,12 +497,11 @@ library(lme4)
 
 ## SLA ##
 
-MEMSLA1<-lmer(SLA~Temp+(1|Site), data=traitdata)
+MEMSLA1x<-lmer(SLA~Temp+scale(Precip)+Temp:scale(Precip)+(1|Site), data=traitdata)
 MEMSLA0<-lmer(SLA~1+(1|Site), data=traitdata)
-
 summary(MEMSLA1)
 
-AIC(MEMSLA1, MEMSLA0)
+AIC(MEMSLA1x, MEMSLA0)
 
 
 ## Height ##
@@ -525,8 +524,8 @@ AIC(MEM_LA_1, MEM_LA_0)
 
 ## LDMC ##
 
-MEM_LDMC_1<-lmer(LDMC~Temp+(1|Site), data=traitdata)
-MEM_LDMC_0<-lmer(LDMC~1+(1|Site), data=traitdata)
+MEM_LDMC_1<-lmer(LDMC~Temp+(1|Site)+(1|Species), data=traitdata)
+MEM_LDMC_0<-lmer(LDMC~1+(1|Site)+(1|Species), data=traitdata)
 summary(MEM_LDMC_1)
 
 AIC(MEM_LDMC_1, MEM_LDMC_0)
@@ -557,8 +556,8 @@ AIC(MEM_Lth_1, MEM_Lth_0)
 
 ## SLA ##
 
-MEMSLA1_P<-lmer(SLA~Precip+(1|Site), data=traitdata)
-MEMSLA0<-lmer(SLA~1+(1|Site), data=traitdata)
+MEMSLA1_P<-lmer(SLA~scale(Precip)+Temp+Temp:scale(Precip)+(1|Site)+(1|Species), data=traitdata)
+MEMSLA0<-lmer(SLA~1+(1|Site)+(1|Species), data=traitdata)
 
 summary(MEMSLA1_P)
 
