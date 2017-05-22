@@ -95,7 +95,7 @@ FransOrder<-traitdata%>%
   group_by(Species, functionalGroup)%>%
   filter(!is.na(SLA))%>%
   filter(n_distinct(T_level)>=2, n_distinct(Site)>2)%>%
-  do({tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
+  do({broom::tidy(lmer(SLA ~scale_Temp + (1|Site), data= .))})%>%
   filter(term=="scale_Temp")%>%
   mutate(estimate=estimate/attr(scalevalues1, which = "scaled:scale"), std.error=std.error/attr(scalevalues1, which = "scaled:scale"))
   
@@ -132,7 +132,7 @@ MixTrait_est<-traitdata%>%
   group_by(collected_traits, Species, functionalGroup)%>%
   filter(!is.na(measurement))%>%
   filter(n_distinct(Site)>2, n_distinct(T_level)>=2)%>%
-  do({tidy(lmer(measurement~scale_Temp + (1|Site), data= .))})%>%
+  do({broom::tidy(lmer(measurement~scale_Temp + (1|Site), data= .))})%>%
   filter(term=="scale_Temp")%>%
   mutate(estimate=estimate/attr(scalevalues1, which = "scaled:scale"))
 
