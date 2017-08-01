@@ -111,5 +111,3 @@ traitdata <- traits %>%
 #  mutate(SLA_mean = plyr::mapvalues(SLA_mean, from = "Inf", to = "NA")) %>%
 #  mutate(SLA_mean_global = plyr::mapvalues(SLA_mean_global, from = "Inf", to = "NA"))
 
-
-
