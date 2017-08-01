@@ -23,7 +23,7 @@ resp.traits.delta <- rtcmeta %>%
 
 timedelta$annPrecip <- as.numeric(scale(timedelta$annPrecip))
 timedelta$summer_temp <- as.numeric(scale(timedelta$summer_temp))
-timedelta$Year <- as.numeric(scale(timedelta$Year))
+#timedelta$Year <- as.numeric(scale(timedelta$Year))
 
 
 #### Functions ####
@@ -86,19 +86,10 @@ plot.estimates <- function(output, title) {
   )
 }
 
-#function to extract model predictions
-model.predict <- function(mod, print, plot) {
-  
-  if(print == TRUE){
-    print()
-  }
-  if(plot == TRUE){
-    print(ggplot())
-  }
-}
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-########## BIOMASS ##########
+########## COVER ##########
 
 ## ---- SumCover start ---- 
 car::qqp(rtcmeta$deltasumcover, "norm")
@@ -138,8 +129,8 @@ plot(model.dsc.ba)
 ## ---- diversity start ---- 
 
 # treatment delta
-ggplot(rtcmeta, aes(x = summer_temp, y = deltadiversity, colour = Year)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
-ggplot(rtcmeta, aes(x = annPrecip, y = deltadiversity, colour = Year)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+ggplot(timedelta, aes(x = factor(Year), y = deltadiversity, colour = Year)) + geom_boxplot() + facet_wrap(~Temperature_level)
+ggplot(timedelta, aes(x = factor(Year), y = deltadiversity, colour = Year)) + geom_boxplot() + facet_wrap(~Precipitation_level)
 
 
 # remove nas
@@ -169,11 +160,9 @@ plot(model.div.tr)
 rtcmeta.richness <- filter(timedelta, deltarichness != "NA")
 
 car::qqp(rtcmeta.richness$deltarichness, "norm")
-poisson <- MASS::fitdistr(rtcmeta.richness$deltarichness, "Poisson")
-car::qqp(rtcmeta.richness$deltarichness, "pois", poisson$estimate)
 
-ggplot(rtcmeta, aes(x = summer_temp, y = deltarichness, colour = Year, linetype = TTtreat)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
-ggplot(rtcmeta, aes(x = annPrecip, y = richness, colour = Year, linetype = TTtreat)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+ggplot(timedelta, aes(x = factor(Year), y = deltarichness, colour = Year)) + geom_boxplot() + facet_wrap(~Temperature_level)
+ggplot(timedelta, aes(x = factor(Year), y = deltarichness, colour = Year)) + geom_boxplot() + facet_wrap(~Precipitation_level)
 
 
 model.rich.tr <- lmer(deltarichness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year +  (1|siteID/blockID/turfID), REML = FALSE, na.action = "na.fail", data = rtcmeta.richness)
@@ -197,8 +186,8 @@ plot(model.div.tr)
 ## ---- evenness start ---- 
 poisson <- MASS::fitdistr(forbcomfilter$evenness, "Poisson")
 
-ggplot(rtcmeta, aes(x = summer_temp, y = deltaevenness, colour = Year, linetype = TTtreat)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
-ggplot(rtcmeta, aes(x = annPrecip, y = richness, colour = Year, linetype = TTtreat)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+ggplot(timedelta, aes(x = factor(Year), y = deltaevenness, colour = Year)) + geom_boxplot() + facet_wrap(~Temperature_level)
+ggplot(timedelta, aes(x = factor(Year), y = deltaevenness, colour = Year)) + geom_boxplot() + facet_wrap(~Precipitation_level)
 
 rtcmeta.evenness <- filter(timedelta, deltaevenness != "NA")
 rtcmeta.evenness <- filter(timedelta, deltaevenness != "Inf") #removing infinite values from Ovs2RTC and Ovs3RTC
@@ -218,8 +207,7 @@ summary(model.eve.tr)
 output.eve <- model.average(model.eve.tr, 0.95, print = TRUE)
 plot.estimates(output.eve, title = "Evenness")
 
-#need to create the dataframe 'modave'...
-ggplot(modave.eve, aes(x = explan.var, y = Estimate)) + geom_boxplot() + geom_errorbar(aes(ymin = CI.lower, ymax = CI.upper)) + geom_hline(yintercept = 0, linetype = "dashed") + theme(axis.text = element_text(angle = 90))
+qqnorm(residuals(model.eve.tr)); qqline(residuals(model.eve.tr))
 
 ## ---- evenness end ---- 
 
@@ -228,11 +216,11 @@ ggplot(modave.eve, aes(x = explan.var, y = Estimate)) + geom_boxplot() + geom_er
 
 
 ## ---- SLA start ---- 
-rtcmeta.sla <- filter(timedelta, deltawmean_SLA_global != "NA")
+rtcmeta.sla <- filter(timedelta, deltawmean_SLA_local != "NA")
 car::qqp(timedelta$deltawmean_SLA_global, "norm")
 
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltawmean_SLA_global, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = Year, y = deltawmean_SLA_global)) + geom_boxplot() + facet_grid(Temperature_level ~ Precipitation_level) + geom_hline(yintercept = 0, linetype = "dashed")
+ggplot(timedelta, aes(x = factor(Year), y = deltawmean_SLA_local, colour = Year)) + geom_boxplot() + facet_wrap(~Temperature_level)
+ggplot(timedelta, aes(x = factor(Year), y = deltawmean_SLA_local, colour = Year)) + geom_boxplot() + facet_wrap(~Precipitation_level)
 
 
 model.sla.tr <- lmer(deltawmean_SLA_global ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = rtcmeta.sla)
