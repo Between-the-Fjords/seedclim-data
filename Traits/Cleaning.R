@@ -1,7 +1,5 @@
 #### Libraries ####
-library("tidyr")
-library("dplyr")
-library("ggplot2")
+library("tidyverse")
 library("lubridate")
 library("mosaic")
 
@@ -210,7 +208,15 @@ wcommunity_df <- wcommunity %>%
   mutate(T_level = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Sub-alpine", Hog = "Sub-alpine", Ram = "Sub-alpine", Ves = "Sub-alpine", Fau = "Boreal", Vik = "Boreal", Arh = "Boreal", Ovs = "Boreal"))%>%
   ungroup()
   
+short_wcommunity<-wcommunity_df%>%
+  select(Wmean_CN, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, LDMC_mean, Lth_mean, SLA_mean, Height_mean, CN_ratio_mean, Site, turfID, species, cover, functionalGroup, lifeSpan, occurrence)%>%
+  distinct()
 
+ggplot(wcommunity_df, aes(x=Wmean_Height, fill=functionalGroup))+
+  geom_histogram()
+
+ggplot(wcommunity_df, aes(x=Height, fill=functionalGroup))+
+  geom_histogram()
 
 #### Finding errors ####
 
