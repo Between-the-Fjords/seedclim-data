@@ -209,7 +209,7 @@ wcommunity_df <- wcommunity %>%
   ungroup()
   
 short_wcommunity<-wcommunity_df%>%
-  select(Wmean_CN, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, LDMC_mean, Lth_mean, SLA_mean, Height_mean, CN_ratio_mean, Site, turfID, species, cover, functionalGroup, lifeSpan, occurrence)%>%
+  select(Wmean_CN, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, LDMC_mean, Lth_mean, SLA_mean, Height_mean, CN_ratio_mean, Site, turfID, species, cover, functionalGroup, lifeSpan, occurrence, T_level, P_level)%>%
   distinct()
 
 ggplot(wcommunity_df, aes(x=Wmean_Height, fill=functionalGroup))+
