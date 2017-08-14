@@ -29,9 +29,12 @@ biomass_forbs <- biomass_forbs%>%
   distinct()
 
 
-biomass <- rbind(biomass_others, biomass_forbs)
-
-biomass <- biomass %>%
+biomass <- bind_rows(biomass_others, biomass_forbs)%>%
   group_by(turfID)%>%
-  mutate(total.biomass=sum(dry.weight))
+  filter(functional.group!="litter")%>%
+  mutate(total.biomass=sum(dry.weight))%>%
+  ungroup()
+
+biomass %>%
+  slice(which.max(total.biomass))
 
