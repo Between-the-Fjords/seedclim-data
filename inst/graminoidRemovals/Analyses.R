@@ -23,7 +23,7 @@ resp.traits.delta <- rtcmeta %>%
 
 timedelta$annPrecip <- as.numeric(scale(timedelta$annPrecip))
 timedelta$summer_temp <- as.numeric(scale(timedelta$summer_temp))
-#timedelta$Year <- as.numeric(scale(timedelta$Year))
+timedelta$Year <- as.numeric(scale(timedelta$Year))
 
 
 #### Functions ####
@@ -194,11 +194,11 @@ rtcmeta.evenness <- filter(timedelta, deltaevenness != "Inf") #removing infinite
 
 car::qqp(rtcmeta.evenness$deltaevenness, "norm")
 
-model.eve.tr <- lmer(deltaevenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = rtcmeta.evenness)
+model.eve.tr <- lmer(deltaevenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), REML = FALSE, data = rtcmeta.evenness)
 
-model.eve.wot <- lmer(deltaevenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = rtcmeta.evenness)
+model.eve.wot <- lmer(deltaevenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), REML = FALSE, data = rtcmeta.evenness)
 
-model.eve.wop <- lmer(deltaevenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = rtcmeta.evenness)
+model.eve.wop <- lmer(deltaevenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), REML = FALSE, data = rtcmeta.evenness)
 
 anova(model.eve.tr, model.eve.wop)
 anova(model.eve.tr, model.eve.wot)
@@ -246,7 +246,7 @@ ggplot(modave.sla, aes(x = explan.var, y = Estimate)) + geom_boxplot() + geom_er
 
 
 ## ---- LDMC start ---- 
-qqp(rtcmeta$deltawmean_LDMC_global, "lnorm")
+car::qqp(rtcmeta$deltawmean_LDMC_global, "lnorm")
 ggplot(rtcmeta, aes(x = Precipitation_level, y = deltawmean_LDMC_global, colour = Year)) + geom_boxplot() + facet_grid(. ~ Temperature_level)
 
 rtcmeta.LDMC <- filter(timedelta, deltawmean_LDMC_global != "NA")
@@ -425,5 +425,4 @@ orditorp(m02, "sp", cex=1, air=1, pch="", priority=abundance[abundance>0]) #"Pri
 mytext.cca(m02, dis = "bp", arrow.mul = 3.4, adj=1, font=2, labels=c("Height", "Seedmass", "SLA", "Height:SLA", "Height:Seedmass"))
 
 ###########################################################################
-# hogsete plot
 
