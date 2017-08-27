@@ -1,7 +1,5 @@
 #### Libraries ####
-library("tidyr")
-library("dplyr")
-library("ggplot2")
+library("tidyverse")
 library("lubridate")
 library("mosaic")
 
@@ -25,8 +23,7 @@ traits <- traits %>%
   mutate(LDMC=Dry_mass/Wet_mass)%>%
   mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
   mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
-  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))%>% # this is the equivalent of the error/uncertainty in the balance.
-  filter(!(Species=="Hyp_mac" & Site=="Alr"))
+  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))
 
 
 #### Load leaf area data ####
@@ -114,7 +111,8 @@ traitdata <- traitdata %>%
   rename(Site = Site.x, Species = Species.x)%>%
   group_by(Site, Species) %>%
   mutate(CN_ratio_mean = mean(CN.ratio, na.rm = TRUE))%>%
-  ungroup()
+  ungroup()%>%
+  filter(!(Species=="Hyp_mac" & Site=="Alr"))
 
 
 
@@ -131,35 +129,6 @@ species_info <- species_info %>%
 
 traitdata <- traitdata %>%
   left_join(species_info, by = c("Species"="species"))
-
-
-
-
-#### Finding errors ####
-
-LDMC_mistakes<- traitdata%>%
-  group_by(Individual.x)%>%
-  filter(Dry_mass>Wet_mass)
-
-ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass), col= lifeSpan)) +
-  geom_point()+
-  geom_abline(data = Wet_mass/Dry_mass)
-
-# I am not sure that I trust all of these measurements as they are super large. The once who actually are succulents are okay, or rolled leaves. But there might just be some of the leaf thickness measurement people who didn't do it correctly
-Succulents<-traitdata%>%
-  filter(Lth_ave>0.5)
-
-
-bla<-traitdata%>%
-  filter(SLA>500)%>%
-  select(Site, Species, Individual.x, Wet_mass, Dry_mass, Leaf_area, SLA)
-
-#There are som mistakes in here... Arh_Ant_odo_5 probably does not have a so big leaf area.. Ram_Hie_pil_1 burde kanskje fjernes da den er helt ødelagt..
-
-ggplot(traitdata, aes(x = log(Dry_mass), y = log(Leaf_area))) +
-  geom_point()
-
-#Looking at the relationships between leaf area and dry mass. This looks ok, maybe some of the smaller leaves are a little bit strange, think about cutting out leaves at a higher threshold then 0.0002.
 
 
 #### WEIGHTED MEANS ####
@@ -223,8 +192,6 @@ community_cover<-community_cover%>%
 
 wcommunity <- full_join(community_cover, traitdata, by=c( "Site"="Site", "species"="Species"))
 
-
-
 #### Weighting the traits data by the community ####
 
 
@@ -241,7 +208,17 @@ wcommunity_df <- wcommunity %>%
   mutate(T_level = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Sub-alpine", Hog = "Sub-alpine", Ram = "Sub-alpine", Ves = "Sub-alpine", Fau = "Boreal", Vik = "Boreal", Arh = "Boreal", Ovs = "Boreal"))%>%
   ungroup()
   
+short_wcommunity<-wcommunity_df%>%
+  select(Wmean_CN, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, LDMC_mean, Lth_mean, SLA_mean, Height_mean, CN_ratio_mean, Site, turfID, species, cover, functionalGroup, lifeSpan, occurrence, T_level, P_level)%>%
+  distinct()
 
+ggplot(wcommunity_df, aes(x=Wmean_Height, fill=functionalGroup))+
+  geom_histogram()
+
+ggplot(wcommunity_df, aes(x=Height, fill=functionalGroup))+
+  geom_histogram()
+
+#### Finding errors ####
 
 
 #### Checking that I have 85% of the community ####
@@ -287,3 +264,30 @@ NA_community <- wcommunity_df %>%
                    #.$Site %in% c("Lav", "Hog", "Vik") ~ "2",
                    #.$Site %in% c("Gud", "Ram", "Arh") ~ "3",
                    #.$Site %in% c("Skj", "Ves", "Ovs") ~ "4"))
+
+
+#### LDMCS mistakes ####
+
+LDMC_mistakes<- traitdata%>%
+  group_by(Individual.x)%>%
+  filter(Dry_mass>Wet_mass)
+
+ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass), col= lifeSpan)) +
+  geom_point()+
+  geom_abline(data = Wet_mass/Dry_mass)
+
+# I am not sure that I trust all of these measurements as they are super large. The once who actually are succulents are okay, or rolled leaves. But there might just be some of the leaf thickness measurement people who didn't do it correctly
+Succulents<-traitdata%>%
+  filter(Lth_ave>0.5)
+
+
+bla<-traitdata%>%
+  filter(SLA>500)%>%
+  select(Site, Species, Individual.x, Wet_mass, Dry_mass, Leaf_area, SLA)
+
+#There are som mistakes in here... Arh_Ant_odo_5 probably does not have a so big leaf area.. Ram_Hie_pil_1 burde kanskje fjernes da den er helt ødelagt..
+
+ggplot(traitdata, aes(x = log(Dry_mass), y = log(Leaf_area))) +
+  geom_point()
+
+#Looking at the relationships between leaf area and dry mass. This looks ok, maybe some of the smaller leaves are a little bit strange, think about cutting out leaves at a higher threshold then 0.0002.
