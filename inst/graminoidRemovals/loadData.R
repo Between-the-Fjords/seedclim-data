@@ -186,7 +186,7 @@ head(forbcover)
 diversity.freq <- rowSums(forbcover > 0)
 
 #Shannon's diversity index
-diversity.freq <- data.frame(richness = diversity.freq, diversity = exp(diversity(forbcover, index = "shannon"))) #exponent of shannon index
+diversity.freq <- data.frame(richness = diversity.freq, diversity = diversity(forbcover, index = "shannon")) #exponent of shannon index
 rnames <- rownames(forbcover)
 diversity.freq$ID <- as.factor(rnames)
 
@@ -305,10 +305,10 @@ timedelta <- cbind((forbcom[forbcom$Year != 2011,]), timedeltacalc)
 
 # we only have data for seedlings in 2013, so this is purely a control-treatment analysis
 # source seedling data import
-source("inst/graminoidRemovals/Seedlings.R")
+#source("inst/graminoidRemovals/Seedlings.R")
 
-seedlingGR <- seedlingGR %>%
-  group_by()
+#seedlingGR <- seedlingGR %>%
+#  group_by()
 
 ## ---- Seedling.data.end ---- 
 
