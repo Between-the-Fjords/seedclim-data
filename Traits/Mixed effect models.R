@@ -22,36 +22,11 @@ model_SLA_x<-lmer(SLA~Temp+(1|Site/Species), data=traitdata)
 
 model_SLA_0<-lmer(SLA~1+(1|Site/Species), data=traitdata)
 
-summary(MEMSLA1_P)
-
-AIC(model_SLA_1, model_SLA_1p)
+AIC(model_SLA_1, model_SLA_1p, model_SLA_x, model_SLA_0)
 
 qqnorm(resid(model_SLA_1))
 
-#The mixed effect model with the temperature and the precip, and the interaction betweent hem is the better model
-
-
-
-## SLA ##
-
-#Two different models tryed out
-
-#SLA_model<- glmer(SLA ~scale(Temp)+scale(Precip)+scale(Temp):scale(Precip) + (1|Site), data= traitdata, fam=gaussian(link=log))
-
-#SLA_model<-lmer(SLA ~ scale(Temp) + scale(Precip) + scale(Temp):scale(Precip) +  (1 | Site) + (1 | Species), data = traitdata)
-
-#summary(SLA_model)
-
-#The gaussion log model was not good. Using just normal gaussian distribution therefore using lmer instead of glmer.
-
-
-## Making something to see which species I have collected from at most sites ##
-
-#hm<-traitdata%>%
-#  select(Species)%>%
-#  group_by(Species)%>%
-#  summarise(number=n())%>%
-#  arrange(-number)
+#The mixed effect model with the temperature and the precip, and the interaction between them is the better model
 
 
 #The 15 species that have been collected at the most sites, SLA
@@ -63,7 +38,9 @@ scalevalues<- scale(TheLucky15$Temp) #Finding the values to scale the temperatur
 #attributes(scalevalues)
 
 
-klm<-TheLucky15%>%
+#SLA
+
+SLA_mod_pred<-TheLucky15%>%
   mutate(scale_Temp=scale(Temp))%>%
   group_by(Species)%>%
   do({model<-lmer(SLA ~scale_Temp + (1|Site), data= .)
@@ -77,14 +54,154 @@ klm<-TheLucky15%>%
      })%>%
   mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
 
-  
+
 TheLucky15%>%  
   ggplot(aes(x=Temp, y=SLA, color=P_level))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
-  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=klm, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=klm, inherit.aes = FALSE)
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=SLA_mod_pred, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=temp, y=fit), data=SLA_mod_pred, inherit.aes = FALSE)
+
+SLA_precip<-TheLucky15%>%
+  group_by(Species)%>%
+  do({model<-lmer(SLA ~Precip + (1|Site), data= .)
+  NewData <- expand.grid(Precip = seq(min(.$Precip)*1.1,max(.$Precip)*1.1, length=7000))
+  X <- model.matrix(~ Precip,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })
+
+TheLucky15%>%  
+  ggplot(aes(x=Precip, y=SLA, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=SLA_precip, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=Precip, y=fit), data=SLA_precip, inherit.aes = FALSE)
+
+
+#Leaf dry matter content
+
+LDMC_mod_pred<-TheLucky15%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species)%>%
+  do({model<-lmer(LDMC ~scale_Temp + (1|Site), data= .)
+  NewData <- expand.grid(temp = seq(min(.$scale_Temp)*1.1,max(.$scale_Temp)*1.1, length=100))
+  X <- model.matrix(~ temp,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })%>%
+  mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
+
   
+TheLucky15%>%  
+  ggplot(aes(x=Temp, y=LDMC, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=LDMC_mod_pred, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=temp, y=fit), data=LDMC_mod_pred, inherit.aes = FALSE)
+
+#Leaf thickness
+
+Lth_mod_pred<-TheLucky15%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species)%>%
+  do({model<-lmer(Lth_ave ~scale_Temp + (1|Site), data= .)
+  NewData <- expand.grid(temp = seq(min(.$scale_Temp)*1.1,max(.$scale_Temp)*1.1, length=100))
+  X <- model.matrix(~ temp,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })%>%
+  mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
+
+
+TheLucky15%>%  
+  ggplot(aes(x=Temp, y=Lth_ave, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Lth_mod_pred, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=temp, y=fit), data=Lth_mod_pred, inherit.aes = FALSE)
+
+
+#Height
+
+Height_mod_pred<-TheLucky15%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species)%>%
+  do({model<-lmer(Height ~scale_Temp + (1|Site), data= .)
+  NewData <- expand.grid(temp = seq(min(.$scale_Temp)*1.1,max(.$scale_Temp)*1.1, length=100))
+  X <- model.matrix(~ temp,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })%>%
+  mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
+
+
+TheLucky15%>%  
+  ggplot(aes(x=Temp, y=Height, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Height_mod_pred, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=temp, y=fit), data=Height_mod_pred, inherit.aes = FALSE)
+  
+#Leaf area
+
+LA_mod_pred<-TheLucky15%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species)%>%
+  do({model<-lmer(Leaf_area ~scale_Temp + (1|Site), data= .)
+  NewData <- expand.grid(temp = seq(min(.$scale_Temp)*1.1,max(.$scale_Temp)*1.1, length=100))
+  X <- model.matrix(~ temp,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })%>%
+  mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
+
+
+TheLucky15%>%  
+  ggplot(aes(x=Temp, y=Leaf_area, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=LA_mod_pred, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=temp, y=fit), data=LA_mod_pred, inherit.aes = FALSE)
+
+# CN ratio
+
+CN_mod_pred<-TheLucky15%>%
+  mutate(scale_Temp=scale(Temp))%>%
+  group_by(Species)%>%
+  do({model<-lmer(CN.ratio ~scale_Temp + (1|Site), data= .)
+  NewData <- expand.grid(temp = seq(min(.$scale_Temp)*1.1,max(.$scale_Temp)*1.1, length=100))
+  X <- model.matrix(~ temp,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })%>%
+  mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
+
+
+TheLucky15%>%  
+  ggplot(aes(x=Temp, y=CN.ratio, color=P_level))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=CN_mod_pred, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=temp, y=fit), data=CN_mod_pred, inherit.aes = FALSE)
 
 ## All the species, to figure out how the different species SLAs are reacting to temperature change
 
