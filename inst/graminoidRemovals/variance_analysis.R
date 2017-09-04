@@ -5,7 +5,7 @@ traitVariance <- wholecom %>%
 
 
 ############# TEMPERATURE ##############
-# test for difference in variance of forbs and graminoids in TTCs in 2011 with temperature
+# test for difference in variance of forbs and graminoids in TTCs in 2011 with temperature using the levene's test
 traitVariance %>%
   filter(Year == 2011, TTtreat == "TTC") %>% 
   group_by(wmean_trait, functionalGroup) %>%
@@ -80,19 +80,6 @@ traitVariance %>%
   facet_wrap(~ wmean_trait, scales = "free")
 
 
-# plot for IAVS conference
-traitVariance %>% 
-  filter(TTtreat == "TTC", Year == 2011, wmean_trait %in% c("wmean_SLA_local")) %>% 
-  ggplot(aes(measurement, fill = factor(Temperature_level))) +
-  scale_fill_manual(values = cbPalette[c(3, 4, 2)]) +
-  geom_density(alpha = 0.5) +
-  theme_classic() +
-  axis.dim +
-  facet_wrap(~ functionalGroup, scales = "free") +
-  labs(x = "SLA", fill = "Temperature (C)") +
-  ggsave(filename = paste0("IAVS_SLA_functionalgroup.jpg"), height = 4, width = 8, dpi = 300)
-
-
 
 ########## PRECIPITATION ##############
 # test for difference in variance of forbs and graminoids in TTCs in 2011 with precipitation
@@ -130,18 +117,6 @@ wholecom %>%
 
 
 
-# plot 2 for IAVS conference
-wholecom %>% 
-  filter(funYear %in% c("forb_2011", "forb_2016", "graminoid_2011")) %>% 
-  ggplot(aes(wmean_CN_local, fill = factor(funYear))) +
-  scale_fill_manual(values = rev(cbPalette[c(10, 4, 2, 5)])) +
-  geom_density(alpha = 0.5) +
-  theme_classic() +
-  axis.dim +
-  facet_wrap(~ Temperature_level, scales = "free") +
-  labs(x = "CN ratio", fill = "Functional groups \n in 2011 and 2016") +
-  ggsave(filename = paste0("IAVS_CN_functionalgroup_TTtreat.jpg"), height = 4, width = 10.5, dpi = 300)
-  
 
 # test for difference in means of forbs in 2011 and 2016 and graminoids in 2011 in TTCs and RTCs
 wholecom %>% 
@@ -158,6 +133,43 @@ wholecom %>%
 
 
 #### Plots ###
+# plot for IAVS conference
+traitVariance %>% 
+  filter(TTtreat == "TTC", Year == 2011, wmean_trait %in% c("wmean_SLA_local")) %>% 
+  ggplot(aes(measurement, fill = factor(Temperature_level))) +
+  scale_fill_manual(values = cbPalette[c(3, 4, 2)]) +
+  geom_density(alpha = 0.5) +
+  theme_classic() +
+  axis.dim +
+  facet_wrap(~ functionalGroup, scales = "free") +
+  labs(x = "SLA", fill = "Temperature (C)") +
+  ggsave(filename = paste0("IAVS_SLA_functionalgroup.jpg"), height = 4, width = 8, dpi = 300)
+
+# plot 2 for IAVS conference
+wholecom_rtc %>% 
+  filter(funYear %in% c("forb_2011", "forb_2016", "graminoid_2011")) %>% 
+  ggplot(aes(wmean_LDMC_local, fill = factor(funYear))) +
+  scale_fill_manual(values = rev(cbPalette[c(10, 4, 2, 5)])) +
+  geom_density(alpha = 0.5) +
+  theme_classic() +
+  axis.dim +
+  facet_wrap(~ Precipitation_level, scales = "free") +
+  labs(x = "CN ratio", fill = "Functional groups \n in 2011 and 2016") 
+  ggsave(filename = paste0("IAVS_CN_functionalgroup_TTtreat.jpg"), height = 4, width = 10.5, dpi = 300)
+
+
+library(nlme)
+wholecom_rtc <- wholecom %>% 
+  filter(TTtreat == "RTC")
+  
+modx <- lme(wmean_CN_local ~ summer_temp, data = wholecom_rtc, subset = funYear %in% c("forb_2011", "forb_2016"), random = ~ 1|siteID, weights = varIdent(form = ~ 1|funYear))
+
+mod0 <- lme(wmean_CN_local ~ summer_temp, data = wholecom_rtc, subset = funYear %in% c("forb_2011", "forb_2016"), random = ~ 1|siteID)
+
+anova(modx, mod0)
+summary(modx)
+
+
 wholecom %>% 
   gather(key = wmean_trait, value = measurement, c(wmean_CN_local, wmean_LDMC_local, wmean_SLA_local, wmean_LA_local, wmean_LTH_local, wmean_seedMass)) %>%
   filter(functionalGroup == "forb", TTtreat == "TTC", Year == 2011, wmean_trait %in% c("wmean_CN_local", "wmean_SLA_local", "wmean_seedMass")) %>% 
