@@ -4,13 +4,11 @@ library("lubridate")
 library("mosaic")
 
 #### Load trait data ####
+
 traits <-read.csv("Traits/data/leaftraits2016csv.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
-#head(traits)
-#str(traits)
 
 
 #### Cleaning the trait data ####
-
 
 traits <- traits %>%
   rename(Height=Height..mm., Lth_1=Lth.1..mm., Lth_2= Lth.2..mm., Lth_3= Lth.3..mm., Wet_mass=Wet.mass..g., Dry_mass=Dry.mass..g., Site=Location) %>%
@@ -23,15 +21,16 @@ traits <- traits %>%
   mutate(LDMC=Dry_mass/Wet_mass)%>%
   mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
   mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
-  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))
-
+  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))%>%
+  filter(!(Species=="Hyp_mac" & Site=="Alr"))%>%
+  filter(!(Species=="Agr_cap" & Site =="Alr" & Individual=="9"))
 
 #### Load leaf area data ####
 
 LA <- read.csv2("Traits/data/Leaf area.csv", stringsAsFactors = FALSE)
 
-
 LA<-transform(LA, Leaf_area = as.numeric(Leaf_area))
+
 LA <- LA %>%
   filter(Leaf_area > 0.1)
 
@@ -70,9 +69,11 @@ traitdata <- traits %>%
 CN <- read.csv2("Traits/data/CNratio.csv", dec=".", sep=";")
 
 #Making a dictionary for the CN name abreviations
+
 dict_CN <- read.csv2("Traits/data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
 #Making a dictionary for the site names in the CN file
+
 dict_Site <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
   "old new
   AR Arh
@@ -111,24 +112,18 @@ traitdata <- traitdata %>%
   rename(Site = Site.x, Species = Species.x)%>%
   group_by(Site, Species) %>%
   mutate(CN_ratio_mean = mean(CN.ratio, na.rm = TRUE))%>%
-  ungroup()%>%
-  filter(!(Species=="Hyp_mac" & Site=="Alr"))
+  ungroup()
 
 
 
 #### Add info about species ####
 
 
-species_info<- read.csv2("Traits/data/species_info.csv", sep=";", stringsAsFactors = FALSE)
-
-
-species_info <- species_info %>%
-  select(species, family, functionalGroup, lifeSpan, occurrence, occurrence.2) %>%
-  mutate(species=gsub("\\.", "_", species))
+species_info<- read.csv2("Traits/data/systematics_species.csv", sep=";", stringsAsFactors = FALSE)
 
 
 traitdata <- traitdata %>%
-  left_join(species_info, by = c("Species"="species"))
+  left_join(species_info, by = c("Species"="Species"))
 
 
 #### WEIGHTED MEANS ####
@@ -137,14 +132,10 @@ traitdata <- traitdata %>%
 
 community <-read.csv2("Traits/data/funcab_composition_2016.csv", header=TRUE, sep=";", stringsAsFactors = FALSE)
 
-
-
 community<-community %>%
   filter(Site!="")%>%
   mutate(Site= substr(Site, 1,3))%>%
   filter(Measure == "Cover")
-
-
 
 community_cover<-community%>%
   select(-subPlot, -year, -date, -Measure, -recorder, -Nid.herb, -Nid.gram, -Nid.rosett, -Nid.seedling, -liver, -lichen, -litter, -soil, -rock, -X.Seedlings) %>%
@@ -188,15 +179,17 @@ community_cover<-community_cover%>%
 
         
 #### Joining the datasets and making that ready for analysis ####
-
+str(community_cover)
+str(traitdata)
 
 wcommunity <- full_join(community_cover, traitdata, by=c( "Site"="Site", "species"="Species"))
 
 #### Weighting the traits data by the community ####
 
+# This must really be summerise and not mutate because I don't want every leaf, just the averages #
 
 wcommunity_df <- wcommunity %>%
-  group_by(turfID)%>%
+  group_by(turfID, Site)%>%
   filter(!is.na(mean_cover)) %>%
   mutate(Wmean_LDMC= weighted.mean(LDMC_mean, cover, na.rm=TRUE),
             Wmean_Lth= weighted.mean(Lth_mean, cover, na.rm=TRUE),
@@ -206,17 +199,9 @@ wcommunity_df <- wcommunity %>%
             Wmean_CN = weighted.mean(CN_ratio_mean, cover, na.rm=TRUE))%>%
   mutate(P_level = recode(Site, Ulv = "1", Alr = "1", Fau = "1", Lav = "2", Hog = "2", Vik = "2", Gud = "3", Ram = "3", Arh = "3", Skj = "4", Ves = "4", Ovs = "4")) %>%
   mutate(T_level = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Sub-alpine", Hog = "Sub-alpine", Ram = "Sub-alpine", Ves = "Sub-alpine", Fau = "Boreal", Vik = "Boreal", Arh = "Boreal", Ovs = "Boreal"))%>%
-  ungroup()
-  
-short_wcommunity<-wcommunity_df%>%
-  select(Wmean_CN, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, LDMC_mean, Lth_mean, SLA_mean, Height_mean, CN_ratio_mean, Site, turfID, species, cover, functionalGroup, lifeSpan, occurrence, T_level, P_level)%>%
-  distinct()
+  ungroup()%>%
+  select(Site, species, T_level, P_level, Temp, Precip, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order)
 
-ggplot(wcommunity_df, aes(x=Wmean_Height, fill=functionalGroup))+
-  geom_histogram()
-
-ggplot(wcommunity_df, aes(x=Height, fill=functionalGroup))+
-  geom_histogram()
 
 #### Finding errors ####
 
@@ -231,13 +216,10 @@ check_community_df <- wcommunity_df %>%
   mutate(cover_100 = (cover/(sum(cover)))*100)%>%
   filter(!is.na(SLA_mean))
 
-
 uncomplete_turf <- check_community_df%>%
   #group_by(Site, turfID)%>%
   mutate(sumcover= sum(cover_100))%>%
   filter(sumcover<80) %>% distinct(turfID)
-
-
 
 #### Checking which species I need to do ####
 
@@ -272,7 +254,7 @@ LDMC_mistakes<- traitdata%>%
   group_by(Individual.x)%>%
   filter(Dry_mass>Wet_mass)
 
-ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass), col= lifeSpan)) +
+ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass))) +
   geom_point()+
   geom_abline(data = Wet_mass/Dry_mass)
 
