@@ -54,13 +54,14 @@ SLA_mod_pred<-TheLucky15%>%
      })%>%
   mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
 
-
 TheLucky15%>%  
-  ggplot(aes(x=Temp, y=SLA, color=P_level))+
+  ggplot(aes(x=Temp, y=SLA, color=as.factor(P_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=SLA_mod_pred, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=SLA_mod_pred, inherit.aes = FALSE)
+  geom_line(aes(x=temp, y=fit), data=SLA_mod_pred, inherit.aes = FALSE)+
+  labs(color = "Precipitation (mm)")
+
 
 SLA_precip<-TheLucky15%>%
   group_by(Species)%>%
@@ -75,16 +76,23 @@ SLA_precip<-TheLucky15%>%
   })
 
 TheLucky15%>%  
-  ggplot(aes(x=Precip, y=SLA, color=P_level))+
+  ggplot(aes(x=Precip, y=SLA, color=as.factor(T_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=SLA_precip, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=Precip, y=fit), data=SLA_precip, inherit.aes = FALSE)
+  geom_line(aes(x=Precip, y=fit), data=SLA_precip, inherit.aes = FALSE)+
+  labs(color = "Temperature (C)")
 
 
 #Leaf dry matter content
 
-LDMC_mod_pred<-TheLucky15%>%
+TheLucky15_LDMC<-traitdata %>%
+  filter(Species %in% c("Agr_cap", "Ant_odo", "Cam_rot", "Des_ces", "Ver_off", "Ave_fle", "Luz_mul", "Bis_viv", "Pot_ere", "Alc_alp", "Tri_rep", "Tha_alp", "Ach_mil", "Nar_str", "Rum_ace"))%>%
+  filter(!LDMC>1)
+
+scalevalues_LDMC<- scale(TheLucky15_LDMC$Temp)
+
+LDMC_mod_pred<-TheLucky15_LDMC%>%
   mutate(scale_Temp=scale(Temp))%>%
   group_by(Species)%>%
   do({model<-lmer(LDMC ~scale_Temp + (1|Site), data= .)
@@ -96,15 +104,36 @@ LDMC_mod_pred<-TheLucky15%>%
   NewData$up <- NewData$fit + (1.96 * NewData$SE )
   NewData
   })%>%
-  mutate(temp=temp*attr(scalevalues, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
+  mutate(temp=temp*attr(scalevalues_LDMC, which = "scaled:scale")+attr(scalevalues, which = "scaled:center"))
 
   
-TheLucky15%>%  
-  ggplot(aes(x=Temp, y=LDMC, color=P_level))+
+TheLucky15_LDMC%>%  
+  ggplot(aes(x=Temp, y=LDMC, color=as.factor(P_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=LDMC_mod_pred, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=LDMC_mod_pred, inherit.aes = FALSE)
+  geom_line(aes(x=temp, y=fit), data=LDMC_mod_pred, inherit.aes = FALSE)+
+  labs(color = "Precipitation (mm)")
+
+LDMC_precip<-TheLucky15_LDMC%>%
+  group_by(Species)%>%
+  do({model<-lmer(LDMC ~Precip + (1|Site), data= .)
+  NewData <- expand.grid(Precip = seq(min(.$Precip)*1.1,max(.$Precip)*1.1, length=7000))
+  X <- model.matrix(~ Precip,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })
+
+TheLucky15_LDMC%>%  
+  ggplot(aes(x=Precip, y=LDMC, color=as.factor(T_level)))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=LDMC_precip, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=Precip, y=fit), data=LDMC_precip, inherit.aes = FALSE)+
+  labs(color = "Temperature (C)")
 
 #Leaf thickness
 
@@ -124,11 +153,32 @@ Lth_mod_pred<-TheLucky15%>%
 
 
 TheLucky15%>%  
-  ggplot(aes(x=Temp, y=Lth_ave, color=P_level))+
+  ggplot(aes(x=Temp, y=Lth_ave, color=as.factor(P_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Lth_mod_pred, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=Lth_mod_pred, inherit.aes = FALSE)
+  geom_line(aes(x=temp, y=fit), data=Lth_mod_pred, inherit.aes = FALSE)+
+  labs(color = "Precipitation (mm)", x= "Temperature (C)", y="Leaf thickness (mm)")
+
+Lth_precip<-TheLucky15%>%
+  group_by(Species)%>%
+  do({model<-lmer(Lth_ave ~Precip + (1|Site), data= .)
+  NewData <- expand.grid(Precip = seq(min(.$Precip)*1.1,max(.$Precip)*1.1, length=7000))
+  X <- model.matrix(~ Precip,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })
+
+TheLucky15%>%  
+  ggplot(aes(x=Precip, y=Lth_ave, color=as.factor(T_level)))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=Lth_precip, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=Precip, y=fit), data=Lth_precip, inherit.aes = FALSE)+
+  labs(x= "Precipitation (mm)", color= "Temperature (C)", y = "Leaf thickness (mm)")
 
 
 #Height
@@ -149,11 +199,32 @@ Height_mod_pred<-TheLucky15%>%
 
 
 TheLucky15%>%  
-  ggplot(aes(x=Temp, y=Height, color=P_level))+
+  ggplot(aes(x=Temp, y=Height, color=as.factor(P_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=Height_mod_pred, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=Height_mod_pred, inherit.aes = FALSE)
+  geom_line(aes(x=temp, y=fit), data=Height_mod_pred, inherit.aes = FALSE)+
+  labs(color = "Precipitation (mm)", x= "Temperature (C)", y="Height (mm)")
+
+Height_precip<-TheLucky15%>%
+  group_by(Species)%>%
+  do({model<-lmer(Height ~Precip + (1|Site), data= .)
+  NewData <- expand.grid(Precip = seq(min(.$Precip)*1.1,max(.$Precip)*1.1, length=7000))
+  X <- model.matrix(~ Precip,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })
+
+TheLucky15%>%  
+  ggplot(aes(x=Precip, y=Height, color=as.factor(T_level)))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=Height_precip, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=Precip, y=fit), data=Height_precip, inherit.aes = FALSE)+
+  labs(x = "Precipitation (mm)", color= "Temperature (C)", y="Height (mm)")
   
 #Leaf area
 
@@ -173,11 +244,34 @@ LA_mod_pred<-TheLucky15%>%
 
 
 TheLucky15%>%  
-  ggplot(aes(x=Temp, y=Leaf_area, color=P_level))+
+  ggplot(aes(x=Temp, y=Leaf_area, color=as.factor(P_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=LA_mod_pred, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=LA_mod_pred, inherit.aes = FALSE)
+  geom_line(aes(x=temp, y=fit), data=LA_mod_pred, inherit.aes = FALSE)+
+  labs(color = "Precipitation (mm)", x= "Temperature (C)", y="Leaf area (x)")
+
+
+
+LA_precip<-TheLucky15%>%
+  group_by(Species)%>%
+  do({model<-lmer(Leaf_area ~Precip + (1|Site), data= .)
+  NewData <- expand.grid(Precip = seq(min(.$Precip)*1.1,max(.$Precip)*1.1, length=7000))
+  X <- model.matrix(~ Precip,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })
+
+TheLucky15%>%  
+  ggplot(aes(x=Precip, y=Leaf_area, color=as.factor(T_level)))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=LA_precip, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=Precip, y=fit), data=LA_precip, inherit.aes = FALSE)+
+  labs(x = "Precipitation (mm)", color= "Temperature (C)", y="Leaf area (x)")
 
 # CN ratio
 
@@ -197,11 +291,32 @@ CN_mod_pred<-TheLucky15%>%
 
 
 TheLucky15%>%  
-  ggplot(aes(x=Temp, y=CN.ratio, color=P_level))+
+  ggplot(aes(x=Temp, y=CN.ratio, color=as.factor(P_level)))+
   geom_jitter(height=0)+
   facet_wrap( ~ Species, ncol=5)+
   geom_ribbon(aes(x=temp, ymax=up, ymin=lo), data=CN_mod_pred, inherit.aes= FALSE, alpha=0.4)+
-  geom_line(aes(x=temp, y=fit), data=CN_mod_pred, inherit.aes = FALSE)
+  geom_line(aes(x=temp, y=fit), data=CN_mod_pred, inherit.aes = FALSE)+
+  labs(color = "Precipitation (mm)", x= "Temperature (C)", y="C/N ratio")
+
+CN_precip<-TheLucky15%>%
+  group_by(Species)%>%
+  do({model<-lmer(CN.ratio ~Precip + (1|Site), data= .)
+  NewData <- expand.grid(Precip = seq(min(.$Precip)*1.1,max(.$Precip)*1.1, length=7000))
+  X <- model.matrix(~ Precip,data = NewData)
+  NewData$fit <- X %*% fixef(model)
+  NewData$SE <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+  NewData$lo <- NewData$fit - (1.96 * NewData$SE )
+  NewData$up <- NewData$fit + (1.96 * NewData$SE )
+  NewData
+  })
+
+TheLucky15%>%  
+  ggplot(aes(x=Precip, y=CN.ratio, color=as.factor(T_level)))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)+
+  geom_ribbon(aes(x=Precip, ymax=up, ymin=lo), data=CN_precip, inherit.aes= FALSE, alpha=0.4)+
+  geom_line(aes(x=Precip, y=fit), data=CN_precip, inherit.aes = FALSE)+
+  labs(x= "Precipitation (mm)", color= "Temperature (C)", y="C/N ratio")
 
 ## All the species, to figure out how the different species SLAs are reacting to temperature change
 
