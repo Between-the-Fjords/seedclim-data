@@ -1,7 +1,7 @@
 #### Libraries ####
 library("tidyverse")
 library("lubridate")
-library("mosaic")
+#library("mosaic")
 
 #### Load trait data ####
 
@@ -23,7 +23,17 @@ traits <- traits %>%
   mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
   mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))%>%
   filter(!(Species=="Hyp_mac" & Site=="Alr"))%>%
-  filter(!(Species=="Agr_cap" & Site =="Alr" & Individual=="9"))
+  filter(!(Species=="Agr_cap" & Site =="Alr" & Individual=="9"))%>%
+  filter(!(Species=="Car_vag" & Site == "Ves"))%>%
+  filter(!(Species=="Fes_rub" & Site == "Ulv"))%>%
+  filter(!(Species=="Fes_rub" & Site == "Gud"))%>%
+  filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
+  filter(!(Species=="Pot_cra" & Site == "Gud"))%>%
+  filter(!(Species=="Ran_acr" & Site == "Skj"))%>%
+  filter(!(Species=="Sax_aiz"))%>%
+  filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
+  filter(!(Species=="Vac_myr" & Site == "Ves"))%>%
+  filter(!(Species=="Ver_alp" & Site == "Ves"))
 
 #### Load leaf area data ####
 
@@ -109,7 +119,7 @@ CN<-CN %>%
 traitdata <- traitdata %>%
   full_join(CN, by=c("ID"="ID"))%>%
   select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -Site.y, -Species.y, -Individual.y, -N.., -C.., -N.Area, -C.Area) %>%
-  rename(Site = Site.x, Species = Species.x)%>%
+  rename(Site = Site.x, Species = Species.x, Individual=Individual.x)%>%
   group_by(Species) %>%
   mutate(CN_ratio_mean_global = mean(CN.ratio, na.rm = TRUE))%>%
   ungroup()%>%
@@ -176,17 +186,17 @@ community_cover<-community_cover%>%
   group_by(Site, species)%>%
   mutate(mean_cover=mean(cover, na.rm=TRUE))%>% #If you want the turf data use mutate, if you want the site data use summarise
   ungroup()%>%
-  mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))
-
+  mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))%>%
+  mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))
 
         
 #### Joining the datasets and making that ready for analysis ####
 
-wcommunity <- full_join(community_cover, traitdata, by=c( "Site"="Site", "species"="Species"))
+wcommunity <- left_join(traitdata, community_cover, by=c( "Site"="Site", "Species"="species"))
 
 #### Weighting the traits data by the community ####
 
-# This must really be summerise and not mutate because I don't want every leaf, just the averages #
+# If I just want the averages I must use summerise and not mutate
 
 
 wcommunity_df <- wcommunity %>%
@@ -205,7 +215,7 @@ wcommunity_df <- wcommunity %>%
          Wmean_global_Height= weighted.mean(Height_mean_global, cover, na.rm=TRUE),
          Wmean_global_CN = weighted.mean(CN_ratio_mean_global, cover, na.rm=TRUE))%>%
   ungroup()%>%
-  select(Site, species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC)
+  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC)
 
 
 
@@ -215,7 +225,7 @@ wcommunity_df <- wcommunity %>%
 #### Checking that I have 85% of the community ####
 
 check_community_df <- wcommunity_df %>%
-  group_by(Site, species, turfID)%>%
+  group_by(Site, Species, turfID)%>%
   select(Site, turfID, species, cover, SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN_ratio_mean)%>%
   unique()%>%
   group_by(Site, turfID)%>%
