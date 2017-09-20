@@ -1,0 +1,225 @@
+# Lorah Patterson - Variance partitioning of 2016 China leaf trait data
+
+### lme and varcomp analysis ###
+
+#library("BIEN")
+#library("varComp")
+library("ape")
+library("nlme")
+#library("lme4")
+#library("HLMdiag")
+
+
+### Variance partitioning by taxonomic level: order, family, genus, species, within species ###
+
+#varSLA <- lmer(SLA~1 + (1|Order/Family/Genus/species), data=wcommunity_df, na.action = na.omit, REML = TRUE)
+#varcomp.mer(varSLA)
+
+varSLA <- lme(SLA~1, random= ~1|Order/Family/Genus/Species, data=wcommunity_df, na.action = na.omit)
+
+SLA_sys<-varcomp(varSLA, scale=TRUE)
+plot(SLA_sys)
+
+
+#Order: 0.0%
+#Family: 13.5%
+#Genus: 7.7%
+#Species: 32.6%
+#Within species: 45.9%
+
+LDMC_df<-wcommunity_df%>%
+  filter(!LDMC>1)
+
+varLDMC <- lme(LDMC~1, random= ~1|Order/Family/Genus/Species, data=LDMC_df, na.action = na.omit)
+
+LDMC_sys<-varcomp(varLDMC, scale=TRUE)
+plot(LDMC_sys)
+
+#Order: 20.0
+#Family: 15.5
+#Genus: 12.7
+#Species: 16.2
+#Within species: 35.6
+
+
+varLth <- lme(Lth_ave~1, random= ~1|Order/Family/Genus/Species, data=wcommunity_df, na.action = na.omit)
+
+Lth_sys <- varcomp(varLth, scale=TRUE)
+plot(Lth_sys)
+
+
+# 8.7% på Order level
+# 0.0 % på Family level
+# 11.0% på Genus level
+# 50.5 % på Species level
+# 29.9% Unexplained
+
+
+varCN <- lme(CN.ratio~1, random= ~1|Order/Family/Genus/Species, data=wcommunity_df, na.action = na.omit)
+
+CN_sys <- varcomp(varCN, scale=TRUE)
+plot(CN_sys)
+
+
+# 19.9 % Order level
+# 7.1 % Family level
+# 8.4 % Genus
+# 23.9 % Species level
+# 40.6 % Within
+
+Height_graminoid<-wcommunity_df%>%
+  filter(Order=="Poales")
+
+Height_forbs<-wcommunity_df%>%
+  filter(!Order=="Poales")
+
+varHeight_gra <- lme(Height~1, random= ~1|Order/Family/Genus/Species, data=Height_graminoid, na.action = na.omit)
+
+varHeight_forb <- lme(Height~1, random= ~1|Order/Family/Genus/Species, data=Height_forbs, na.action = na.omit)
+
+Height_gra_sys <- varcomp(varHeight_gra, scale=TRUE)
+Height_forb_sys <- varcomp(varHeight_forb, scale=TRUE)
+
+plot(Height_gra_sys)
+plot(Height_forb_sys)
+
+
+# 2.2 % på Order
+# 2.6 % på Family
+# 59.4% på Genus
+# 13.3 % Species
+# 22.5% Within
+
+SLA_vec<-as.vector(SLA_sys)
+LDMC_vec<-as.vector(LDMC_sys)
+Lth_vec<-as.vector(Lth_sys)
+CN_vec<-as.vector(CN_sys)
+Height_gra_vec<-as.vector(Height_gra_sys)
+Height_forb_vec<-as.vector(Height_forb_sys)
+
+Variance<-c(SLA_vec, LDMC_vec, Lth_vec, CN_vec, Height_gra_vec, Height_forb_vec)
+
+Traits<-c("SLA","SLA","SLA","SLA","SLA", "LDMC","LDMC","LDMC","LDMC","LDMC", "Lth","Lth","Lth","Lth","Lth", "CN","CN","CN","CN","CN", "Height_gra","Height_gra","Height_gra","Height_gra","Height_gra", "Height_forb", "Height_forb","Height_forb", "Height_forb","Height_forb")
+
+Systematics<-c("aOrder", "bFamily", "cGenus", "dSpecies", "eWithin","aOrder", "bFamily", "cGenus", "dSpecies", "eWithin","aOrder", "bFamily", "cGenus", "dSpecies", "eWithin","aOrder", "bFamily", "cGenus", "dSpecies", "eWithin","aOrder", "bFamily", "cGenus", "dSpecies", "eWithin","aOrder", "bFamily", "cGenus", "dSpecies", "eWithin")
+
+
+Col_vec<-(c("Traits", "Variance", "Systematics"))
+
+
+df<- data.frame(matrix(vector(), 30, 3,
+       dimnames=list(c(), Col_vec)),stringsAsFactors=F)
+
+
+df[,2]<-Variance
+df[,1]<-Traits
+df[,3]<-Systematics
+
+ggplot(data=df, aes(x=Traits, y=Variance, fill=Systematics))+
+  geom_bar(stat="identity")+
+  theme_classic()+
+  scale_fill_brewer(palette = "YlGn")
+
+
+
+#### Variance partitioning on spacial level ####
+
+varSLA_spa <- lme(SLA~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+
+SLA_spa <- varcomp(varSLA_spa, scale= TRUE)
+plot(SLA_spa)
+
+
+LDMC_df<-wcommunity_df%>%
+  filter(!LDMC>1)
+
+varLDMC_spa <- lme(LDMC~1, random= ~1|T_level/Site/Species, data=LDMC_df, na.action = na.omit)
+
+LDMC_spa <- varcomp(varLDMC_spa, scale = TRUE)
+plot(LDMC_spa)
+
+
+varLth_spa <- lme(Lth_ave~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+
+Lth_spa <- varcomp(varLth_spa, scale = TRUE)
+plot(Lth_spa)
+
+
+
+varCN_spa <- lme(CN.ratio~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+
+CN_spa <- varcomp(varCN_spa, scale = TRUE)
+plot(CN_spa)
+
+
+
+varHeight_spa <- lme(Height~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+
+Height_spa <- varcomp(varHeight_spa, scale=TRUE)
+plot(Height_spa)
+
+
+SLA_vec2 <- as.vector(SLA_spa)
+LDMC_vec2 <- as.vector(LDMC_spa)
+Lth_vec2 <- as.vector(Lth_spa)
+CN_vec2 <- as.vector(CN_spa)
+Height_vec2 <- as.vector(Height_spa)
+
+Variance2<-c(SLA_vec2, LDMC_vec2, Lth_vec2, CN_vec2, Height_vec2)
+
+Traits2<-c("SLA","SLA","SLA","SLA", "LDMC","LDMC","LDMC","LDMC", "Lth","Lth","Lth","Lth", "CN","CN","CN","CN", "Height","Height","Height","Height")
+
+Spacial<-c("aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin")
+
+Col_vec<-(c("Traits", "Variance", "Spacial scale"))
+
+
+df<- data.frame(matrix(vector(), 20, 3,
+                       dimnames=list(c(), Col_vec)),stringsAsFactors=F)
+
+
+df[,2]<-Variance2
+df[,1]<-Traits2
+df[,3]<-Spacial
+
+ggplot(data=df, aes(x=Traits, y=Variance, fill=Spacial))+
+  geom_bar(stat="identity")+
+  theme_classic()+
+  scale_fill_brewer(palette = "YlGn")
+
+
+
+#### Variance analysis from Fran ####
+
+wcommunity_df %>% 
+  gather(key=SLA, value=measurement, SLA, SLA_mean, SLA_mean_global)%>% 
+  #gather(key=Height, value=measurement, Height, Height_mean, Wmean_Height, Height_mean_global, Wmean_global_Height)%>%
+  #gather(key=Leaf_thickness, value=measurement, Lth_ave, Lth_mean, Wmean_Lth, Lth_mean_global, Wmean_global_Lth)%>%
+  #gather(key=Leaf_area, value=measurement, Leaf_area, LA_mean, Wmean_LA, LA_mean_global, Wmean_global_LA)%>%
+  #gather(key=CN_ratio, value=measurement, CN.ratio, CN_ratio_mean, Wmean_CN, CN_ratio_mean_global, Wmean_global_CN)%>%
+  filter(Order=="Poales")%>%
+  ggplot(aes(measurement, fill = SLA)) +
+  geom_density(alpha = 0.5) +
+  theme_classic() +
+  scale_fill_manual(values=c("#FF0033","#FFCC33", "#FFFFCC"))+
+  facet_wrap(~ T_level, scales = "free") +
+  labs(x = "SLA", fill = "SLA measurements")+
+  scale_x_continuous(limits=c(0,700))+
+  scale_y_continuous(limits=c(0.0000, 0.04))
+
+wcommunity_df %>% 
+  gather(key=SLA_com, value=measurement, Wmean_global_SLA, Wmean_SLA)%>% 
+  #gather(key=Height, value=measurement, Height, Height_mean, Wmean_Height, Height_mean_global, Wmean_global_Height)%>%
+  #gather(key=Leaf_thickness, value=measurement, Lth_ave, Lth_mean, Wmean_Lth, Lth_mean_global, Wmean_global_Lth)%>%
+  #gather(key=Leaf_area, value=measurement, Leaf_area, LA_mean, Wmean_LA, LA_mean_global, Wmean_global_LA)%>%
+  #gather(key=CN_ratio, value=measurement, CN.ratio, CN_ratio_mean, Wmean_CN, CN_ratio_mean_global, Wmean_global_CN)%>%
+  filter(Order=="Poales")%>%
+  ggplot(aes(measurement, fill= SLA_com)) +
+  geom_density(alpha = 0.5) +
+  theme_classic() +
+  scale_fill_manual(values=c("#99FF99","#99CCFF"))+
+  facet_wrap(~ T_level, scales = "free") +
+  labs(x = "C/N ratio", fill = "SLA measurements")+
+  scale_x_continuous(limits=c(0,700))+
+  scale_y_continuous(limits=c(0.0000, 0.035))
+
