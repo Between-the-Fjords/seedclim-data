@@ -187,6 +187,121 @@ ggplot(data=df, aes(x=Traits, y=Variance, fill=Spacial))+
   theme_classic()+
   scale_fill_brewer(palette = "YlGn")
 
+#### Variance partitioning species/within species with temp and precip ####
+
+var_temp_SLA <- lme(SLA~T_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+SLA_temp<-varcomp(var_temp_SLA, scale=TRUE)
+
+
+var_precip_SLA <- lme(SLA~P_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+SLA_precip<-varcomp(var_precip_SLA, scale=TRUE)
+
+
+var_temp_LDMC <- lme(LDMC~T_level, random= ~1|Species, data=LDMC_df, na.action = na.omit)
+
+LDMC_temp<-varcomp(var_temp_LDMC, scale=TRUE)
+
+
+var_precip_LDMC <- lme(LDMC~P_level, random= ~1|Species, data=LDMC_df, na.action = na.omit)
+
+LDMC_precip<-varcomp(var_precip_LDMC, scale=TRUE)
+
+
+
+var_temp_Lth <- lme(Lth_ave~T_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+Lth_temp<-varcomp(var_temp_Lth, scale=TRUE)
+
+
+var_precip_Lth <- lme(Lth_ave~P_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+Lth_precip<-varcomp(var_precip_Lth, scale=TRUE)
+
+
+
+var_temp_CN <- lme(CN.ratio~T_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+CN_temp<-varcomp(var_temp_CN, scale=TRUE)
+
+
+var_precip_CN <- lme(CN.ratio~P_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+CN_precip<-varcomp(var_precip_CN, scale=TRUE)
+
+
+var_temp_Height <- lme(Height~T_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+Height_temp<-varcomp(var_temp_Height, scale=TRUE)
+
+
+var_precip_Height <- lme(Height~P_level, random= ~1|Species, data=wcommunity_df, na.action = na.omit)
+
+Height_precip<-varcomp(var_precip_Height, scale=TRUE)
+
+
+
+SLA_temp2 <- as.vector(SLA_temp)
+LDMC_temp2 <- as.vector(LDMC_temp)
+Lth_temp2 <- as.vector(Lth_temp)
+CN_temp2 <- as.vector(CN_temp)
+Height_temp2 <- as.vector(Height_temp)
+
+Variance2<-c(SLA_temp2, LDMC_temp2, Lth_temp2, CN_temp2, Height_temp2)
+
+Traits2<-c("SLA","SLA", "LDMC","LDMC", "Lth","Lth", "CN","CN","Height","Height")
+
+Intra_inter<-c("Species", "Within", "Species", "Within", "Species", "Within", "Species", "Within", "Species", "Within")
+
+Col_vec<-(c("Traits", "Variance", "Intra_inter"))
+
+
+df_temp<- data.frame(matrix(vector(), 10, 3,
+                       dimnames=list(c(), Col_vec)),stringsAsFactors=F)
+
+
+df_temp[,2]<-Variance2
+df_temp[,1]<-Traits2
+df_temp[,3]<-Intra_inter
+
+ggplot(data=df_temp, aes(x=Traits, y=Variance, fill=Intra_inter))+
+  geom_bar(stat="identity")+
+  theme_classic()+
+  scale_fill_brewer(palette = "YlGn")+
+  ggtitle("Inter- and intraspecific variation with Temperature")
+
+
+SLA_precip2 <- as.vector(SLA_precip)
+LDMC_precip2 <- as.vector(LDMC_precip)
+Lth_precip2 <- as.vector(Lth_precip)
+CN_precip2 <- as.vector(CN_precip)
+Height_precip2 <- as.vector(Height_precip)
+
+Variance3<-c(SLA_precip2, LDMC_precip2, Lth_precip2, CN_precip2, Height_precip2)
+
+Traits3<-c("SLA","SLA", "LDMC","LDMC", "Lth","Lth", "CN","CN","Height","Height")
+
+Intra_inter<-c("Species", "Within", "Species", "Within", "Species", "Within", "Species", "Within", "Species", "Within")
+
+Col_vec<-(c("Traits", "Variance", "Intra_inter"))
+
+
+df_precip<- data.frame(matrix(vector(), 10, 3,
+                            dimnames=list(c(), Col_vec)),stringsAsFactors=F)
+
+
+df_precip[,2]<-Variance3
+df_precip[,1]<-Traits3
+df_precip[,3]<-Intra_inter
+
+ggplot(data=df_precip, aes(x=Traits, y=Variance, fill=Intra_inter))+
+  geom_bar(stat="identity")+
+  theme_classic()+
+  scale_fill_brewer(palette = "YlGn")+
+  ggtitle("Inter- and intraspecific variation with Precipitation")
+
+
 
 
 #### Variance analysis from Fran ####
