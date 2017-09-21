@@ -374,6 +374,19 @@ ggplot(MixTrait_est, aes(x=estimate, fill=functionalGroup))+
   geom_histogram()+
   facet_wrap(~collected_traits, scales="free")
 
+traitdata%>%
+  filter(Order=="Poales")%>%
+  ggplot(aes(x=Temp, y=SLA))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=5)
+
+traitdata%>%
+  filter(!Order=="Poales")%>%
+  ggplot(aes(x=Temp, y=SLA))+
+  geom_jitter(height=0)+
+  facet_wrap( ~ Species, ncol=10)
+
+
 
 #### Testing different species ####
 
