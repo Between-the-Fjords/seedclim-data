@@ -131,11 +131,21 @@ traitdata <- traitdata %>%
 #### Add info about species ####
 
 
-species_info<- read.csv2("Traits/data/systematics_species.csv", sep=";", stringsAsFactors = FALSE)
+systematics_species<- read.csv2("Traits/data/systematics_species.csv", sep=";", stringsAsFactors = FALSE)
+
+species_info<- read.csv2("Traits/data/species_info.csv", sep=";", stringsAsFactors = FALSE)
+
+species_info <- species_info%>%
+  select(species, functionalGroup, lifeSpan, occurrence.2)%>%
+  mutate(species=gsub("\\.", "_", species))
+  
 
 
 traitdata <- traitdata %>%
-  left_join(species_info, by = c("Species"="Species"))
+  left_join(systematics_species, by = c("Species"="Species"))
+
+traitdata <- traitdata %>%
+  left_join(species_info, by =c("Species" = "species"))
 
 
 #### WEIGHTED MEANS ####
@@ -215,7 +225,24 @@ wcommunity_df <- wcommunity %>%
          Wmean_global_Height= weighted.mean(Height_mean_global, cover, na.rm=TRUE),
          Wmean_global_CN = weighted.mean(CN_ratio_mean_global, cover, na.rm=TRUE))%>%
   ungroup()%>%
-  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC)
+  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence.2, functionalGroup)
+
+
+#Used to make the dataset to feed into the CSR excel sheet
+
+#CSR_df<-traitdata%>%
+#  filter(!LDMC>1)%>%
+#  select(Species, Family, Leaf_area, Wet_mass, Dry_mass)%>%
+#  mutate(Leaf_area=Leaf_area*100)%>%
+#  mutate(Wet_mass=Wet_mass*1000)%>%
+#  mutate(Dry_mass=Dry_mass*1000)%>%
+#  group_by(Species)%>%
+#  summarise(Leaf_area = mean(Leaf_area, na.rm = TRUE),
+#            Wet_mass = mean(Wet_mass, na.rm = TRUE),
+#            Dry_mass = mean(Dry_mass, na.rm = TRUE))
+  
+
+
 
 
 
@@ -267,7 +294,7 @@ NA_community <- wcommunity_df %>%
 #### LDMCS mistakes ####
 
 LDMC_mistakes<- traitdata%>%
-  group_by(Individual.x)%>%
+  group_by(Individual)%>%
   filter(Dry_mass>Wet_mass)
 
 ggplot(traitdata, aes(x = log(Wet_mass), y = log(Dry_mass))) +
@@ -281,7 +308,7 @@ Succulents<-traitdata%>%
 
 bla<-traitdata%>%
   filter(SLA>500)%>%
-  select(Site, Species, Individual.x, Wet_mass, Dry_mass, Leaf_area, SLA)
+  select(Site, Species, Individual, Wet_mass, Dry_mass, Leaf_area, SLA)
 
 #There are som mistakes in here... Arh_Ant_odo_5 probably does not have a so big leaf area.. Ram_Hie_pil_1 burde kanskje fjernes da den er helt ødelagt..
 
