@@ -18,8 +18,7 @@ library("nlme")
 varSLA <- lme(SLA~1, random= ~1|Order/Family/Genus/Species, data=wcommunity_df, na.action = na.omit)
 
 SLA_sys<-varcomp(varSLA, scale=TRUE)
-plot(SLA_sys)
-
+#plot(SLA_sys)
 
 #Order: 0.0%
 #Family: 13.5%
@@ -33,7 +32,7 @@ LDMC_df<-wcommunity_df%>%
 varLDMC <- lme(LDMC~1, random= ~1|Order/Family/Genus/Species, data=LDMC_df, na.action = na.omit)
 
 LDMC_sys<-varcomp(varLDMC, scale=TRUE)
-plot(LDMC_sys)
+#plot(LDMC_sys)
 
 #Order: 20.0
 #Family: 15.5
@@ -45,7 +44,7 @@ plot(LDMC_sys)
 varLth <- lme(Lth_ave~1, random= ~1|Order/Family/Genus/Species, data=wcommunity_df, na.action = na.omit)
 
 Lth_sys <- varcomp(varLth, scale=TRUE)
-plot(Lth_sys)
+#plot(Lth_sys)
 
 
 # 8.7% på Order level
@@ -58,7 +57,7 @@ plot(Lth_sys)
 varCN <- lme(CN.ratio~1, random= ~1|Order/Family/Genus/Species, data=wcommunity_df, na.action = na.omit)
 
 CN_sys <- varcomp(varCN, scale=TRUE)
-plot(CN_sys)
+#plot(CN_sys)
 
 
 # 19.9 % Order level
@@ -80,8 +79,8 @@ varHeight_forb <- lme(Height~1, random= ~1|Order/Family/Genus/Species, data=Heig
 Height_gra_sys <- varcomp(varHeight_gra, scale=TRUE)
 Height_forb_sys <- varcomp(varHeight_forb, scale=TRUE)
 
-plot(Height_gra_sys)
-plot(Height_forb_sys)
+#plot(Height_gra_sys)
+#plot(Height_forb_sys)
 
 
 # 2.2 % på Order
@@ -117,75 +116,92 @@ df[,3]<-Systematics
 
 ggplot(data=df, aes(x=Traits, y=Variance, fill=Systematics))+
   geom_bar(stat="identity")+
-  theme_classic()+
-  scale_fill_brewer(palette = "YlGn")
-
+  theme_minimal()+
+  scale_fill_manual(labels= c("Order", "Family", "Genus", "Species", "Within" ), values=rev(c("#FF6666","#FFCC33", "#FFFF99", "#99FF99","#99CCFF")))+
+  scale_x_discrete(labels=c("C/N ratio", "Height forbs", "Height graminoids", "LDMC", "Leaf thickness", "SLA"))+
+  theme(axis.text.x= element_text(angle=90))+
+  labs(x="", y="Proportion of variance", fill="")
 
 
 #### Variance partitioning on spacial level ####
 
-varSLA_spa <- lme(SLA~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+varSLA_spa <- lme(SLA~1, random= ~1|T_level/Site, data=wcommunity_df, na.action = na.omit)
 
 SLA_spa <- varcomp(varSLA_spa, scale= TRUE)
-plot(SLA_spa)
+
 
 
 LDMC_df<-wcommunity_df%>%
   filter(!LDMC>1)
 
-varLDMC_spa <- lme(LDMC~1, random= ~1|T_level/Site/Species, data=LDMC_df, na.action = na.omit)
+varLDMC_spa <- lme(LDMC~1, random= ~1|T_level/Site, data=LDMC_df, na.action = na.omit)
 
 LDMC_spa <- varcomp(varLDMC_spa, scale = TRUE)
-plot(LDMC_spa)
 
 
-varLth_spa <- lme(Lth_ave~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+
+varLth_spa <- lme(Lth_ave~1, random= ~1|T_level/Site, data=wcommunity_df, na.action = na.omit)
 
 Lth_spa <- varcomp(varLth_spa, scale = TRUE)
-plot(Lth_spa)
 
 
 
-varCN_spa <- lme(CN.ratio~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
+
+varCN_spa <- lme(CN.ratio~1, random= ~1|T_level/Site, data=wcommunity_df, na.action = na.omit)
 
 CN_spa <- varcomp(varCN_spa, scale = TRUE)
-plot(CN_spa)
 
 
 
-varHeight_spa <- lme(Height~1, random= ~1|T_level/Site/Species, data=wcommunity_df, na.action = na.omit)
 
-Height_spa <- varcomp(varHeight_spa, scale=TRUE)
-plot(Height_spa)
+Height_graminoid<-wcommunity_df%>%
+  filter(Order=="Poales")
+
+Height_forbs<-wcommunity_df%>%
+  filter(!Order=="Poales")
+
+varHeight_gra_spa <- lme(Height~1, random= ~1|T_level/Site, data=Height_graminoid, na.action = na.omit)
+
+varHeight_forb_spa <- lme(Height~1, random= ~1|T_level/Site, data=Height_forbs, na.action = na.omit)
+
+Height_gra_spa <- varcomp(varHeight_gra_spa, scale=TRUE)
+Height_forb_spa <- varcomp(varHeight_forb_spa, scale=TRUE)
+
 
 
 SLA_vec2 <- as.vector(SLA_spa)
 LDMC_vec2 <- as.vector(LDMC_spa)
 Lth_vec2 <- as.vector(Lth_spa)
 CN_vec2 <- as.vector(CN_spa)
-Height_vec2 <- as.vector(Height_spa)
+Height_vec_gra <- as.vector(Height_gra_spa)
+Height_vec_forb <- as.vector(Height_forb_spa)
 
-Variance2<-c(SLA_vec2, LDMC_vec2, Lth_vec2, CN_vec2, Height_vec2)
+Variance2<-c(SLA_vec2, LDMC_vec2, Lth_vec2, CN_vec2, Height_vec_gra, Height_vec_forb)
 
-Traits2<-c("SLA","SLA","SLA","SLA", "LDMC","LDMC","LDMC","LDMC", "Lth","Lth","Lth","Lth", "CN","CN","CN","CN", "Height","Height","Height","Height")
+Traits2<-c("SLA","SLA","SLA", "LDMC","LDMC","LDMC", "Lth","Lth","Lth", "CN","CN","CN", "Height gra","Height gra","Height gra", "Height forb", "Height forb", "Height forb")
 
-Spacial<-c("aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin", "aTemp_level", "bSite", "cSpecies", "dWithin")
+Spacial<-c("aTemp_level", "bSite", "cWithin", "aTemp_level", "bSite", "cWithin", "aTemp_level", "bSite", "cWithin", "aTemp_level", "bSite", "cWithin","aTemp_level", "bSite", "cWithin", "aTemp_level", "bSite", "cWithin")
 
 Col_vec<-(c("Traits", "Variance", "Spacial scale"))
 
 
-df<- data.frame(matrix(vector(), 20, 3,
+spatial<- data.frame(matrix(vector(), 18, 3,
                        dimnames=list(c(), Col_vec)),stringsAsFactors=F)
 
 
-df[,2]<-Variance2
-df[,1]<-Traits2
-df[,3]<-Spacial
+spatial[,2]<-Variance2
+spatial[,1]<-Traits2
+spatial[,3]<-Spacial
 
-ggplot(data=df, aes(x=Traits, y=Variance, fill=Spacial))+
+ggplot(data=spatial, aes(x=Traits, y=Variance, fill=Spacial))+
   geom_bar(stat="identity")+
-  theme_classic()+
-  scale_fill_brewer(palette = "YlGn")
+  theme_minimal()+
+  scale_fill_manual(labels = c("Temperature level", "Site", "Within"), values=rev(c("#FF6666","#FFCC33","#99CCFF")))+
+  scale_x_discrete(labels=c("C/N ratio", "Height forbs", "Height graminoids", "LDMC", "Leaf thickness", "SLA"))+
+  theme(axis.text.x= element_text(angle=90))+
+  labs(x="", y="Proportion of variance", fill="")
+
+
 
 #### Variance partitioning species/within species with temp and precip ####
 
@@ -312,15 +328,14 @@ wcommunity_df %>%
   #gather(key=Leaf_thickness, value=measurement, Lth_ave, Lth_mean, Wmean_Lth, Lth_mean_global, Wmean_global_Lth)%>%
   #gather(key=Leaf_area, value=measurement, Leaf_area, LA_mean, Wmean_LA, LA_mean_global, Wmean_global_LA)%>%
   #gather(key=CN_ratio, value=measurement, CN.ratio, CN_ratio_mean, Wmean_CN, CN_ratio_mean_global, Wmean_global_CN)%>%
-  filter(Order=="Poales")%>%
   ggplot(aes(measurement, fill = SLA)) +
   geom_density(alpha = 0.5) +
   theme_classic() +
   scale_fill_manual(values=c("#FF0033","#FFCC33", "#FFFFCC"))+
   facet_wrap(~ T_level, scales = "free") +
-  labs(x = "SLA", fill = "SLA measurements")+
-  scale_x_continuous(limits=c(0,700))+
-  scale_y_continuous(limits=c(0.0000, 0.04))
+  labs(x = "SLA", fill = "SLA measurements")
+  #scale_x_continuous(limits=c(0,700))+
+  #scale_y_continuous(limits=c(0.0000, 0.04))
 
 wcommunity_df %>% 
   gather(key=SLA_com, value=measurement, Wmean_global_SLA, Wmean_SLA)%>% 
@@ -338,3 +353,20 @@ wcommunity_df %>%
   scale_x_continuous(limits=c(0,700))+
   scale_y_continuous(limits=c(0.0000, 0.035))
 
+blabla<-wcommunity_df %>%
+  rename(Wmean_SLA2_global=Wmean_global_SLA, Wmean_SLA1=Wmean_SLA)%>%
+  gather(key=SLA, value=measurement, SLA, SLA_mean, SLA_mean_global, Wmean_SLA1, Wmean_SLA2_global)
+
+
+ggplot(data=blabla, aes(SLA, measurement)) +
+  geom_violin(aes(fill=as.factor(SLA)))+
+  geom_boxplot(width=0.1)+
+  coord_flip()+
+  guides(fill=FALSE)+
+  theme_bw(base_size = 13) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_fill_manual(values=c("#FF6666","#FFCC33", "#FFFF99", "#99FF99","#99CCFF"))+
+  stat_summary(fun.y=mean, colour="black", geom="point", 
+               shape=42, size=7,show_guide = FALSE)+
+  labs(title = "Variation in SLA means", y = "Specific leaf area", x = "")+
+  scale_x_discrete(labels=c("Wmean_SLA2_global" = "Global CWM", "Wmean_SLA1" = "Local CWM", "SLA_mean_global" = "Global mean", "SLA_mean" = "Local mean", "SLA" = "Raw data"))
