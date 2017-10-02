@@ -136,7 +136,7 @@ systematics_species<- read.csv2("Traits/data/systematics_species.csv", sep=";", 
 species_info<- read.csv2("Traits/data/species_info.csv", sep=";", stringsAsFactors = FALSE)
 
 species_info <- species_info%>%
-  select(species, functionalGroup, lifeSpan, occurrence.2)%>%
+  select(species, functionalGroup, lifeSpan, occurrence)%>%
   mutate(species=gsub("\\.", "_", species))
   
 
@@ -225,7 +225,7 @@ wcommunity_df <- wcommunity %>%
          Wmean_global_Height= weighted.mean(Height_mean_global, cover, na.rm=TRUE),
          Wmean_global_CN = weighted.mean(CN_ratio_mean_global, cover, na.rm=TRUE))%>%
   ungroup()%>%
-  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence.2, functionalGroup)
+  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence, functionalGroup)
 
 
 #Used to make the dataset to feed into the CSR excel sheet
