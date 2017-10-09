@@ -23,7 +23,8 @@ traits <- traits %>%
   mutate(siteID = factor(siteID, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
   mutate(LDMC = Dry_mass/Wet_mass) %>%
   mutate(Lth_ave = rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
-  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA)) # this is the equivalent of the error/uncertainty in the balance.
+  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA)) %>% # this is the equivalent of the error/uncertainty in the balance.
+  filter(LDMC<1)
 
 #############################
 ###### LEAF AREA START ######
