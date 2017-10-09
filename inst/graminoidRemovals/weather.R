@@ -45,21 +45,3 @@ precipitation
 
 
 weather <- full_join(precipitation, temperature, by = "siteID")
-
-# mean alpine, intermediate and lowland temperatures:
-
-sitesDF <- as.data.frame(cbind(rep(c("driest", "dry", "wet", "wettest"), 3), 
-                               rep(c("alpine", "intermediate", "lowland"), each = 4),
-                               c("Ulvhaugen", "Lavisdalen" , "Gudmedalen", "Skjellingahaugen", "Alrust", "Hogsete", "Rambera", "Veskre", "Fauske", "Vikesland", "Arhelleren", "Ovstedal"))) %>%
-  select(prec = 1, temp = 2, siteID = 3) %>%
-  mutate(siteID = as.character(siteID))
-
-te <- sitesDF %>%
-  left_join(weather, by = "siteID") %>%
-  group_by(temp) %>%
-  mutate(avg.temp = mean(summer_temp)) %>%
-  ungroup() %>%
-  group_by(prec) %>%
-  mutate(avg.prec = mean(annPrecip))
-  
-te
