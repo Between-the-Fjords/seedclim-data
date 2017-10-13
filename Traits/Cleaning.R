@@ -22,18 +22,6 @@ traits <- traits %>%
   mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
   mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
   mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))%>%
-  filter(!(Species=="Hyp_mac" & Site=="Alr"))%>%
-  filter(!(Species=="Agr_cap" & Site =="Alr" & Individual=="9"))%>%
-  filter(!(Species=="Car_vag" & Site == "Ves"))%>%
-  filter(!(Species=="Fes_rub" & Site == "Ulv"))%>%
-  filter(!(Species=="Fes_rub" & Site == "Gud"))%>%
-  filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
-  filter(!(Species=="Pot_cra" & Site == "Gud"))%>%
-  filter(!(Species=="Ran_acr" & Site == "Skj"))%>%
-  filter(!(Species=="Sax_aiz"))%>%
-  filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
-  filter(!(Species=="Vac_myr" & Site == "Ves"))%>%
-  filter(!(Species=="Ver_alp" & Site == "Ves"))%>%
   filter(!LDMC>1)
 
 #### Load leaf area data ####
@@ -126,7 +114,19 @@ traitdata <- traitdata %>%
   ungroup()%>%
   group_by(Site, Species)%>%
   mutate(CN_ratio_mean = mean(CN.ratio, na.rm= TRUE))%>%
-  ungroup
+  ungroup%>%
+  filter(!(Species=="Hyp_mac" & Site=="Alr"))%>%
+  filter(!(Species=="Agr_cap" & Site =="Alr" & Individual=="9"))%>%
+  filter(!(Species=="Car_vag" & Site == "Ves"))%>%
+  filter(!(Species=="Fes_rub" & Site == "Ulv"))%>%
+  filter(!(Species=="Fes_rub" & Site == "Gud"))%>%
+  filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
+  filter(!(Species=="Pot_cra" & Site == "Gud"))%>%
+  filter(!(Species=="Ran_acr" & Site == "Skj"))%>%
+  filter(!(Species=="Sax_aiz"))%>%
+  filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
+  filter(!(Species=="Vac_myr" & Site == "Ves"))%>%
+  filter(!(Species=="Ver_alp" & Site == "Ves"))
 
 
 #### Add info about species ####
