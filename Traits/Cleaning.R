@@ -33,7 +33,8 @@ traits <- traits %>%
   filter(!(Species=="Sax_aiz"))%>%
   filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
   filter(!(Species=="Vac_myr" & Site == "Ves"))%>%
-  filter(!(Species=="Ver_alp" & Site == "Ves"))
+  filter(!(Species=="Ver_alp" & Site == "Ves"))%>%
+  filter(!LDMC>1)
 
 #### Load leaf area data ####
 
