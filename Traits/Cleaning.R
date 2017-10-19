@@ -198,21 +198,42 @@ community_cover<-community_cover%>%
   mutate(mean_cover=mean(cover, na.rm=TRUE))%>% #If you want the turf data use mutate, if you want the site data use summarise
   ungroup()%>%
   mutate(species = plyr::mapvalues(species, from = dict_com$old, to = dict_com$new))%>%
-  mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))
+  mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs")))%>%
+  group_by(turfID)%>%
+  mutate(sum_cover= sum(cover))%>%
+  mutate(cover_species=cover/sum_cover*100)
 
         
 #### Joining the datasets and making that ready for analysis ####
 
 wcommunity <- left_join(traitdata, community_cover, by=c( "Site"="Site", "Species"="species"))
 
+#### Filtering out turfs with less than 70% of the community present ###
+
+check_community_df <- wcommunity %>%
+  group_by(Site, Species, turfID)%>%
+  select(Site, turfID, Species, cover, SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN_ratio_mean, sum_cover)%>%
+  unique()%>%
+  ungroup()%>%
+  group_by(turfID)%>%
+  mutate(cover_traits = (sum(cover)))%>%
+  filter(!is.na(SLA_mean))%>%
+  mutate(community_covered_trait=cover_traits/sum_cover*100)
+
+complete_turf <- check_community_df%>%
+  filter(community_covered_trait>70)%>%
+  distinct(turfID, .keep_all=TRUE)
+
+Complete_turfs<-as.vector(complete_turf$turfID)
+  
+wcommunity_df <- filter(wcommunity, turfID %in% Complete_turfs)
+
 #### Weighting the traits data by the community ####
 
 # If I just want the averages I must use summerise and not mutate
 
-
-wcommunity_df <- wcommunity %>%
+wcommunity_df <- wcommunity_df%>%
   group_by(turfID, Site)%>%
-  filter(!is.na(mean_cover)) %>%
   mutate(Wmean_LDMC= weighted.mean(LDMC_mean, cover, na.rm=TRUE),
             Wmean_Lth= weighted.mean(Lth_mean, cover, na.rm=TRUE),
             Wmean_LA= weighted.mean(LA_mean, cover, na.rm=TRUE),
@@ -226,7 +247,8 @@ wcommunity_df <- wcommunity %>%
          Wmean_global_Height= weighted.mean(Height_mean_global, cover, na.rm=TRUE),
          Wmean_global_CN = weighted.mean(CN_ratio_mean_global, cover, na.rm=TRUE))%>%
   ungroup()%>%
-  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence, functionalGroup)
+  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence, functionalGroup, turfID, cover, sum_cover, cover_species)
+
 
 
 #Used to make the dataset to feed into the CSR excel sheet
@@ -254,16 +276,26 @@ wcommunity_df <- wcommunity %>%
 
 check_community_df <- wcommunity_df %>%
   group_by(Site, Species, turfID)%>%
-  select(Site, turfID, species, cover, SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN_ratio_mean)%>%
+  select(Site, turfID, Species, cover, SLA_mean, Lth_mean, Height_mean, LDMC_mean, LA_mean, CN_ratio_mean, sum_cover)%>%
   unique()%>%
-  group_by(Site, turfID)%>%
-  mutate(cover_100 = (cover/(sum(cover)))*100)%>%
-  filter(!is.na(SLA_mean))
+  ungroup()%>%
+  group_by(turfID)%>%
+  mutate(cover_traits = (sum(cover)))%>%
+  filter(!is.na(SLA_mean))%>%
+  mutate(community_covered_trait=cover_traits/sum_cover*100)
+
+complete_turf <- check_community_df%>%
+  filter(community_covered_trait>70)%>%
+  distinct(turfID, .keep_all=TRUE)
+
+Complete_turfs<-as.vector(complete_turf$turfID)
 
 uncomplete_turf <- check_community_df%>%
-  #group_by(Site, turfID)%>%
-  mutate(sumcover= sum(cover_100))%>%
-  filter(sumcover<80) %>% distinct(turfID)
+  filter(community_covered_trait<80)%>%
+  distinct(turfID, .keep_all=TRUE)
+
+Uncomplete_turfs<-as.vector(uncomplete_turf$turfID)
+
 
 #### Checking which species I need to do ####
 
