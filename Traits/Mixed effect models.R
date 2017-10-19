@@ -35,7 +35,7 @@ devtools::source_gist("https://gist.github.com/phipsgabler/91a81883a82a54bb6a92"
 TheLucky15<-traitdata %>%
   filter(Species %in% c("Agr_cap", "Ant_odo", "Cam_rot", "Des_ces", "Ver_off", "Ave_fle", "Luz_mul", "Bis_viv", "Pot_ere", "Alc_alp", "Tri_rep", "Tha_alp", "Ach_mil", "Nar_str", "Rum_ace"))
 
-scalevalues<- scale(TheLucky15$Temp) #Finding the values to scale the temperature back with
+#scalevalues<- scale(TheLucky15$Temp) #Finding the values to scale the temperature back with
 #attributes(scalevalues)
 
 
@@ -58,6 +58,7 @@ SLA_temp_95 <- SLA_temp_95%>%
 SLA_temp_95 %>%
   group_by(term) %>%
   mutate(Average = mean(estimate)) %>%
+  arrange(Species)%>%
   ggplot(aes(
     x = Species,
     y = estimate,
@@ -75,10 +76,157 @@ SLA_temp_95 %>%
     yintercept = 0,
     color = "darkgrey")
 
-#ggsave("Model_output.jpg")
+
+#### LDMC ####
+
+LDMC_temp_95 <- TheLucky15 %>%
+  mutate(scale_Precip = scale(Precip),
+         scale_Temp = scale(Temp)) %>%
+  group_by(Species) %>%
+  do({
+    model <- lmer(LDMC ~ scale_Temp*scale_Precip + (1 | Site), data = .)
+    tidy(model)
+  }) %>%
+  filter(term == "scale_Temp"| term =="scale_Precip" | term == "scale_Temp:scale_Precip")
+
+LDMC_temp_95 <- LDMC_temp_95%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+LDMC_temp_95 %>%
+  group_by(term) %>%
+  mutate(Average = mean(estimate)) %>%
+  arrange(Species)%>%
+  ggplot(aes(
+    x = Species,
+    y = estimate,
+    ymin = lower,
+    ymax = upper,
+    color = term
+  )) +
+  geom_errorbar(width = 0.5, position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  coord_flip()+
+  scale_color_manual(labels = c("Precipitation", "Temperature", "Interaction"), values=rev(c("#FF6666","#FFCC33","#99CCFF")))+
+  labs(y="Change in LDMC per unit precipitation and/or temperature", x = "", color="")+
+  theme_minimal()+
+  geom_hline(
+    yintercept = 0,
+    color = "darkgrey")
+
+#### Leaf thickness ####
+
+Lth_temp_95 <- TheLucky15 %>%
+  mutate(scale_Precip = scale(Precip),
+         scale_Temp = scale(Temp)) %>%
+  group_by(Species) %>%
+  do({
+    model <- lmer(Lth_ave ~ scale_Temp*scale_Precip + (1 | Site), data = .)
+    tidy(model)
+  }) %>%
+  filter(term == "scale_Temp"| term =="scale_Precip" | term == "scale_Temp:scale_Precip")
+
+Lth_temp_95 <- Lth_temp_95%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+Lth_temp_95 %>%
+  group_by(term) %>%
+  mutate(Average = mean(estimate)) %>%
+  arrange(Species)%>%
+  ggplot(aes(
+    x = Species,
+    y = estimate,
+    ymin = lower,
+    ymax = upper,
+    color = term
+  )) +
+  geom_errorbar(width = 0.5, position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  coord_flip()+
+  scale_color_manual(labels = c("Precipitation", "Temperature", "Interaction"), values=rev(c("#FF6666","#FFCC33","#99CCFF")))+
+  labs(y="Change in leaf thickness per unit precipitation and/or temperature", x = "", color="")+
+  theme_minimal()+
+  geom_hline(
+    yintercept = 0,
+    color = "darkgrey")
+
+#### CN ratio ###
+
+CN_temp_95 <- TheLucky15 %>%
+  filter(!Species=="Cam_rot")%>%
+  mutate(scale_Precip = scale(Precip),
+         scale_Temp = scale(Temp)) %>%
+  group_by(Species) %>%
+  do({
+    model <- lmer(log(CN.ratio) ~ scale_Temp*scale_Precip + (1 | Site), data = .)
+    tidy(model)
+  }) %>%
+  filter(term == "scale_Temp"| term =="scale_Precip" | term == "scale_Temp:scale_Precip")
+
+CN_temp_95 <- CN_temp_95%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+CN_temp_95 %>%
+  group_by(term) %>%
+  mutate(Average = mean(estimate)) %>%
+  arrange(Species)%>%
+  ggplot(aes(
+    x = Species,
+    y = estimate,
+    ymin = lower,
+    ymax = upper,
+    color = term
+  )) +
+  geom_errorbar(width = 0.5, position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  coord_flip()+
+  scale_color_manual(labels = c("Precipitation", "Temperature", "Interaction"), values=rev(c("#FF6666","#FFCC33","#99CCFF")))+
+  labs(y="Change in C/N ratio per unit precipitation and/or temperature", x = "", color="")+
+  theme_minimal()+
+  geom_hline(
+    yintercept = 0,
+    color = "darkgrey")
+
+#### Vegetative height ####
+
+Height_temp_95 <- TheLucky15 %>%
+  mutate(scale_Precip = scale(Precip),
+         scale_Temp = scale(Temp)) %>%
+  group_by(Species) %>%
+  do({
+    model <- lmer(log(Height) ~ scale_Temp*scale_Precip + (1 | Site), data = .)
+    tidy(model)
+  }) %>%
+  filter(term == "scale_Temp"| term =="scale_Precip" | term == "scale_Temp:scale_Precip")
+
+Height_temp_95 <- Height_temp_95%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+Height_temp_95 %>%
+  group_by(term) %>%
+  mutate(Average = mean(estimate)) %>%
+  arrange(Species)%>%
+  ggplot(aes(
+    x = Species,
+    y = estimate,
+    ymin = lower,
+    ymax = upper,
+    color = term
+  )) +
+  geom_errorbar(width = 0.5, position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  coord_flip()+
+  scale_color_manual(labels = c("Precipitation", "Temperature", "Interaction"), values=rev(c("#FF6666","#FFCC33","#99CCFF")))+
+  labs(y="Change in height per unit precipitation and/or temperature", x = "", color="")+
+  theme_minimal()+
+  geom_hline(
+    yintercept = 0,
+    color = "darkgrey")
 
 
-scale_values<- scale(TheLucky15$Precip)
 
 
 ##### One model of each #####
@@ -147,6 +295,9 @@ Agr_cap<-TheLucky15%>%
   filter(Species=="Agr_cap")%>%
   filter(!is.na(SLA))
 
+mean(Agr_cap$SLA, na.rm=TRUE)
+var(Agr_cap$SLA, na.rm=TRUE)
+
 model_Agr <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Agr_cap)
 
 newdata_Agr<-expand.grid(Precip=seq(500,3200, length=500), Temp=c(6.5, 8.5, 10.5), Site=NA)
@@ -178,6 +329,9 @@ Agr_cap_plot <- ggplot(Agr_cap, aes(Precip, SLA,lty = as.factor(T_level),colour 
 Ant_odo <- TheLucky15 %>%
   filter(Species == "Ant_odo") %>%
   filter(!is.na(SLA))
+
+mean(Ant_odo$SLA, na.rm=TRUE)
+var(Ant_odo$SLA, na.rm=TRUE)
 
 
 model_Ant_odo <- lmer(SLA ~ scale(Temp) * scale(Precip) + (1 | Site), data = Ant_odo)
@@ -211,6 +365,9 @@ Cam_rot<-TheLucky15%>%
   filter(Species=="Cam_rot")%>%
   filter(!is.na(SLA))
 
+mean(Cam_rot$SLA, na.rm=TRUE)
+var(Cam_rot$SLA, na.rm=TRUE)
+
 model_Cam_rot <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Cam_rot)
 
 newdata_Cam<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
@@ -239,6 +396,9 @@ Cam_rot_plot <- ggplot(Cam_rot, aes(Precip, SLA,lty = as.factor(T_level), color 
 Des_ces<-TheLucky15%>%
   filter(Species=="Des_ces")%>%
   filter(!is.na(SLA))
+
+mean(Des_ces$SLA, na.rm=TRUE)
+var(Des_ces$SLA, na.rm=TRUE)
 
 model_Des_ces <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Des_ces)
 
