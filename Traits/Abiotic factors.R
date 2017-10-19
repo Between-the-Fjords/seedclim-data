@@ -1,5 +1,8 @@
 ##### Traits with abiotic factors #####
-
+library("lme4")
+library("broom")
+library("lmerTest")
+library("gridExtra")
 ### SLA ###
 
 mean(wcommunity_df$SLA, na.rm=TRUE)
@@ -9,8 +12,14 @@ mean(wcommunity_df$Wmean_SLA, na.rm=TRUE)
 mean(wcommunity_df$Wmean_global_SLA, na.rm=TRUE)
 
 
-SLA_raw_Temp <- lm(SLA ~Temp, data= wcommunity_df)
+SLA_raw_Temp <- lmer(SLA ~ Temp + (1|Site), data= wcommunity_df)
 summary(SLA_raw_Temp)
+
+SLA_raw_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Temp<-expand.grid( Temp=seq(5.5, 11, length=1000))
 
@@ -23,12 +32,18 @@ pLot1<-wcommunity_df%>%
   ggplot(aes(x=Temp, y=SLA))+
   geom_jitter(width=0.1)+
   geom_line(aes( x = Temp, y = fit), data=newdata_Temp, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666")+
-  labs( y="SLA (cm^2/g", x="")+
+  labs( y="SLA (cm2/g)", x="")+
   theme_minimal()
 
 
-SLA_raw_precip <- lm(SLA ~Precip, data= wcommunity_df)
+SLA_raw_precip <- lmer(SLA ~Precip + (1|Site), data= wcommunity_df)
 summary(SLA_raw_precip)
+
+SLA_raw_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Precip<-expand.grid(Precip=seq(500, 3100, length=1000))
 
@@ -39,14 +54,21 @@ pLot2<-wcommunity_df%>%
   unique()%>%
   ggplot(aes(x=Precip, y=SLA))+
   geom_jitter(width=30)+
-  geom_line(aes( x = Precip, y = fit), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF")+
+  geom_line(aes( x = Precip, y = fit), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype=2)+
   labs(x="", y="")+
   theme_minimal()
 
 ### LDMC ###
 
-LDMC_raw_Temp <- lm(LDMC ~Temp, data= wcommunity_df)
+LDMC_raw_Temp <- lmer(LDMC ~Temp + (1|Site), data= wcommunity_df)
 summary(LDMC_raw_Temp)
+
+LDMC_raw_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
 
 newdata_Temp$fit_LDMC <- predict(LDMC_raw_Temp, re.form=NA, newdata=newdata_Temp)
 
@@ -60,8 +82,14 @@ pLot3<-wcommunity_df%>%
   labs(y="LDMC", x="")+
   theme_minimal()
 
-LDMC_raw_precip <- lm(LDMC ~Precip, data= wcommunity_df)
+LDMC_raw_precip <- lmer(LDMC ~Precip + (1|Site), data= wcommunity_df)
 summary(LDMC_raw_precip)
+
+LDMC_raw_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Precip$fit_LDMC <- predict(LDMC_raw_precip, re.form=NA, newdata=newdata_Precip)
 
@@ -77,8 +105,14 @@ pLot4<-wcommunity_df%>%
 
 #### Leaf thickness ####
 
-Lth_raw_Temp <- lm(Lth_ave ~Temp, data= wcommunity_df)
+Lth_raw_Temp <- lmer(Lth_ave ~Temp + (1|Site), data= wcommunity_df)
 summary(Lth_raw_Temp)
+
+Lth_raw_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Temp$fit_Lth <- predict(Lth_raw_Temp, re.form=NA, newdata=newdata_Temp)
 
@@ -87,52 +121,72 @@ pLot5<-wcommunity_df%>%
   unique()%>%
   ggplot(aes(x=Temp, y=Lth_ave))+
   geom_jitter(width=0.1)+
-  geom_line(aes( x = Temp, y = fit_Lth), data=newdata_Temp, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 1)+
+  geom_line(aes( x = Temp, y = fit_Lth), data=newdata_Temp, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 2)+
   labs(y="Leaf thickness (mm)", x="")+
   theme_minimal()
 
 
-Lth_raw_precip <- lm(Lth_ave ~Precip, data= wcommunity_df)
+Lth_raw_precip <- lmer(Lth_ave ~Precip + (1|Site), data= wcommunity_df)
 summary(Lth_raw_precip)
 
-newdata_Precip$fit_Lth <- predict(LDMC_raw_precip, re.form=NA, newdata=newdata_Precip)
+Lth_raw_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip$fit_Lth <- predict(Lth_raw_precip, re.form=NA, newdata=newdata_Precip)
 
 pLot6<-wcommunity_df%>%
   select(Site, Species, Precip, Lth_ave)%>%
   unique()%>%
   ggplot(aes(x=Precip, y=Lth_ave))+
   geom_jitter(width=30)+
-  geom_line(aes( x = Precip, y = fit_Lth), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 1)+
+  geom_line(aes( x = Precip, y = fit_Lth), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
   labs(x="", y="")+
   theme_minimal()
 
 #### CN ratio ####
 
-CN_raw_Temp <- lm(CN.ratio ~Temp, data= wcommunity_df)
+CN_raw_Temp <- lmer(log(CN.ratio) ~Temp + (1|Site), data= wcommunity_df)
 summary(CN_raw_Temp)
+plot(CN_raw_Temp)
+
+CN_raw_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Temp$fit_CN <- predict(CN_raw_Temp, re.form=NA, newdata=newdata_Temp)
 
 pLot7<-wcommunity_df%>%
   select(Site, Species, Temp, CN.ratio)%>%
   unique()%>%
-  ggplot(aes(x=Temp, y=CN.ratio))+
+  ggplot(aes(x=Temp, y=log(CN.ratio)))+
   geom_jitter(width=0.1)+
-  geom_line(aes( x = Temp, y = fit_CN), data=newdata_Temp, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 1)+
+  geom_line(aes( x = Temp, y = fit_CN), data=newdata_Temp, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 2)+
   labs(y="C/N ratio", x="")+
   theme_minimal()
 
-CN_raw_precip <- lm(CN.ratio ~Precip, data= wcommunity_df)
+CN_raw_precip <- lmer(log(CN.ratio) ~Precip + (1|Site), data= wcommunity_df)
 summary(CN_raw_precip)
+plot(CN_raw_precip)
+
+CN_raw_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Precip$fit_CN <- predict(CN_raw_precip, re.form=NA, newdata=newdata_Precip)
 
 pLot8<-wcommunity_df%>%
   select(Site, Species, Precip, CN.ratio)%>%
   unique()%>%
-  ggplot(aes(x=Precip, y=CN.ratio))+
+  ggplot(aes(x=Precip, y=log(CN.ratio)))+
   geom_jitter(width=30)+
-  geom_line(aes( x = Precip, y = fit_CN), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 1)+
+  geom_line(aes( x = Precip, y = fit_CN), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
   labs(x="", y="")+
   theme_minimal()
 
@@ -141,8 +195,15 @@ pLot8<-wcommunity_df%>%
 Forbs<-wcommunity_df%>%
   filter(functionalGroup=="forb")
 
-H_Forb_raw_Temp <- lm(log(Height) ~Temp, data= Forbs)
+H_Forb_raw_Temp <- lmer(log(Height) ~Temp + (1|Site), data= Forbs)
 summary(H_Forb_raw_Temp)
+
+H_Forb_raw_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
 
 newdata_Temp$fit_H_Forb <- predict(H_Forb_raw_Temp, re.form=NA, newdata=newdata_Temp)
 
@@ -156,8 +217,14 @@ pLot9<-wcommunity_df%>%
   labs(y="Height (f) (log)", x="")+
   theme_minimal()
 
-H_Forb_raw_Precip <- lm(log(Height) ~Precip, data= Forbs)
+H_Forb_raw_Precip <- lmer(log(Height) ~Precip + (1|Site), data= Forbs)
 summary(H_Forb_raw_Precip)
+
+H_Forb_raw_Precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Precip$fit_H_Forb <- predict(H_Forb_raw_Precip, re.form=NA, newdata=newdata_Precip)
 
@@ -167,15 +234,21 @@ pLot10<-wcommunity_df%>%
   unique()%>%
   ggplot(aes(x=Precip, y=log(Height)))+
   geom_jitter(width=30)+
-  geom_line(aes( x = Precip, y = fit_H_Forb), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 1)+
+  geom_line(aes( x = Precip, y = fit_H_Forb), data=newdata_Precip, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
   labs(x="", y="")+
   theme_minimal()
 
 Graminoids<-wcommunity_df%>%
   filter(functionalGroup=="graminoid")
 
-H_Gram_raw_Temp <- lm(log(Height) ~Temp, data= Graminoids)
+H_Gram_raw_Temp <- lmer(log(Height) ~Temp + (1|Site), data= Graminoids)
 summary(H_Gram_raw_Temp)
+
+H_Gram_raw_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Temp$fit_H_Gram <- predict(H_Gram_raw_Temp, re.form=NA, newdata=newdata_Temp)
 
@@ -189,8 +262,14 @@ pLot11<-wcommunity_df%>%
   labs(x="Temperature (C)", y="Height (g) (log)")+
   theme_minimal()
 
-H_Gram_raw_Precip <- lm(log(Height) ~Precip, data= Graminoids)
+H_Gram_raw_Precip <- lmer(log(Height) ~Precip + (1|Site), data= Graminoids)
 summary(H_Gram_raw_Precip)
+
+H_Gram_raw_Precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
 
 newdata_Precip$fit_H_Gram <- predict(H_Gram_raw_Precip, re.form=NA, newdata=newdata_Precip)
 
@@ -204,7 +283,280 @@ pLot12<-wcommunity_df%>%
   labs(y="", x="Precipitation (mm/year)")+
   theme_minimal()
 
-library(gridExtra)
 
 grid.arrange(pLot1, pLot2, pLot3, pLot4, pLot5, pLot6, pLot7, pLot8, pLot9, pLot10, pLot11, pLot12, ncol=2)
 
+######################################### CWM ########################################
+
+#### SLA ####
+
+SLA_CWM_Temp <- lmer(Wmean_global_SLA ~Temp + (1|Site), data= wcommunity_df)
+summary(SLA_CWM_Temp)
+
+SLA_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Temp_CWM<-expand.grid( Temp=seq(5.5, 11, length=1000))
+
+newdata_Temp_CWM$fit_SLA <- predict(SLA_CWM_Temp, re.form=NA, newdata=newdata_Temp_CWM)
+
+
+CWM_1<-wcommunity_df%>%
+  select(Site, Species, Temp, Wmean_global_SLA)%>%
+  unique()%>%
+  ggplot(aes(x=Temp, y=Wmean_global_SLA))+
+  geom_point()+
+  geom_line(aes( x = Temp, y = fit_SLA), data=newdata_Temp_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666",linetype=1)+
+  labs( y="SLA (cm2/g)", x="")+
+  theme_minimal()
+
+
+SLA_CWM_precip <- lmer(Wmean_global_SLA ~Precip + (1|Site), data= wcommunity_df)
+summary(SLA_CWM_precip)
+
+SLA_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip_CWM<-expand.grid(Precip=seq(500, 3100, length=1000))
+
+newdata_Precip_CWM$fit_SLA <- predict(SLA_CWM_precip, re.form=NA, newdata=newdata_Precip_CWM)
+
+CWM_2<-wcommunity_df%>%
+  select(Site, Species, Precip, Wmean_global_SLA)%>%
+  unique()%>%
+  ggplot(aes(x=Precip, y=Wmean_global_SLA))+
+  geom_point()+
+  geom_line(aes( x = Precip, y = fit_SLA), data=newdata_Precip_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
+  labs(x="", y="")+
+  theme_minimal()
+
+#### LDMC ####
+
+LDMC_CWM_Temp <- lmer(Wmean_global_LDMC ~Temp + (1|Site), data= wcommunity_df)
+summary(LDMC_CWM_Temp)
+
+LDMC_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Temp_CWM$fit_LDMC <- predict(LDMC_CWM_Temp, re.form=NA, newdata=newdata_Temp_CWM)
+
+
+CWM_3<-wcommunity_df%>%
+  select(Site, Species, Temp, Wmean_global_LDMC)%>%
+  unique()%>%
+  ggplot(aes(x=Temp, y=Wmean_global_LDMC))+
+  geom_point()+
+  geom_line(aes( x = Temp, y = fit_LDMC), data=newdata_Temp_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 2)+
+  labs( y="LDMC", x="")+
+  theme_minimal()
+
+
+LDMC_CWM_precip <- lmer(Wmean_global_LDMC ~Precip + (1|Site), data= wcommunity_df)
+summary(LDMC_CWM_precip)
+
+LDMC_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip_CWM$fit_LDMC <- predict(LDMC_CWM_precip, re.form=NA, newdata=newdata_Precip_CWM)
+
+CWM_4<-wcommunity_df%>%
+  select(Site, Species, Precip, Wmean_global_LDMC)%>%
+  unique()%>%
+  ggplot(aes(x=Precip, y=Wmean_global_LDMC))+
+  geom_point()+
+  geom_line(aes( x = Precip, y = fit_LDMC), data=newdata_Precip_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
+  labs(x="", y="")+
+  theme_minimal()
+
+
+#### Leaf thickness
+
+Lth_CWM_Temp <- lmer(Wmean_global_Lth ~Temp + (1|Site), data= wcommunity_df)
+summary(Lth_CWM_Temp)
+
+Lth_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Temp_CWM$fit_Lth <- predict(Lth_CWM_Temp, re.form=NA, newdata=newdata_Temp_CWM)
+
+
+CWM_5<-wcommunity_df%>%
+  select(Site, Species, Temp, Wmean_global_Lth)%>%
+  unique()%>%
+  ggplot(aes(x=Temp, y=Wmean_global_Lth))+
+  geom_point()+
+  geom_line(aes( x = Temp, y = fit_Lth), data=newdata_Temp_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 2)+
+  labs( y="Leaf thickness (mm)", x="")+
+  theme_minimal()
+
+
+Lth_CWM_precip <- lmer(Wmean_global_Lth ~Precip + (1|Site), data= wcommunity_df)
+summary(Lth_CWM_precip)
+
+Lth_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip_CWM$fit_Lth <- predict(Lth_CWM_precip, re.form=NA, newdata=newdata_Precip_CWM)
+
+CWM_6<-wcommunity_df%>%
+  select(Site, Species, Precip, Wmean_global_Lth)%>%
+  unique()%>%
+  ggplot(aes(x=Precip, y=Wmean_global_Lth))+
+  geom_point()+
+  geom_line(aes( x = Precip, y = fit_Lth), data=newdata_Precip_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
+  labs(x="", y="")+
+  theme_minimal()
+
+#### CN ratio ####
+
+CN_CWM_Temp <- lmer(log(Wmean_global_CN) ~Temp + (1|Site), data= wcommunity_df)
+summary(CN_CWM_Temp)
+plot(CN_CWM_Temp)
+
+CN_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+
+newdata_Temp_CWM$fit_CN <- predict(CN_CWM_Temp, re.form=NA, newdata=newdata_Temp_CWM)
+
+
+CWM_7<-wcommunity_df%>%
+  select(Site, Species, Temp, Wmean_global_CN)%>%
+  unique()%>%
+  ggplot(aes(x=Temp, y=log(Wmean_global_CN)))+
+  geom_point()+
+  geom_line(aes( x = Temp, y = fit_CN), data=newdata_Temp_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666", linetype = 2)+
+  labs( y="C/N ratio", x="")+
+  theme_minimal()
+
+
+CN_CWM_precip <- lmer(log(Wmean_global_CN) ~Precip + (1|Site), data= wcommunity_df)
+summary(CN_CWM_precip)
+
+CN_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip_CWM$fit_CN <- predict(CN_CWM_precip, re.form=NA, newdata=newdata_Precip_CWM)
+
+CWM_8<-wcommunity_df%>%
+  select(Site, Species, Precip, Wmean_global_CN)%>%
+  unique()%>%
+  ggplot(aes(x=Precip, y=log(Wmean_global_CN)))+
+  geom_point()+
+  geom_line(aes( x = Precip, y = fit_CN), data=newdata_Precip_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
+  labs(x="", y="")+
+  theme_minimal()
+
+#### Height ####
+
+H_Forb_CWM_Temp <- lmer(log(Wmean_global_Height) ~Temp + (1|Site), data= Forbs)
+summary(H_Forb_CWM_Temp)
+
+H_Forb_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Temp_CWM$fit_H_Forb <- predict(H_Forb_CWM_Temp, re.form=NA, newdata=newdata_Temp_CWM)
+
+
+CWM_9<-Forbs%>%
+  select(Site, Species, Temp, Wmean_global_Height)%>%
+  unique()%>%
+  ggplot(aes(x=Temp, y=log(Wmean_global_Height)))+
+  geom_point()+
+  geom_line(aes( x = Temp, y = fit_H_Forb), data=newdata_Temp_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666")+
+  labs( y="Height f (log)", x="")+
+  theme_minimal()
+
+H_Forb_CWM_precip <- lmer(log(Wmean_global_Height) ~Precip + (1|Site), data= Forbs)
+summary(H_Forb_CWM_precip)
+
+H_Forb_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip_CWM$fit_H_Forb <- predict(H_Forb_CWM_precip, re.form=NA, newdata=newdata_Precip_CWM)
+
+CWM_10<-Forbs%>%
+  select(Site, Species, Precip, Wmean_global_Height)%>%
+  unique()%>%
+  ggplot(aes(x=Precip, y=log(Wmean_global_Height)))+
+  geom_point()+
+  geom_line(aes( x = Precip, y = fit_H_Forb), data=newdata_Precip_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
+  labs(x="", y="")+
+  theme_minimal()
+
+
+H_Gram_CWM_Temp <- lmer(log(Wmean_global_Height) ~Temp + (1|Site), data= Graminoids)
+summary(H_Gram_CWM_Temp)
+
+H_Gram_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+
+newdata_Temp_CWM$fit_H_Gram <- predict(H_Gram_CWM_Temp, re.form=NA, newdata=newdata_Temp_CWM)
+
+
+CWM_11<-Graminoids%>%
+  select(Site, Species, Temp, Wmean_global_Height)%>%
+  unique()%>%
+  ggplot(aes(x=Temp, y=log(Wmean_global_Height)))+
+  geom_point()+
+  geom_line(aes( x = Temp, y = fit_H_Gram), data=newdata_Temp_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666")+
+  labs( y="Height f (log)", x="")+
+  theme_minimal()
+
+
+
+H_Gram_CWM_precip <- lmer(log(Wmean_global_Height) ~Precip + (1|Site), data= Graminoids)
+summary(H_Gram_CWM_precip)
+
+H_Gram_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_Precip_CWM$fit_H_Gram <- predict(H_Gram_CWM_precip, re.form=NA, newdata=newdata_Precip_CWM)
+
+CWM_12<-Graminoids%>%
+  select(Site, Species, Precip, Wmean_global_Height)%>%
+  unique()%>%
+  ggplot(aes(x=Precip, y=log(Wmean_global_Height)))+
+  geom_point()+
+  geom_line(aes( x = Precip, y = fit_H_Gram), data=newdata_Precip_CWM, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#99CCFF", linetype = 2)+
+  labs(x="", y="")+
+  theme_minimal()
+
+grid.arrange(CWM_1, CWM_2, CWM_3, CWM_4, CWM_5, CWM_6, CWM_7, CWM_8, CWM_9, CWM_10, CWM_11, CWM_12, ncol=2)
