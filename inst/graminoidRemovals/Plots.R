@@ -156,6 +156,18 @@ ggplot(div, aes(x = diversity, fill = funYear)) +
   facet_grid(as.formula(. ~ Temperature_level)) 
 
 
+wholecom %>% 
+  select(wmean_CN_local, wmean_CN_global, wmean_SLA_local, wmean_SLA_global, wmean_LDMC_local, wmean_LDMC_local, wmean_seedMass, functionalGroup, TTtreat, Year, Temperature_level, Precipitation_level, siteID, blockID, funYear) %>% 
+  gather(key = wmean_trait, value = measurement, c( wmean_SLA_local, wmean_SLA_global)) %>%
+  filter(Year == 2016, functionalGroup == "forb") %>% 
+  ggplot(aes(x = measurement, fill = wmean_trait)) +
+  theme_bw() +
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = cbPalette) +
+  #geom_smooth(method = lm) +
+  #geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+  facet_grid(as.formula(. ~ Temperature_level)) 
+
 
 plots <- list()
 nm <- c("Alrust", "Arhelleren", "Fauske", "Gudmedalen", "Hogsete", "Lavisdalen", "Ovstedal", "Rambera", "Skjellingahaugen", "Ulvhaugen", "Veskre", "Vikesland" )

@@ -295,4 +295,5 @@ timedeltacalc <- as.data.frame(t(timedeltacalc))
 colnames(timedeltacalc) <- paste0("delta", colnames(timedeltacalc))
 timedelta <- cbind((forbcom[forbcom$Year != 2011,]), timedeltacalc)
 
-
+wholecom <- wholecom %>% 
+  mutate(intra_SLA = wmean_SLA_local - wmean_SLA_global)
