@@ -16,14 +16,14 @@ import.data<-function(filelist, con){
     print(n)
     chkft <- c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
     es_MX <- locale("es", decimal_mark = ",", encoding = "Windows-1252")
-    dat <- read.csv2(n, dec = ",")
+    dat <- read.csv2(n, dec = ",", stringsAsFactors = FALSE)
     if(ncol(dat) > 1){
       if(any(sapply(dat[, chkft], class) == "character")) 
         es_MX <- locale("es", decimal_mark = ".", encoding = "Windows-1252")
-        dat <- read.csv2(n, dec = ".")  
+        dat <- read.csv2(n, dec = ".", stringsAsFactors = FALSE)  
     }else{
       es_MX <- locale("es", decimal_mark = ".", encoding = "Windows-1252")
-      dat <- read.csv(n, dec = ".")
+      dat <- read.csv(n, dec = ".", stringsAsFactors = FALSE)
      }
          
     dat <- dat[!is.na(dat$originPlotID),]
