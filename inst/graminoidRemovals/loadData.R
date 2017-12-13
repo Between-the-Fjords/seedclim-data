@@ -39,7 +39,8 @@ my.GR.data <-tbl(con, "subTurfCommunity") %>%
   left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>%
   filter(year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC") %>%
   select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight) %>%
-  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat))
+  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>% 
+  ungroup()
 
 my.GR.data
 
@@ -118,10 +119,18 @@ my.GR.data <- probfixes(my.GR.data, prob.sp.name$old, prob.sp.name$new)
 
 #gridded temperature etc
 source("inst/graminoidRemovals/weather.R")
+#save(weather, file = "~/Desktop/weather.Rdata")
 
 my.GR.data <- my.GR.data %>%
   left_join(weather, by = "siteID") 
 
+
+#### code to get rid of turfs that have been attacked by ants or cows ####
+lowcover <- my.GR.data %>% group_by(turfID, Year, functionalGroup) %>% mutate(sumcover = sum(cover)) %>% filter(sumcover< 25, functionalGroup == "forb") %>% distinct(siteID, turfID,Year,sumcover)
+
+#my.GR.data %>% filter(turfID %in% c("Ovs2RTC", "Ovs3RTC", "126 TTC")) %>% group_by(turfID, Year) %>% mutate(sumcover = sum(cover)) %>% distinct(siteID, turfID,Year, sumcover)
+
+#my.GR.data <- filter(my.GR.data, !siteID %in% c("Ovs2RTC", "Ovs3RTC"))
 ## ---- my.GR.data.end ----
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -148,7 +157,7 @@ traits <- traits %>%
     Nem == 0 & BNem == 0 & SBor == 0 & LAlp == 1, "alpine", 
     ifelse(HAlp == 0 & MAlp == 0 & LAlp == 0 & Nem == 1, "lowland", 
            ifelse(abundance > 5.5, "generalist", "other"))))) %>% # assign specialisms to species based on range limits
-  select(species, height:seedMass, specialism, Max_height, Min_height)
+  select(species, family, height:seedMass, specialism, Max_height, Min_height)
 
 head(traits)
 
@@ -172,23 +181,6 @@ my.GR.data$functionalGroup <- plyr::mapvalues(my.GR.data$functionalGroup, from =
 my.GR.data$functionalGroup <- plyr::mapvalues(my.GR.data$functionalGroup, from = "woody", to = "forb")
 my.GR.data$specialism <- plyr::mapvalues(my.GR.data$specialism, from = "lowland", to = "other")
 
-
-my.GR.data %>%
-  filter(TTtreat == "TTC") %>% 
-  ggplot(aes(x = as.factor(Precipitation_level), y = mossHeight)) +
-  stat_summary(fun.data = "mean_cl_boot") +
-  stat_summary(fun.data = "mean_cl_boot", geom = "line") +
-  theme_classic() +
-  axis.dim +
-  labs(x = "Annual rainfall (m)", y = "Moss depth (cm)") +
-  ggsave(filename = "moss_depth_precip.jpg", path = "/Users/fja062/Documents/seedclimComm/figures")
-
-
-
-my.GR.data %>% ggplot(aes(x = Year, y = totalBryophytes, colour = TTtreat, group = TTtreat)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
-  facet_grid(. ~ Precipitation_level)
 
 ## ---- Traits.data.end ---- 
 
@@ -224,20 +216,20 @@ wholecom <- my.GR.data %>%
          wmean_maxheight = weighted.mean(Max_height, cover, na.rm = TRUE),
          wmean_minheight = weighted.mean(Min_height, cover, na.rm = TRUE),
          sumcover = sum(cover),
-         wmean_LDMC_local = weighted.mean(LDMC_mean, cover, na.rm = TRUE),
-         wmean_SLA_local = weighted.mean(SLA_mean, cover, na.rm = TRUE),
-         wmean_LTH_local = weighted.mean(Lth_mean, cover, na.rm = TRUE),
-         wmean_LA_local = weighted.mean(LA_mean, cover, na.rm = TRUE),
-         wmean_height_local = weighted.mean(Height_mean, cover, na.rm = TRUE),
-         wmean_CN_local = weighted.mean(CN_mean, cover, na.rm = TRUE),
-         wmean_LDMC_global = weighted.mean(LDMC_mean_global, cover, na.rm = TRUE),
-         wmean_SLA_global = weighted.mean(SLA_mean_global, cover, na.rm = TRUE),
-         wmean_CN_global = weighted.mean(CN_mean_global, cover, na.rm = TRUE),
-         wmean_LTH_global = weighted.mean(Lth_mean_global, cover, na.rm = TRUE),
-         wmean_LA_global = weighted.mean(LA_mean_global, cover, na.rm = TRUE),
-         wmean_height_global = weighted.mean(Height_mean_global, cover, na.rm = TRUE)) %>%
+         wmeanLDMC_local = weighted.mean(LDMC_mean, cover, na.rm = TRUE),
+         wmeanSLA_local = weighted.mean(SLA_mean, cover, na.rm = TRUE),
+         wmeanLTH_local = weighted.mean(Lth_mean, cover, na.rm = TRUE),
+         wmeanLA_local = weighted.mean(LA_mean, cover, na.rm = TRUE),
+         wmeanheight_local = weighted.mean(Height_mean, cover, na.rm = TRUE),
+         wmeanCN_local = weighted.mean(CN_mean, cover, na.rm = TRUE),
+         wmeanLDMC_global = weighted.mean(LDMC_mean_global, cover, na.rm = TRUE),
+         wmeanSLA_global = weighted.mean(SLA_mean_global, cover, na.rm = TRUE),
+         wmeanCN_global = weighted.mean(CN_mean_global, cover, na.rm = TRUE),
+         wmeanLTH_global = weighted.mean(Lth_mean_global, cover, na.rm = TRUE),
+         wmeanLA_global = weighted.mean(LA_mean_global, cover, na.rm = TRUE),
+         wmeanheight_global = weighted.mean(Height_mean_global, cover, na.rm = TRUE)) %>%
   ungroup() %>%
-  select(-(height:seedMass), -(Max_height:SLA), -recorder, -species, -(SLA_mean_global:LA_mean_global)) %>%
+  select(-(height:seedMass), -(Max_height:SLA), -recorder, -(SLA_mean_global:LA_mean_global)) %>%
   #filter(!(functionalgroup == "graminoid" & Year == 2012) & !(functionalgroup == "graminoid" & Year == 2013) & !(functionalgroup == "graminoid" & Year == 2015) & !(functionalgroup == "graminoid" & Year == 2016)) %>%
   distinct(ID, functionalGroup, .keep_all = TRUE) %>%
   as.data.frame()
@@ -259,7 +251,7 @@ forbcom <- wholecom %>%
 deltacalc <- sapply(1:nrow(forbcom[forbcom$TTtreat == "RTC",]), function(i){
   R <- forbcom[forbcom$TTtreat == "RTC",][i,]
   #browser()
-  cols <- c("wmean_height","wmean_leafSize", "sumcover", "totalBryophytes", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "evenness", "wmean_LDMC_global", "wmean_SLA_global", "wmean_LTH_global", "wmean_LA_global", "wmean_height_global", "wmean_CN_global", "wmean_LDMC_local", "wmean_SLA_local", "wmean_LTH_local", "wmean_LA_local", "wmean_height_local", "wmean_CN_local")
+  cols <- c("wmean_height","wmean_leafSize", "sumcover", "totalBryophytes", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "evenness", "wmeanLDMC_global", "wmeanSLA_global", "wmeanLTH_global", "wmeanLA_global", "wmeanheight_global", "wmeanCN_global", "wmeanLDMC_local", "wmeanSLA_local", "wmeanLTH_local", "wmeanLA_local", "wmeanheight_local", "wmeanCN_local")
   friend <- forbcom$Year == R$Year & forbcom$blockID == R$blockID & forbcom$functionalGroup == R$functionalGroup & forbcom$TTtreat == "TTC"
   if(all (!friend)) {print(R$turfID)
     return(rep(NA, length(cols)))}
@@ -281,7 +273,7 @@ rtcmeta$Year <- factor(rtcmeta$Year)
 timedeltacalc <- sapply(1:nrow(forbcom[forbcom$Year != 2011,]), function(i){
  R <- forbcom[forbcom$Year != 2011,][i,]
    #browser()
-  cols <- c("wmean_height","wmean_leafSize", "sumcover", "totalBryophytes", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "evenness", "wmean_LDMC_global", "wmean_SLA_global", "wmean_LTH_global", "wmean_LA_global", "wmean_height_global", "wmean_CN_global", "wmean_LDMC_local", "wmean_SLA_local", "wmean_LTH_local", "wmean_LA_local", "wmean_height_local", "wmean_CN_local")
+  cols <- c("wmean_height","wmean_leafSize", "sumcover", "totalBryophytes", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "evenness", "wmeanLDMC_global", "wmeanSLA_global", "wmeanLTH_global", "wmeanLA_global", "wmeanheight_global", "wmeanCN_global", "wmeanLDMC_local", "wmeanSLA_local", "wmeanLTH_local", "wmeanLA_local", "wmeanheight_local", "wmeanCN_local")
    friend <- forbcom$turfID == R$turfID & forbcom$Year == 2011
   if(all (!friend)) {print(R$turfID)
      return(rep(NA, length(cols)))}
@@ -294,6 +286,4 @@ timedeltacalc <- sapply(1:nrow(forbcom[forbcom$Year != 2011,]), function(i){
 timedeltacalc <- as.data.frame(t(timedeltacalc))
 colnames(timedeltacalc) <- paste0("delta", colnames(timedeltacalc))
 timedelta <- cbind((forbcom[forbcom$Year != 2011,]), timedeltacalc)
-
-wholecom <- wholecom %>% 
-  mutate(intra_SLA = wmean_SLA_local - wmean_SLA_global)
+timedelta <- filter(timedelta, deltasumcover > -80)
