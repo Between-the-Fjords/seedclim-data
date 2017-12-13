@@ -3,7 +3,7 @@ library(DBI)
 con <- dbConnect(RMySQL::MySQL(), group = "seedclim")
 
 #load file
-corrections <- read.csv("speciesCorrections.csv")
+corrections <- read.csv("speciesCorrections.csv", sep = ";")
 
 #check for taxon name anomalies
 taxon <- dbGetQuery(con, paste("SELECT species FROM taxon;"))$species
