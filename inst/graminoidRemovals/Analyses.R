@@ -6,7 +6,6 @@ library(lme4)
 library(MuMIn)
 library(GGally)
 library(tibble)
-library(ggplot2)
 library(lmerTest)
 library(broom)
 
@@ -27,13 +26,13 @@ forbcom$summer_temp <- as.numeric(scale(forbcom$summer_temp))
 forbcom$Year <- as.numeric(scale(forbcom$Year))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-forbcom %>% 
-  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
+modx <- forbcom %>% 
+  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, totalBryophytes, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
+  gather(key = trait, value = measurement, c(richness, evenness, totalBryophytes, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
   group_by(trait) %>%
   do({
-    mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/turfID), REML = FALSE, data = .)
+    mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip +TTtreat:annPrecip:Year + TTtreat:summer_temp:Year + (1|siteID/turfID), REML = FALSE, data = .)
+    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year +TTtreat:summer_temp:Year + TTtreat:summer_temp:Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
     an <- anova(mod, mod0)}
   )
 
@@ -47,17 +46,19 @@ mod1precip <- forbcom %>%
   #filter(trait %in% c(precTraits$trait)) %>% 
   group_by(trait) %>%
   do({
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/turfID), REML = FALSE, data = .)
-  tidy(mod)}) %>% 
-  filter(term == "TTtreatRTC:annPrecip:Year") %>% 
+    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year +TTtreat:summer_temp:Year + TTtreat:summer_temp:Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
+  tidy(mod)
+  #qqnorm(residuals(mod), main = .$trait); qqline(residuals(mod))
+  }) %>% 
+#filter(term == "TTtreatRTC:annPrecip:Year") %>% 
   arrange(desc(trait)) %>% 
   as.data.frame()
 
 capture.output(mod1temp, file = "~/Documents/seedclimComm/gramRemResults/mod1temp.csv")
 
 forbcom %>% 
-  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
+  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, totalBryophytes, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
+  gather(key = trait, value = measurement, c(richness, evenness, sumcover, totalBryophytes, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
   group_by(trait) %>%
   do({
     mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
@@ -84,6 +85,20 @@ mod1temp <- forbcom %>%
 
 mod1temp %>% filter(term == "TTtreatRTC:summer_temp:Year")
 mod1precip %>% filter(term == "TTtreatRTC:annPrecip:Year")
+
+
+
+# testing
+mod9 <- forbcom %>% 
+  filter(Year == 2016) %>% 
+  select(TTtreat, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, totalBryophytes, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
+  gather(key = trait, value = measurement, c(richness, evenness, totalBryophytes, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
+  group_by(trait) %>%
+  do({
+    mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + TTtreat:summer_temp + TTtreat:annPrecip + summer_temp:annPrecip + (1|siteID), REML = FALSE, data = .)
+    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + TTtreat:summer_temp + TTtreat:annPrecip + summer_temp:annPrecip + summer_temp:annPrecip:TTtreat + (1|siteID), REML = FALSE, data = .)
+    an <- anova(mod, mod0)}
+  )
 
 
 
