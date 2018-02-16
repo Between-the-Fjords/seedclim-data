@@ -16,14 +16,14 @@ import.data<-function(filelist, con){
     print(n)
     chkft <- c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
     es_MX <- locale("es", decimal_mark = ",", encoding = "Windows-1252")
-    dat <- read_csv2(n, locale = es_MX)
+    dat <- read.csv2(n, dec = ",", stringsAsFactors = FALSE)
     if(ncol(dat) > 1){
       if(any(sapply(dat[, chkft], class) == "character")) 
         es_MX <- locale("es", decimal_mark = ".", encoding = "Windows-1252")
-        dat <- read_csv2(n, locale = es_MX)  
+        dat <- read.csv2(n, dec = ".", stringsAsFactors = FALSE)  
     }else{
       es_MX <- locale("es", decimal_mark = ".", encoding = "Windows-1252")
-      dat <- read_csv(n, locale = es_MX)
+      dat <- read.csv(n, dec = ".", stringsAsFactors = FALSE)
      }
          
     dat <- dat[!is.na(dat$originPlotID),]
@@ -31,7 +31,10 @@ import.data<-function(filelist, con){
     dat$turfID <- trimws(dat$turfID)
     head(dat)
     names(dat)
-    Encoding(dat$comment) <- "latin1"
+    if(class(dat$comment) == "character"){
+      try(Encoding(dat$comment) <- "latin1")
+    }
+    
     
     #remove numeric suffix on duplicates
     names(dat) <- gsub("_\\d$", "", names(dat))
@@ -72,10 +75,10 @@ import.data<-function(filelist, con){
     
     #TurfEnv
     turfEnv <- dat[dat$Measure == "Cover", c("turfID","year",  "pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular","totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment","recorder", "date")]
-    if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
-      stop ("more than 255 characters in a comment field in turfEnv")
-    }
-    dbWriteTable(con, "turfEnvironment", turfEnv, row.names = FALSE, append = TRUE)
+    # if(any(nchar(as.character(turfEnv$comment[!is.na(turfEnv$comment)])) > 255)) {
+    #   stop ("more than 255 characters in a comment field in turfEnv")
+    # }
+   dbWriteTable(con, "turfEnvironment", turfEnv, row.names = FALSE, append = TRUE)
   nrow(turfEnv)   
   
   #Mergedictionary

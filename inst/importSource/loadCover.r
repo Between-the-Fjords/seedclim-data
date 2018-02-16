@@ -53,8 +53,9 @@ stompingQ<-"SELECT blocks.siteID, blocks.blockID, turfs.turfID, subTurfEnvironme
 FROM blocks INNER JOIN (plots INNER JOIN (turfs INNER JOIN subTurfEnvironment ON turfs.turfID = subTurfEnvironment.turfID) ON plots.plotID = turfs.destinationPlotID) ON blocks.blockID = plots.blockID
 GROUP BY blocks.siteID, blocks.blockID, turfs.turfID, subTurfEnvironment.year, turfs.TTtreat, subTurfEnvironment.bad
 HAVING (((subTurfEnvironment.bad)='x'));"
-dbGetQuery(con, stompingQ) 
-
+stomping <- dbGetQuery(con, stompingQ) 
+stomping <- filter(stomping, is.na(TTtreat)|TTtreat == "TTC") %>% 
+  distinct()
  #delete turfs with too much stomping  
 cover.thin <- cover.thin[cover.thin$notbad>10,]
 sort(cover.thin$notbad, decreasing = TRUE)

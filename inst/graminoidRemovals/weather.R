@@ -1,6 +1,6 @@
 #gridded temp and precip data
 #load data monthlyClimate
-load("~/Documents/SeedClim-Climate-Data/GriddedMonth_AnnualClimate2009-2016.Rdata")
+load("/Volumes/fja062/PhD/Projects/2017_temperature_regulation_of_functional_groups/SeedClim-Climate-Data/GriddedMonth_AnnualClimate2009-2016.Rdata")
 head(monthlyClimate)
 
 library(lubridate)
@@ -11,6 +11,7 @@ temperature <- monthlyClimate %>%
   mutate(siteID = as.character(plyr::mapvalues(Site, from = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"), to = c("Ulvhaugen", "Lavisdalen", "Gudmedalen", "Skjellingahaugen", "Alrust", "Hogsete", "Rambera", "Veskre", "Fauske", "Vikesland", "Arhelleren", "Ovstedal")))) %>%
   mutate(Month = month(dateMonth), Year = year(dateMonth)) %>%
   filter(Month > 5, Month < 10) %>%
+  filter(Year > 2009) %>% 
   group_by(siteID) %>%
   mutate(summer_temp = mean(value)) %>%
   select(c(siteID, summer_temp)) %>%
@@ -19,7 +20,7 @@ temperature <- monthlyClimate %>%
 
 temperature
 
-load("~/Documents/SeedClim-Climate-Data/GriddedDailyClimateData2009-2016.Rdata")
+load("/Volumes/fja062/PhD/Projects/2017_temperature_regulation_of_functional_groups/SeedClim-Climate-Data/GriddedDailyClimateData2009-2016.Rdata")
 head(climate)
 
 #### precipitation ####  
@@ -31,6 +32,7 @@ precipitation <- climate %>%
   #mutate(ID = paste(siteID, Year, sep = "_")) %>%
   #group_by(ID) %>%
   #mutate(annPrecip2nd = sum(value[Month == c(1:9)]), annPrecip1st = sum(value[Month == c(10:12)])) %>%
+  filter(Year > 2009) %>% 
   group_by(siteID, Year) %>%
   mutate(annprecip = sum(Precipitation)) %>%
   ungroup() %>%
@@ -45,21 +47,3 @@ precipitation
 
 
 weather <- full_join(precipitation, temperature, by = "siteID")
-
-# mean alpine, intermediate and lowland temperatures:
-
-sitesDF <- as.data.frame(cbind(rep(c("driest", "dry", "wet", "wettest"), 3), 
-                               rep(c("alpine", "intermediate", "lowland"), each = 4),
-                               c("Ulvhaugen", "Lavisdalen" , "Gudmedalen", "Skjellingahaugen", "Alrust", "Hogsete", "Rambera", "Veskre", "Fauske", "Vikesland", "Arhelleren", "Ovstedal"))) %>%
-  select(prec = 1, temp = 2, siteID = 3) %>%
-  mutate(siteID = as.character(siteID))
-
-te <- sitesDF %>%
-  left_join(weather, by = "siteID") %>%
-  group_by(temp) %>%
-  mutate(avg.temp = mean(summer_temp)) %>%
-  ungroup() %>%
-  group_by(prec) %>%
-  mutate(avg.prec = mean(annPrecip))
-  
-te

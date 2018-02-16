@@ -16,44 +16,84 @@ precip.lab <-   scale_x_discrete("Precipitation [mm y-1]",
 temp.lab <- scale_x_discrete("Temperature [C]",
                              labels = c("0.6"="600", "1.2"="1200","2"="2000","2.7"="2700"))
 
-axis.dim <- theme(axis.text=element_text(size=12),
+axis.dim <- theme(axis.text=element_text(size=10),
                   axis.title=element_text(size=15),
                   axis.ticks = element_blank(),
-                  legend.text = element_text(size=12),
-                  legend.title = element_text(size=14),
-                  strip.text.x = element_text(size = 12),
-                  strip.text.y = element_text(size = 15),
+                  legend.text = element_text(size=11),
+                  legend.title = element_text(size=12),
+                  strip.text.x = element_text(size = 11),
+                  strip.text.y = element_text(size = 13),
                   axis.text.x  = element_text(angle = 90))
 
-#### FORBS ONLY ####
-distributions <- my.GR.data %>%
-  filter(TTtreat == "RTC")
-
-forbcover <- xtabs(cover ~ paste(turfID, Year, sep = "_") + species, data = distributions)
-forbcover <- as.data.frame(unclass(forbcover))
-forbcover <- forbcover[,colSums(forbcover > 0) > 0] #remove empty spp
-
-forbcom$funYear <- as.factor(paste(forbcom$functionalgroup, forbcom$Year, sep = "_"))
-
-
+legend.title.prec <- "Treatment and \n precipitation"
+legend.title.temp <- "Treatment \n and temperature"
 
 ##### FUNCTIONS FOR PLOTTING #####
 # per response variable
-time.plots <- function(dat, response, explan, save) {
-  p <- ggplot(dat, aes_string(x = "Year", y = response, colour = "TTtreat", group = "TTtreat")) +
+time.plots.temp <- function(dat, response, save, ylab) {
+  p <- ggplot(dat, aes_string(x = "Year", y = response, colour = "interaction(Precipitation_level, TTtreat)", alpha = "interaction(Precipitation_level, TTtreat)", shape = "interaction(Precipitation_level, TTtreat)", linetype = "interaction(Precipitation_level, TTtreat)", group = "interaction(Precipitation_level, TTtreat)")) +
     stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
     stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    facet_grid(as.formula(paste(".~ ", explan))) +
-    scale_color_manual(values = cbPalette, labels = c("Control", "Treatment")) +
+    facet_grid(as.formula(paste(".~ ", "Temperature_level"))) +
+    scale_alpha_manual(legend.title.prec, values = c(0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1)) +
+    scale_color_manual(legend.title.prec, values = cbPalette[c(1, 1, 1, 1, 7, 2, 4, 3)]) +
+    scale_linetype_manual(legend.title.prec, values = c("dashed", "dashed", "dashed", "dashed", "solid", "solid", "solid", "solid")) +
+    scale_shape_manual(legend.title.prec, values = c(0, 1, 2, 8, 15, 16, 17, 8)) +
     theme_classic() +
-    labs(y = paste("Δ", substr(response, 6, nchar(response))), colour = "") +
+    theme(strip.background = element_blank()) +
+    labs(y = if_else(ylab == TRUE,
+                     paste("Δ", substr(response, 6, nchar(response))),
+                     ""), colour = "") +
+    #theme(legend.text = c("Control", "Treatment")) +
     axis.dim
   if(save == TRUE){ 
-    ggsave(p, filename = paste0(response, explan, ".jpg", sep = ""), height = 3.5, width = 6.5, dpi = 300)
+    ggsave(p, filename = paste0(response, "temp.jpg", sep = ""), height = 4, width = 8, dpi = 300, path = "/Users/fja062/Documents/seedclimComm/figures")
   }# defaults to save == FALSE, so you don't have to write that in every time
   return(p)
 }
+
+time.plots.precip <- function(dat, response, save, ylab) {
+  p <- ggplot(dat, aes_string(x = "Year", y = response, colour = "interaction(Temperature_level, TTtreat)", alpha = "interaction(Temperature_level, TTtreat)", shape = "interaction(Temperature_level, TTtreat)", linetype = "interaction(Temperature_level, TTtreat)", group = "interaction(Temperature_level, TTtreat)")) +
+    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
+    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    facet_grid(as.formula(paste(".~ ", "Precipitation_level"))) +
+    scale_alpha_manual(legend.title.temp, values = c(0.5, 0.5, 0.5, 1, 1, 1)) +
+    scale_color_manual(legend.title.temp, values = cbPalette[c(1, 1, 1, 9, 8, 7)]) +
+    scale_linetype_manual(legend.title.temp, values = c("dashed", "dashed", "dashed", "solid", "solid", "solid")) +
+    scale_shape_manual(legend.title.temp, values = c(0, 1, 2, 15, 16, 17)) +
+    theme_classic() +
+    theme(strip.background = element_blank()) +
+    labs(y = if_else(ylab == TRUE,
+                     paste("Δ", substr(response, 6, nchar(response))),
+                     ""), colour = "") +
+    #theme(legend.text = c("Control", "Treatment")) +
+    axis.dim
+  if(save == TRUE){ 
+    ggsave(p, filename = paste0(response, "precip.jpg", sep = ""), height = 4, width = 8, dpi = 300, path = "/Users/fja062/Documents/seedclimComm/figures")
+  }# defaults to save == FALSE, so you don't have to write that in every time
+  return(p)
+}
+
+timedelta %>% filter(TTtreat == "RTC") %>% ggplot(aes(x = Year, y = deltasumcover, colour = as.factor(Precipitation_level), group = as.factor(Temperature_level))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), aes(group = Precipitation_level)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", aes(group = Precipitation_level)) +
+  facet_grid(. ~ Temperature_level) +
+  scale_colour_manual(values = cbPalette[c(10, 4, 2, 7)]) +
+  geom_hline(yintercept = 0, linetype = "dashed")
+
+
+####### plot for temperature and precipitation interaction
+timedelta %>% filter(deltasumcover > -75) %>% 
+  ggplot(aes(x = Year, y = deltasumcover, colour = as.factor(Precipitation_level), alpha = TTtreat, linetype = TTtreat, group = interaction(Precipitation_level, TTtreat))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
+  facet_grid(. ~ Temperature_level) +
+  scale_alpha_manual(values = c(0.5, 1)) +
+  scale_colour_manual(values = cbPalette[c(7, 2, 4, 10)]) +
+  scale_linetype_manual(values = c("dashed", "solid")) +
+  geom_hline(yintercept = 0, linetype = "dashed")
 
 
 time.plots.facet <- function(dat, response) {
@@ -80,104 +120,66 @@ density.plots <- function(dat, response, explan) {
   return(p)
 }
 
+  
+
 ##########################
-time.plots(timedelta, response = "deltadiversity", explan = "Temperature_level", save = FALSE)
+time.plots(timedelta, response = "deltatotalBryophytes", explan = "Temperature_level", save = FALSE)
 
-time.plots(wholecom, response = "vegetationHeight", explan = "Temperature_level", save = FALSE)
-
-time.plots(timedelta, response = "deltawmean_height_global", explan = "Temperature_level", save = FALSE)
-
-#### Temperature and precipitation across grid ####
-
-ggsave(ggplot(my.GR.data, aes(summer_temp, annPrecip)) +
-  geom_point() +
-  geom_density_2d(colour = "black") +
-  axis.dim, filename = "temp_precip_gradient.jpg", height = 6, width = 6)
 
 #### COVER ####
 # if we dig deeper, and look at the cover of the functional groups, things start to look interesting.
 
-time.plots(timedelta, response = "deltasumcover", explan = "Precipitation_level", save = FALSE)
-time.plots(timedelta, response = "deltasumcover", explan = "Temperature_level", save = FALSE)
+time.plots.temp(timedelta, response = "deltasumcover", save = TRUE, ylab = TRUE)
 time.plots.facet(timedelta, response = "deltasumcover")
 
-density.plots(wholecom, "sumcover", "Precipitation_level")
-
-wholecom %>%
-  filter(funYear %in% c("forb_2011", "forb_2016", "graminoid_2011")) %>%
-  ggplot(aes(x = wmean_SLA_local, fill = funYear)) +
-  theme_bw() +
-  scale_color_manual(values = cbPalette) +
-  geom_density(alpha = 0.5) +
-  #geom_smooth(method = lm) +
-  #geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
-  facet_grid(as.formula(TTtreat ~ Temperature_level)) +
-  axis.dim +
-  ggsave(filename = "sla_distributions.pdf")
-
-
-ggplot(wholecom, aes(wmean_SLA_local, fill = factor(Temperature_level))) +
-  geom_density(alpha = 0.5) +
-  theme_bw() +
-  axis.dim +
-  facet_wrap( ~ functionalGroup) +
-  ggsave(filename = "func_sla_distributions.pdf")
 
 #### RICHNESS ####
 #
-time.plots(timedelta, response = "deltarichness", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltarichness", explan = "Precipitation_level", save = TRUE)
+time.plots.precip(timedelta, response = "deltarichness", save = TRUE, ylab = TRUE)
 time.plots.facet(timedelta, response = "deltarichness")
 
 #### EVENNESS ####
 #
-time.plots(timedelta, response = "deltaevenness", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltaevenness", explan = "Precipitation_level", save = TRUE)
+time.plots.temp(timedelta, response = "deltaevenness", save = TRUE, ylab = TRUE)
 time.plots.facet(timedelta, response = "deltaevenness")
 
-#### DIVERSITY ####
-#
-time.plots(timedelta, response = "deltadiversity", explan = "Temperature_level")
-time.plots(timedelta, response = "deltadiversity", explan = "Precipitation_level")
-time.plots.facet(timedelta, response = "deltadiversity")
 
 #### HEIGHT ####
 # we'd expect the forb community at the warmest sites to increase in height after graminoid removal, but we do not see this.
 
-time.plots(timedelta, response = "deltawmean_height_global", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltawmean_height_global", explan = "Precipitation_level", save = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_height_global")
+time.plots.precip(timedelta, response = "deltawmeanheight_local", save = FALSE, ylab = TRUE)
+time.plots.facet(timedelta, response = "deltawmean_height_local")
 
 #### CN ####
 # 
-time.plots(timedelta, response = "deltawmean_CN_global", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltawmean_CN_global", explan = "Precipitation_level", save = TRUE)
+time.plots.precip(timedelta, response = "deltawmeanCN_local", save = FALSE, ylab = TRUE)
 time.plots.facet(timedelta, response = "deltawmean_CN_local")
 
 #### SLA ####
 # lower SLA in 
-time.plots(timedelta, response = "deltawmean_SLA_local", explan = "Temperature_level", save = FALSE)
-time.plots(timedelta, response = "deltawmean_SLA_global", explan = "Precipitation_level", save = FALSE)
+time.plots.precip(timedelta, response = "deltawmeanSLA_local", save = FALSE, ylab = TRUE)
 time.plots.facet(timedelta, response = "deltawmean_SLA_local")
 
 #### SEEDMASS ####
 #
-time.plots(timedelta, response = "deltawmean_seedMass", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltawmean_seedMass", explan = "Precipitation_level", save = TRUE)
+time.plots.temp(timedelta, response = "deltawmean_seedMass", save = FALSE, ylab = TRUE)
 time.plots.facet(timedelta, response = "deltawmean_seedMass")
 
 #### LDMC ####
 #
-time.plots(timedelta, response = "deltawmean_LDMC_global", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltawmean_LDMC_global", explan = "Precipitation_level", save = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_LDMC_global")
+time.plots(timedelta, response = "deltawmeanLDMC_local", save = FALSE, ylab = TRUE)
+time.plots.facet(timedelta, response = "deltawmean_LDMC_local")
+
+#### LTH ####
+#
+time.plots.temp(timedelta, response = "deltawmeanLTH_local", save = FALSE, ylab = TRUE)
+time.plots.precip(timedelta, response = "deltawmeanLTH_local", save = FALSE, ylab = TRUE)
+time.plots.facet(timedelta, response = "deltawmean_LDMC_local")
 
 #### LA ####
 #
-time.plots(timedelta, response = "deltawmean_LA_global", explan = "Temperature_level", save = TRUE)
-time.plots(timedelta, response = "deltawmean_LA_global", explan = "Precipitation_level", save = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_LA_local")
-
+time.plots(timedelta, response = "deltawmeanLA_local", save = FALSE, ylab = TRUE)
+time.plots.facet(timedelta, response = "deltawmean_LDMC_local")
 
 #######################################
 ########## other plots ################
@@ -188,7 +190,7 @@ div <- wholecom %>%
   #filter(!(functionalgroup == "woody" & Temperature_level == 10.5))
 
 
-ggplot(div, aes(x = wmean_SLA_global, fill = funYear)) +
+ggplot(div, aes(x = diversity, fill = funYear)) +
   theme_bw() +
   geom_density(alpha = 0.5) +
   scale_fill_manual(values = cbPalette) +
@@ -196,9 +198,6 @@ ggplot(div, aes(x = wmean_SLA_global, fill = funYear)) +
   #geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
   facet_grid(as.formula(. ~ Temperature_level)) 
 
-ggplot(my.GR.data, aes(x = as.numeric(Year), y = summer_temp, colour = as.factor(Temperature_level))) + geom_point() + geom_smooth(method = "lm", se= FALSE)
-
-ggplot(my.GR.data, aes(x = as.numeric(Year), y = annPrecip, colour = as.factor(Precipitation_level))) + geom_point() + geom_smooth(method = "lm", se= FALSE)
 
 
 plots <- list()
@@ -221,7 +220,7 @@ for(i in seq_along(nm)) {
 }
 
 varplots <- plot_grid(plotlist = plots, cols = 2)
-save_plot("plots1.tiff", varplots,
+save_plot("plots1.jpg", varplots,
           ncol = 2,
           nrow = 3,
           base_aspect_ratio = 1.3)
@@ -237,26 +236,6 @@ ggplot(wholecom, aes(x = Year, y = wmean_seedMass, colour = functionalgroup, lin
   facet_grid(as.formula(. ~ prec)) +
   geom_density2d()
 
-
-
-#6. rtcmeta, aes(x = precip/temp, y = deltarichness:deltaseedMass)
-
-plotdeltatprec <- function(df, na.rm = TRUE, ...) {
-  nm <- names(df)[22:28]
-  for(i in seq_along(nm)) {
-    print(
-      ggplot(df, aes_string(x = "prec", y = nm[i])) +
-        geom_boxplot() +
-        ggtitle(paste(nm[i], "across precipitation gradient")) +
-        geom_hline(yintercept = 0, linetype = "dashed") +
-        scale_colour_manual(values = cbPalette) +
-        facet_grid(as.formula(.~ Year)) +
-        theme_bw() +
-        axis.dim + precip.lab
-    )
-  }
-}
-plotdeltatprec(rtcmeta)
 
 
 ###########################
@@ -314,6 +293,25 @@ dev.off()
 
 multiplot(plotlist = plots, cols = 3)  
 
+
+my.GR.data %>%
+  filter(TTtreat == "TTC") %>% 
+  ggplot(aes(x = as.factor(Precipitation_level), y = mossHeight)) +
+  stat_summary(fun.data = "mean_cl_boot") +
+  stat_summary(fun.data = "mean_cl_boot", geom = "line") +
+  theme_classic() +
+  axis.dim +
+  labs(x = "Annual rainfall (m)", y = "Moss depth (cm)") +
+  ggsave(filename = "moss_depth_precip.jpg", path = "/Users/fja062/Documents/seedclimComm/figures")
+
+
+
+my.GR.data %>% filter(TTtreat == "RTC") %>% ggplot(aes(x = Year, y = totalBryophytes, colour = as.factor(Temperature_level), group = as.factor(Temperature_level))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
+  facet_grid(. ~ Precipitation_level) +
+  scale_colour_manual(values = cbPalette)
+
 ######
 # so far I've managed to create a tally of subplot frequency for all species, which reinstates all those species that are dropped because their cover is NA. But I either need to update the inital MySQL code, or find some way of implementing the below code to include site/plot/block info etc...
 ######
@@ -349,30 +347,3 @@ subturf$problems[is.na(subturf$problems)] <- "ok"
 subturf$problems <- as.factor(subturf$problems)
 
 ###########################
-
-############### SEEDLINGS ###############
-
-#recruitment.data$temp.prec.comb<-paste(recruitment.data$Temperature_level, recruitment.data$Precipitation_level)
-
-#recruitment.data.RTC<-recruitment.data[recruitment.data$TTtreat=="RTC",]
-#recruitment.data.TTC<-recruitment.data[recruitment.data$TTtreat=="TTC",]
-#These two should have the same dimensions
-#...and the order of the plots should be the same
-#recruitment.data.RTC$blockID 
-#recruitment.data.TTC$blockID
-#recruitment.data.TTC<-recruitment.data.TTC[order(recruitment.data.TTC$blockID),] #correcting the order 
-
-#Calculating the difference in recruitment between RTCs and TTCs
-#diff.recruitment<-cbind(recruitment.data.RTC,recruitment.data.TTC$seedlings)
-#colnames(diff.recruitment)[12]<-"seedlings.RTC"
-#colnames(diff.recruitment)[16]<-"seedlings.TTC"
-#diff.recruitment$diff.seedling<-diff.recruitment$seedlings.RTC-diff.recruitment$seedlings.TTC
-
-#lineplot.CI(temp.prec.comb, diff.seedling, group=TTtreat, err.width=0.25, lty=0, cex=2, cex.leg=1.5, xlab="", ylab="?? No. seedlings (removal-control)", legend=F, cex.lab=1.5,xaxt="n",data=diff.recruitment) #replace "???" with the lambda symbol in case it hasn't been saved properly  
-#axis(side = 1, at = c(1,2,3,4,5,6,7,8,9,10,11,12), labels=F)
-#abline(h=0,lty=2)
-#abline(v=4.5, lty=2)
-#abline(v=8.5, lty=2)
-#mtext(at=2.5,"Alpine (dry to wet)", side=1, line=2.5, cex=1.5)
-#mtext(at=6.5,"Intermediate (dry to wet)", side=1, line=2.5, cex=1.5)
-#mtext(at=10.5,"Lowland (dry to wet)", side=1, line=2.5, cex=1.5)

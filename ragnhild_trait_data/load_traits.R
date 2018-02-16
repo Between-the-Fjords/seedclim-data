@@ -1,6 +1,5 @@
 #### Libraries ####
 library(lubridate)
-library(ggplot2)
 library(stringr)
 
 #########################################################################
@@ -23,7 +22,8 @@ traits <- traits %>%
   mutate(siteID = factor(siteID, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
   mutate(LDMC = Dry_mass/Wet_mass) %>%
   mutate(Lth_ave = rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
-  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA)) # this is the equivalent of the error/uncertainty in the balance.
+  mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA)) %>% # this is the equivalent of the error/uncertainty in the balance.
+  filter(LDMC<1)
 
 #############################
 ###### LEAF AREA START ######
@@ -111,3 +111,24 @@ traitdata <- traits %>%
 #  mutate(SLA_mean = plyr::mapvalues(SLA_mean, from = "Inf", to = "NA")) %>%
 #  mutate(SLA_mean_global = plyr::mapvalues(SLA_mean_global, from = "Inf", to = "NA"))
 
+traitdata <- traitdata %>% 
+  group_by(siteID, species) %>% 
+  mutate(CN_mean = if_else(is.na(CN_mean),
+                            CN_mean_global,
+                            CN_mean)) %>% 
+  mutate(SLA_mean = if_else(is.na(SLA_mean),
+                           SLA_mean_global,
+                           SLA_mean)) %>% 
+  mutate(Lth_mean = if_else(is.na(Lth_mean),
+                           Lth_mean_global,
+                           Lth_mean)) %>% 
+  mutate(LA_mean = if_else(is.na(LA_mean),
+                           LA_mean_global,
+                           LA_mean)) %>% 
+  mutate(Height_mean = if_else(is.na(Height_mean),
+                          Height_mean_global,
+                          Height_mean)) %>% 
+  mutate(LDMC_mean = if_else(is.na(LDMC_mean),
+                             LDMC_mean_global,
+                             LDMC_mean))
+  
