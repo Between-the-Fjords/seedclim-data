@@ -5,14 +5,13 @@ library("lubridate")
 
 #### Load trait data ####
 
-traits <-read.csv("Traits/data/leaftraits2016csv.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+traits <-read.csv("Traits/data/Leaf_traits.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
 
 
 #### Cleaning the trait data ####
 
 traits <- traits %>%
-  rename(Height=Height..mm., Lth_1=Lth.1..mm., Lth_2= Lth.2..mm., Lth_3= Lth.3..mm., Wet_mass=Wet.mass..g., Dry_mass=Dry.mass..g., Site=Location) %>%
-  select(-Lth.average..mm.)%>%
+  rename(Site=Location)%>%
   mutate(Date = mdy(Date))%>%
   mutate(T_level = recode(Site, Ulv = 6.5, Lav = 6.5,  Gud = 6.5, Skj = 6.5, Alr = 8.5, Hog = 8.5, Ram = 8.5, Ves = 8.5, Fau = 10.5, Vik = 10.5, Arh = 10.5, Ovs = 10.5)) %>%
   mutate(Temp = recode(Site, Ulv=6.17, Lav=6.45, Gud=5.87, Skj=6.58, Alr=9.14, Hog=9.17, Ram=8.77, Ves=8.67, Fau=10.3, Vik=10.55, Arh=10.60, Ovs=10.78))%>%
@@ -20,13 +19,14 @@ traits <- traits %>%
   mutate(P_level = recode(Site, Ulv = 600, Alr = 600, Fau = 600, Lav = 1200, Hog = 1200, Vik = 1200, Gud = 2000, Ram = 2000, Arh = 2000, Skj = 2700, Ves = 2700, Ovs = 2700)) %>%
   mutate(LDMC=Dry_mass/Wet_mass)%>%
   mutate(Site = factor(Site, levels = c("Ulv", "Lav", "Gud", "Skj", "Alr", "Hog", "Ram", "Ves", "Fau", "Vik", "Arh", "Ovs"))) %>%
-  mutate(Lth_ave=rowMeans(select(traits, matches("^Lth\\.\\d")), na.rm = TRUE)) %>%
+  mutate(Lth_ave=rowMeans(.[6:8])) %>%
   mutate(Dry_mass = replace(Dry_mass, Dry_mass < 0.0005, NA))%>%
-  filter(!LDMC>1)
-
+  #mutate(LDMC_mistakes=Dry_mass/Wet_mass) #Checking for mistakes where the dry mass is more than the wet mass
+  filter(!LDMC>1) #Filtering the mistakes out for now while checking the raw data for these mistakes
+  
 #### Load leaf area data ####
 
-LA <- read.csv2("Traits/data/Leaf area.csv", stringsAsFactors = FALSE)
+LA <- read.csv2("Traits/data/Leaf_area_total.csv", stringsAsFactors = FALSE)
 
 LA<-transform(LA, Leaf_area = as.numeric(Leaf_area))
 
@@ -34,33 +34,14 @@ LA <- LA %>%
   filter(Leaf_area > 0.1)
 
 
-#### Merge the trait data and the leaf area data and make the means ####
+#### Merge the trait data and the leaf area data ####
 
 traitdata <- traits %>%
   mutate(ID = paste0(Site, "_", Species, "_", Individual, ".jpg")) %>%
   filter(!(ID=="Ves_Leo_aut_6.jpg"))%>%
   mutate(Site_sp=paste0(Site,"_", Species)) %>%
   full_join(LA, by=c("ID"="Image_file")) %>%
-  mutate(SLA=Leaf_area/Dry_mass) %>%
-  group_by(Species) %>%
-  mutate(
-    SLA_mean_global = mean(SLA, na.rm = TRUE),
-    Lth_mean_global = mean(Lth_ave, na.rm = TRUE),
-    Height_mean_global = mean(Height, na.rm = TRUE),
-    LDMC_mean_global = mean(LDMC, na.rm = TRUE),
-    LA_mean_global = mean(Leaf_area, na.rm = TRUE) #,
-    #count = n()
-  ) %>%
-  ungroup() %>%
-  group_by(Site, Species) %>%
-  mutate(
-    SLA_mean = mean(SLA, na.rm = TRUE),
-    Lth_mean = mean(Lth_ave, na.rm = TRUE),
-    Height_mean = mean(Height, na.rm = TRUE),
-    LDMC_mean = mean(LDMC, na.rm = TRUE),
-    LA_mean = mean(Leaf_area, na.rm = TRUE)
-  ) %>%
-  ungroup()
+  mutate(SLA=Leaf_area/Dry_mass)
 
 
 #### Load CN data ####
@@ -99,22 +80,17 @@ CN<-CN %>%
   mutate(ID = paste0(Site, "_", Species, "_", Individual, ".jpg"))%>%
   mutate(N_weight = (N../100)*Weight)%>%
   mutate(C_weight = (C../100)*Weight)%>%
-  filter(!(Name=="VECAR101"))
+  filter(!(Name=="VECAR101"))%>% #Because of mistakes in the data, to small sample
+select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -N.., -C.., -N.Area, -C.Area)
 
 
-#### Merge the trait data and the CN data ####
+#### Merge the trait data and the CN data and make the non-weighted means ####
 
 
 traitdata <- traitdata %>%
   full_join(CN, by=c("ID"="ID"))%>%
-  select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -Site.y, -Species.y, -Individual.y, -N.., -C.., -N.Area, -C.Area) %>%
+  select(-Site.y, -Species.y, -Individual.y)%>%
   rename(Site = Site.x, Species = Species.x, Individual=Individual.x)%>%
-  group_by(Species) %>%
-  mutate(CN_ratio_mean_global = mean(CN.ratio, na.rm = TRUE))%>%
-  ungroup()%>%
-  group_by(Site, Species)%>%
-  mutate(CN_ratio_mean = mean(CN.ratio, na.rm= TRUE))%>%
-  ungroup%>%
   filter(!(Species=="Hyp_mac" & Site=="Alr"))%>%
   filter(!(Species=="Agr_cap" & Site =="Alr" & Individual=="9"))%>%
   filter(!(Species=="Car_vag" & Site == "Ves"))%>%
@@ -126,7 +102,29 @@ traitdata <- traitdata %>%
   filter(!(Species=="Sax_aiz"))%>%
   filter(!(Species=="Hie_pil" & Site == "Gud"))%>%
   filter(!(Species=="Vac_myr" & Site == "Ves"))%>%
-  filter(!(Species=="Ver_alp" & Site == "Ves"))
+  filter(!(Species=="Ver_alp" & Site == "Ves"))%>%
+  mutate(Height_log = log(Height))%>%
+  group_by(Species) %>%
+  mutate(
+    SLA_mean_global = mean(SLA, na.rm = TRUE),
+    Lth_mean_global = mean(Lth_ave, na.rm = TRUE),
+    Height_mean_global = mean(Height_log, na.rm = TRUE),
+    LDMC_mean_global = mean(LDMC, na.rm = TRUE),
+    LA_mean_global = mean(Leaf_area, na.rm = TRUE),
+    CN_ratio_mean_global = mean(CN.ratio, na.rm = TRUE)#,
+    #count = n()
+  ) %>%
+  ungroup() %>%
+  group_by(Site, Species) %>%
+  mutate(
+    SLA_mean = mean(SLA, na.rm = TRUE),
+    Lth_mean = mean(Lth_ave, na.rm = TRUE),
+    Height_mean = mean(Height_log, na.rm = TRUE),
+    LDMC_mean = mean(LDMC, na.rm = TRUE),
+    LA_mean = mean(Leaf_area, na.rm = TRUE),
+    CN_ratio_mean = mean(CN.ratio, na.rm= TRUE)
+  ) %>%
+  ungroup()
 
 
 #### Add info about species ####
@@ -238,18 +236,34 @@ wcommunity_df <- wcommunity_df%>%
             Wmean_Lth= weighted.mean(Lth_mean, cover, na.rm=TRUE),
             Wmean_LA= weighted.mean(LA_mean, cover, na.rm=TRUE),
             Wmean_SLA= weighted.mean(SLA_mean, cover, na.rm=TRUE),
-            Wmean_Height= weighted.mean(Height_mean, cover, na.rm=TRUE),
+            #Wmean_Height= weighted.mean(Height_mean, cover, na.rm=TRUE),
             Wmean_CN = weighted.mean(CN_ratio_mean, cover, na.rm=TRUE))%>%
   mutate(Wmean_global_LDMC= weighted.mean(LDMC_mean_global, cover, na.rm=TRUE),
          Wmean_global_Lth= weighted.mean(Lth_mean_global, cover, na.rm=TRUE),
          Wmean_global_LA= weighted.mean(LA_mean_global, cover, na.rm=TRUE),
          Wmean_global_SLA= weighted.mean(SLA_mean_global, cover, na.rm=TRUE),
-         Wmean_global_Height= weighted.mean(Height_mean_global, cover, na.rm=TRUE),
+         #Wmean_global_Height= weighted.mean(Height_mean_global, cover, na.rm=TRUE),
          Wmean_global_CN = weighted.mean(CN_ratio_mean_global, cover, na.rm=TRUE))%>%
-  ungroup()%>%
-  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence, functionalGroup, turfID, cover, sum_cover, cover_species)
+  group_by(functionalGroup, turfID, Site)%>%
+  mutate(Wmean_Height= weighted.mean(Height_mean, cover, na.rm=TRUE),
+         Wmean_global_Height = weighted.mean(Height_mean_global, cover, na.rm=TRUE))%>%
+  select(Site, Species, T_level, P_level, Temp, Precip, SLA, LDMC, Lth_ave, Leaf_area, Height, CN.ratio, SLA_mean, LDMC_mean, Lth_mean, LA_mean, Height_mean, CN_ratio_mean, Genus, Family, Order, LDMC_mean_global, Lth_mean_global, SLA_mean_global, LA_mean_global, CN_ratio_mean_global, Height_mean_global, Wmean_LDMC, Wmean_Lth, Wmean_LA, Wmean_SLA, Wmean_Height, Wmean_CN, Wmean_global_CN, Wmean_global_Height, Wmean_global_SLA, Wmean_global_LA, Wmean_global_Lth, Wmean_global_LDMC, occurrence, functionalGroup, turfID, cover, sum_cover, cover_species)%>%
+  ungroup()
 
+#Clean this.... Colon or minus
 
+#wcommunity_df_forb<-wcommunity_df%>%
+  #filter(functionalGroup == "forb")%>%
+  #group_by(turfID, Site)%>%
+  #mutate(Wmean_Height_forb= weighted.mean(Height_mean, cover, na.rm=TRUE),
+         #Wmean_global_Height_forb= weighted.mean(Height_mean_global, cover, na.rm=TRUE))
+
+#wcommunity_df_gram<-wcommunity_df%>%
+  #filter(functionalGroup == "graminoid")%>%
+  #group_by(turfID, Site)%>%
+  #mutate(Wmean_Height_graminoid= weighted.mean(Height_mean, cover, na.rm=TRUE),
+         #Wmean_global_Height_graminoid= weighted.mean(Height_mean_global, cover, na.rm=TRUE))
+  
 
 #Used to make the dataset to feed into the CSR excel sheet
 
