@@ -1,13 +1,14 @@
-require(data.table)
-library("sjPlot")
+#require(data.table)
+
+# Reading in data and dictionaries #
 
 TRY <- fread("Traits/data/TRY_data.txt", header = T, sep = "\t", dec = ".", quote = "", data.table = T)
-
 
 dict_TRY <- read.csv2("Traits/data/Dict_TRY.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
 dict_units <- read.csv2("Traits/data/Dict_units.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
+# Cleaning data, changing units to match units used in our study and making means for all species #
 
 TRY <- transform(TRY, OrigValueStr = as.numeric(OrigValueStr))
 
@@ -29,7 +30,7 @@ TRY <- TRY%>%
   unique()%>%
   mutate(AccSpeciesName = plyr::mapvalues(AccSpeciesName, from = dict_TRY$Old_names, to = dict_TRY$New_names))
   
-#Merging TRY data with the local trait data#
+# Merging TRY data with the local trait data #
 
 Local_Global_traits <- full_join(wcommunity_df, TRY, by=c("Species"="AccSpeciesName"))
 
@@ -38,7 +39,6 @@ Local_Global_traits <- full_join(wcommunity_df, TRY, by=c("Species"="AccSpeciesN
 Local_Global_traits <- Local_Global_traits%>%
   group_by(turfID, Site)%>%
   mutate(Wmean_TRY= weighted.mean(SLA_TRY, cover, na.rm=TRUE))
-
 
 
 
@@ -73,6 +73,9 @@ summary(Temp_global_SLA)
 
 Traits_SLA <- Temp_newdata %>%
   gather(key = Predicted, value = value, fit_local_SLA, fit_regional_SLA, fit_global_SLA)
+
+
+# Plotting models #
 
 ggplot(Traits_SLA, aes(x = Temp, y = value, color=Predicted, inherit.aes = FALSE, show.legend = FALSE)) +
   theme_minimal(base_size = 11) +
