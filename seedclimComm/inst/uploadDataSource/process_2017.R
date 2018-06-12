@@ -13,7 +13,7 @@ taxonomy <- tbl(con, "taxon") %>%
 turfs <- tbl(con, "turfs") %>% 
   select(turfID) %>% 
   collect()
-dbDisconnect(con)
+
 
 #taxonomic corrections####
 tax_cor <- readr::read_csv(comment = "#",
@@ -86,7 +86,7 @@ Rot.lun , Botrychium lunaria"
 )
 
 dim(tax_cor)
-tax_cor %>% inner_join(taxonomy, by = c("new_name" = "speciesName"))
+good_tax_cor <- tax_cor %>% inner_join(taxonomy, by = c("new_name" = "speciesName"))
 tax_cor %>% anti_join(taxonomy, by = c("new_name" = "speciesName")) %>% print(n = Inf)
 
 #read excel file####
@@ -122,7 +122,8 @@ data2017 <- map_df(1:length(start), .f = function(i){
     slice(-1) %>% #remove old header row
     rename_at(vars(one_of(c("Pleuro", "Acro", "Liver", "Lichen", "Lichen.1", "Litter", "Soil", "Rock"))), tolower) %>% 
     rename(totalVascular = Tot.veg...., totalBryophytes = Bryo, vegetationHeight = Height..cm.,	mossHeight = Mosse.depth..cm.)
-         
+  #taxonomic corrections for weird codes
+  names(guts) <- plyr::mapvalues(names(guts), from = good_tax_cor$old_code, to = good_tax_cor$species)          
  #     "Mosses"???          
   
   #append metadata to contents
@@ -144,24 +145,31 @@ data2017 %>%
 data2017 <- data2017 %>% 
   mutate(pleuro = coalesce(Rhy.squ, pleuro),
          lichen = coalesce(lichen, lichen.1),
-         Par.pal = coalesce(Par.pal, Par.pal.1),
-         Pru.vul = coalesce(Pru.vul, Pru.vul.1),
-         Car.nor = coalesce(Car.nor, Car.nor.1), 
-         Ave.fle = coalesce(Ave.fle, Ave.fle.1),
-         Car.vag = coalesce(Car.vag, Car.vag.1),
-         Ran.acr = coalesce(Ran.acr, Ran.acr.1)#entered twice
-         ) %>% 
-  select(-Rhy.squ, -lichen.1, -Par.pal.1, -Pru.vul.1, -Car.nor.1, -Ave.fle.1, -Car.vag.1, -Ran.acr.1)
+         Par.pal = coalesce(Par.pal, Par.pal1),
+         Pru.vul = coalesce(Pru.vul, Pru.vul1),
+         Car.nor = coalesce(Car.nor, Car.nor1), 
+         Ave.fle = coalesce(Ave.fle, Ave.fle1),
+         Car.vag = coalesce(Car.vag, Car.vag1),
+         Rum.acl = coalesce(Rum.acl, Rum.acl1),
+         Kna.arv = coalesce(Kna.arv, Kna.arv1),
+         Ran.acr = coalesce(Ran.acr, Ran.acr1),#entered twice
+         NID.seedling = coalesce(Seedl.., Seedl., Seedl.sp), 
+         Hol.lan = coalesce(Hol.lan, Holc.lana, Englodnegras)
+        ) %>% 
+  select(-Rhy.squ, -lichen.1, -Par.pal1, -Pru.vul1, -Car.nor1, -Ave.fle1, -Car.vag1, -Ran.acr1, -Rum.acl1, -Kna.arv1, -Holc.lana, -Englodnegras, -Seedl.., -Seedl., -Seedl.sp)
 
 
 #taxa with 1
-names(data2017)[grep("1", names(data2017))] %>% 
+names(data2017)[grep("1", names(data2017))][-2] %>% 
   set_names() %>% 
   map(function(n){
+    n_1 <- gsub("1", "", n)
     data2017 %>% 
-      select_("siteID", "turfID", "subPlot", n, gsub("\\.1", "", n)) %>% 
+      select_("siteID", "turfID", "subPlot", n, n_1) %>% 
       filter(!is.na(!!as.name(n)))
   }) 
+
+
 
 
 #checks ####
@@ -200,11 +208,11 @@ data2017 %>% count(turfID) %>% arrange(desc(n))
 
 names(data2017) 
 #- check for names in taxon table
-data2017 %>% distinct(site)
+data2017 %>% distinct(siteID)
 #site > sitecode
 data2017 %>% distinct(turfID)
 #check turfid
-data2017 %>% distinct(block)
+data2017 %>% distinct(blockID)
 data2017 %>% distinct(recorder)
 
 ##fix comments
@@ -217,16 +225,53 @@ comments <- data2017 %>%
 comments_condensed <- comments %>% 
   group_by(turfID) %>% 
   mutate(comment = paste(species, comment)) %>%
-  summarise(comments = paste(comment, collapse = " | "))
+  summarise(comment = paste(comment, collapse = " | "))
 
-data2017 <- data2017 %>% left_join(comments_condensed)
+data2017 <- data2017 %>% 
+  left_join(comments_condensed) %>% 
+  filter(subPlot != "comment")
+  
+##extra metadata
+data2017 <- data2017 %>% 
+  mutate(
+    year = 2017,
+    Measure = if_else(subPlot == "%", "Cover", "Presence")
+    )
+
 
 ##reorder dataset
-start <- c("siteID", "blockID", "turfID", "date", "subPlot", "recorder") 
-end <- c("pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular", "totalBryophytes", "Mosses", "vegetationHeight", "mossHeight", "comments")
+start <- c("siteID", "blockID", "turfID", "date","year", "subPlot","Measure", "recorder") 
+end <- c("pleuro", "acro", "liver", "lichen", "litter", "soil", "rock", "totalVascular", "totalBryophytes", "Mosses", "vegetationHeight", "mossHeight", "comment")
 
 spp <- setdiff(names(data2017), c(start, end))
 
 data2017 <- data2017 %>% 
   select(one_of(start), one_of(spp), one_of(end))
 
+
+
+
+## stars
+
+gather(data2017, key, value, -turfID, -subPlot, -comment) %>% 
+  filter(grepl("\\*", value)) %>% 
+  left_join(tbl(con, "turfs") %>% 
+              left_join(tbl(con, "plots"), by = c(destinationPlotID = "plotID")) %>% 
+              select(turfID, blockID) %>% 
+              collect()) %>% 
+  arrange(blockID, turfID) %>% 
+  print(n = Inf)
+
+#temp zap stars
+data2017 <- data2017 %>% 
+  mutate_all(funs(gsub(pattern = "\\*|\\?", replacement  = "", x = .))) %>% 
+  mutate_all(trimws)
+
+#zap blank columns
+data2017 <- data2017 %>% select_if(function(x)!all(is.na(x)))
+
+#lichen
+data2017 <- data2017 %>% mutate(totalLichen = lichen)
+
+write_csv(data2017, path = "rawdata/2017_data/processed_2017.csv")
+dbDisconnect(con)
