@@ -130,6 +130,7 @@ import_data <- function(file, con, merge_dictionary){
 
                                               
   #subTurfCommunity  ####
+
   message("subturfcommunity")  
   
     subspp <- dat %>% 
@@ -137,7 +138,7 @@ import_data <- function(file, con, merge_dictionary){
       select(turfID, year, subTurf = subPlot, (which(names(dat) == "recorder") + 1):(which(names(dat) == "pleuro") -1)) %>% 
       mutate(subTurf = as.integer(subTurf)) %>% 
       gather(key = species, value = presence, -turfID, -subTurf, -year) %>%
-      filter(!is.na(presence), presence != 0)  #remove absent taxa
+      filter(!is.na(presence), presence != 0, presence != "")  #remove absent taxa
 
     # #oddity search
     subspp %>% count(presence)
@@ -220,14 +221,7 @@ import_data <- function(file, con, merge_dictionary){
     
     stopifnot(nrow(subspp) == finalNrowSubTurfCommunity - initNrowSubTurfCommunity)
     
-    
-        #check whether rows added successfully
-    initSTC <- dbGetQuery(con, "select count(*) as n from subTurfCommunity")$n
-    dbWriteTable(con, "subTurfCommunity", subspp, row.names = FALSE, append = TRUE)
-    postSTC <- dbGetQuery(con, "select count(*) as n from subTurfCommunity")$n
-    stopifnot(nrow(subspp) == postSTC - initSTC)
-  
-    
+
     
   ############### Vigdis seedling problem #only for 2011 data     #############################
 
