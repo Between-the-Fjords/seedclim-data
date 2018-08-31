@@ -62,5 +62,11 @@ sunplin_phylo_replicates(put_file = "seedclim.puts",phylogeny_file = "gbotb_anno
                          directory = "C:/Users/Brian/Desktop/current_projects/seedclimComm/phylogeny/",
                          taxa_to_keep<-puts_info_seedclim$speciesName)
 
+#########################################################################
+#Just basic code to inspect a few phylos, make sure they aren't noticably broken
 
+t1<-read.tree("phylogenies/gbotb_base_rep_1.tre")
+t2<-read.tree("phylogenies/gbotb_base_rep_2.tre")
+plot(t1,show.tip.label = F)
+plot(t2,show.tip.label = F)
 
