@@ -1,17 +1,13 @@
 ##### Mixed effect models #####
 library(lme4)
-library(lmerTest)
+#library(lmerTest)
 library(broom)
 #source("Cleaning.R")
 
-devtools::source_gist("https://gist.github.com/phipsgabler/91a81883a82a54bb6a92", filename="qqline.r")
+#devtools::source_gist("https://gist.github.com/phipsgabler/91a81883a82a54bb6a92", filename="qqline.r")
 
 
 #### Temperature ####
-
-
-
-
 
 ## SLA ##
 
@@ -78,8 +74,144 @@ SLA_temp_95 %>%
 #ggsave("Model_output.jpg")
 
 
-scale_values<- scale(TheLucky15$Precip)
 
+#### SLA Agrostis capillaris ####
+
+Agr_cap<-TheLucky15%>%
+  filter(Species=="Agr_cap")%>%
+  filter(!is.na(SLA))
+
+model_Agr <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Agr_cap)
+
+newdata_Agr<-expand.grid(Precip=seq(500,3200, length=500), Temp=c(6.5, 8.5, 10.5), Site=NA)
+
+newdata_Agr$fit <- predict(model_Agr, re.form=NA, newdata=newdata_Agr)
+
+summary(model_Agr)  
+
+Agr_cap_plot <- ggplot(Agr_cap, aes(Precip, SLA,lty = as.factor(T_level),colour = as.factor(T_level))) +
+  geom_jitter(show.legend = FALSE) +
+  theme_minimal(base_size = 11) +
+  geom_line(aes(
+    x = Precip,
+    y = fit, color=factor(Temp)), data=newdata_Agr, size = 1, inherit.aes = FALSE,
+    show.legend = FALSE) +
+  labs(
+    title = "Agrostis capillaris",
+    x = "",
+    y = "cm2/g",
+    colour = "Temperature (ºC)",
+    lty = "Temperature (ºC)"
+  ) +
+  scale_color_manual(values = c("#99CCFF", "#FFCC33", "#FF6666")) +
+  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
+  expand_limits(y=c(20,700))
+
+
+#### Anthoxantum odoratum ####
+
+Ant_odo <- TheLucky15 %>%
+  filter(Species == "Ant_odo") %>%
+  filter(!is.na(SLA))
+
+
+model_Ant_odo <- lmer(SLA ~ scale(Temp) * scale(Precip) + (1 | Site), data = Ant_odo)
+
+newdata_Ant<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
+
+newdata_Ant$fit <- predict(model_Ant_odo, re.form=NA, newdata=newdata_Ant)
+
+#summary(model_Ant_odo)  
+
+
+Ant_odo_plot <- ggplot(Ant_odo, aes(Precip, SLA, lty=as.factor(T_level), colour=as.factor(T_level))) +
+  geom_jitter(show.legend = FALSE) +
+  theme_minimal(base_size = 11) +
+  geom_line(aes( x = Precip,
+    y = fit, color = factor(Temp)), data=newdata_Ant,
+    size = 1, inherit.aes = FALSE, show.legend = FALSE) +
+  labs(
+    title = "Anthoxanthum odoratum",
+    x = "",
+    y = "cm2/g"
+  ) +
+  scale_color_manual(values=c("#99CCFF", "#FFCC33", "#FF6666")) +
+  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
+  expand_limits(y=c(20,700))
+
+
+#### Campanula rotundifolia ####
+
+Cam_rot<-TheLucky15%>%
+  filter(Species=="Cam_rot")%>%
+  filter(!is.na(SLA))
+
+model_Cam_rot <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Cam_rot)
+
+newdata_Cam<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
+
+newdata_Cam$fit <- predict(model_Cam_rot, re.form=NA, newdata=newdata_Cam)
+
+Cam_rot_plot <- ggplot(Cam_rot, aes(Precip, SLA,lty = as.factor(T_level), color = as.factor(T_level))) +
+  geom_jitter(aes(color = as.factor(T_level))) +
+  theme_minimal(base_size = 11) +
+  geom_line(aes(
+    y = fit, x=Precip, color=factor(Temp)), data = newdata_Cam, size = 1, inherit.aes = FALSE) +
+  labs(
+    title = "(c) Campanula rotundifolia",
+    x = "Precipitation (mm/year)",
+    y = "Specific leaf area (cm2/g)",
+    colour = "Temperature (ºC)",
+    lty = "Temperature (ºC)"
+  ) +
+  scale_color_manual(values = c("#99CCFF", "#FFCC33", "#FF6666")) +
+  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
+  expand_limits(y=c(20,700))
+
+
+#### Deschampsia cespitosa ####
+
+Des_ces<-TheLucky15%>%
+  filter(Species=="Des_ces")%>%
+  filter(!is.na(SLA))
+
+model_Des_ces <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Des_ces)
+
+newdata_Des<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
+
+newdata_Des$fit <- predict(model_Des_ces, re.form=NA, newdata=newdata_Des)
+
+newdata_Des<-newdata_Des%>%
+  filter(!Temp==10.5)
+
+Des_ces_plot <- ggplot(Des_ces, aes(Precip, SLA, lty = as.factor(T_level), color = as.factor(T_level))) +
+  geom_jitter(show.legend = FALSE) +
+  theme_minimal(base_size = 11) +
+  geom_line(aes( x = Precip,
+    y = fit, color= factor(Temp)), data=newdata_Des, size = 1, inherit.aes = FALSE, show.legend = FALSE) +
+  labs(
+    title = "(d) Deschampsia cespitosa",
+    x = "Precipitation (mm/year)",
+    y = "cm2/g"
+  ) +
+  scale_color_manual(values = c("#99CCFF", "#FFCC33", "#FF6666")) +
+  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
+  expand_limits(y=c(20,700))
+
+
+
+library(gridExtra)
+grid.arrange(Agr_cap_plot, Ant_odo_plot, Cam_rot_plot, Des_ces_plot, widths=c(0.6, 0.4), ncol=2)
+
+
+png("Species_trends_SLA.png", width = 1668, height = 2532, res = 400)
+grid.arrange(Ant_odo_plot, Agr_cap_plot, Des_ces_plot, ncol=1)
+dev.off()
+
+
+#################################### Old code #########################################
+
+#scale_values<- scale(TheLucky15$Precip)
 
 ##### One model of each #####
 
@@ -141,137 +273,6 @@ SLA_95 %>%
                      breaks = c(1, 2),
                      values = c("#0033CC", "#33CC00"))
 
-#### SLA Agrostis capillaris ####
-
-Agr_cap<-TheLucky15%>%
-  filter(Species=="Agr_cap")%>%
-  filter(!is.na(SLA))
-
-model_Agr <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Agr_cap)
-
-newdata_Agr<-expand.grid(Precip=seq(500,3200, length=500), Temp=c(6.5, 8.5, 10.5), Site=NA)
-
-newdata_Agr$fit <- predict(model_Agr, re.form=NA, newdata=newdata_Agr)
-
-summary(model)  
-
-Agr_cap_plot <- ggplot(Agr_cap, aes(Precip, SLA,lty = as.factor(T_level),colour = as.factor(T_level))) +
-  geom_jitter() +
-  theme_minimal(base_size = 11) +
-  geom_line(aes(
-    x = Precip,
-    y = fit, color=factor(Temp)), data=newdata_Agr, size = 1, inherit.aes = FALSE) +
-  labs(
-    title = "(a) Agrostis capillaris",
-    x = "",
-    y = "Specific leaf area (cm2/g)",
-    colour = "Temperature (ºC)",
-    lty = "Temperature (ºC)"
-  ) +
-  scale_color_manual(values = c("#99CCFF", "#FFCC33", "#FF6666")) +
-  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
-  expand_limits(y=c(20,700))
-
-
-#### Anthoxantum odoratum ####
-
-Ant_odo <- TheLucky15 %>%
-  filter(Species == "Ant_odo") %>%
-  filter(!is.na(SLA))
-
-
-model_Ant_odo <- lmer(SLA ~ scale(Temp) * scale(Precip) + (1 | Site), data = Ant_odo)
-
-newdata_Ant<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
-
-newdata_Ant$fit <- predict(model_Ant_odo, re.form=NA, newdata=newdata_Ant)
-
-#summary(model_Ant_odo)  
-
-
-Ant_odo_plot <- ggplot(Ant_odo, aes(Precip, SLA, lty=as.factor(T_level), colour=as.factor(T_level))) +
-  geom_jitter(show.legend = FALSE) +
-  theme_minimal(base_size = 11) +
-  geom_line(aes( x = Precip,
-    y = fit, color = factor(Temp)), data=newdata_Ant,
-    size = 1, inherit.aes = FALSE, show.legend = FALSE) +
-  labs(
-    title = "(b) Anthoxanthum odoratum",
-    x = "",
-    y = ""
-  ) +
-  scale_color_manual(values=c("#99CCFF", "#FFCC33", "#FF6666")) +
-  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
-  expand_limits(y=c(20,700))
-
-
-#### Campanula rotundifolia ####
-
-Cam_rot<-TheLucky15%>%
-  filter(Species=="Cam_rot")%>%
-  filter(!is.na(SLA))
-
-model_Cam_rot <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Cam_rot)
-
-newdata_Cam<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
-
-newdata_Cam$fit <- predict(model_Cam_rot, re.form=NA, newdata=newdata_Cam)
-
-Cam_rot_plot <- ggplot(Cam_rot, aes(Precip, SLA,lty = as.factor(T_level), color = as.factor(T_level))) +
-  geom_jitter(aes(color = as.factor(T_level))) +
-  theme_minimal(base_size = 11) +
-  geom_line(aes(
-    y = fit, x=Precip, color=factor(Temp)), data = newdata_Cam, size = 1, inherit.aes = FALSE) +
-  labs(
-    title = "(c) Campanula rotundifolia",
-    x = "Precipitation (mm/year)",
-    y = "Specific leaf area (cm2/g)",
-    colour = "Temperature (ºC)",
-    lty = "Temperature (ºC)"
-  ) +
-  scale_color_manual(values = c("#99CCFF", "#FFCC33", "#FF6666")) +
-  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
-  expand_limits(y=c(20,700))
-
-
-#### Deschampsia cespitosa ####
-
-Des_ces<-TheLucky15%>%
-  filter(Species=="Des_ces")%>%
-  filter(!is.na(SLA))
-
-model_Des_ces <- lmer(SLA ~scale(Temp)*scale(Precip) + (1|Site), data= Des_ces)
-
-newdata_Des<-expand.grid(Precip=seq(500,3200, length=3000), Temp=c(6.5, 8.5, 10.5), Site=NA)
-
-newdata_Des$fit <- predict(model_Des_ces, re.form=NA, newdata=newdata_Des)
-
-newdata_Des<-newdata_Des%>%
-  filter(!Temp==10.5)
-
-Des_ces_plot <- ggplot(Des_ces, aes(Precip, SLA, lty = as.factor(T_level), color = as.factor(T_level))) +
-  geom_jitter(show.legend = FALSE) +
-  theme_minimal(base_size = 11) +
-  geom_line(aes( x = Precip,
-    y = fit, color= factor(Temp)), data=newdata_Des, size = 1, inherit.aes = FALSE, show.legend = FALSE) +
-  labs(
-    title = "(d) Deschampsia cespitosa",
-    x = "Precipitation (mm/year)",
-    y = ""
-  ) +
-  scale_color_manual(values = c("#99CCFF", "#FFCC33", "#FF6666")) +
-  theme(plot.title = element_text(hjust = 0.5, face="italic"))+
-  expand_limits(y=c(20,700))
-
-
-
-library(gridExtra)
-grid.arrange(Agr_cap_plot, Ant_odo_plot, Cam_rot_plot, Des_ces_plot, widths=c(0.6, 0.4), ncol=2)
-
-
-
-
-#################################### Old code #########################################
 
 SLA_mod_pred<-TheLucky15%>%
   mutate(scale_Temp=scale(Temp))%>%
