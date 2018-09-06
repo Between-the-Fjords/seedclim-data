@@ -1,4 +1,6 @@
 #require(data.table)
+#library(lme4)
+#library(lmerTest)
 
 # Reading in data and dictionaries #
 
@@ -13,7 +15,7 @@ dict_units <- read.csv2("Traits/data/Dict_units.csv", header = TRUE, sep=";", st
 TRY <- transform(TRY, OrigValueStr = as.numeric(OrigValueStr))
 
 TRY <- TRY%>%
-  select(AccSpeciesName, TraitName, OriglName, OrigValueStr, OrigUnitStr, OrigObsDataID)%>%
+  select(AccSpeciesName, TraitName, OriglName, OrigValueStr, OrigUnitStr, OrigObsDataID, ValueKindName)%>%
   filter(!TraitName=="")%>%
   mutate(OrigUnitStr = plyr::mapvalues(OrigUnitStr, from = dict_units$Old_names, to = dict_units$New_names))%>%
   filter(TraitName == "Leaf area per leaf dry mass (SLA or 1/LMA): petiole and rachis included")%>%
@@ -23,6 +25,7 @@ TRY <- TRY%>%
                              ifelse(OrigUnitStr == "mm2/g", OrigValueStr*0.01,
                                     ifelse(OrigUnitStr == "cm2/g", OrigValueStr*1,
                                            OrigValueStr*1)))))%>%
+  filter(ValueKindName == "Single")%>%
   group_by(AccSpeciesName)%>%
   mutate(SLA_TRY = mean(SLA))%>%
   ungroup()%>%
@@ -54,13 +57,15 @@ Temp_newdata<-expand.grid(Temp=seq(5.5,11, length=500), Site=NA)
 Temp_newdata$fit_local_SLA <- predict(Temp_local_SLA, re.form=NA, newdata=Temp_newdata)
 
 #summary(Temp_local_SLA)  
+anova(Temp_local_SLA)
 
 
 Temp_regional_SLA <- lmer(Wmean_global_SLA ~scale(Temp) + (1|Site), data= Local_Global_traits)
 
 Temp_newdata$fit_regional_SLA <- predict(Temp_regional_SLA, re.form=NA, newdata=Temp_newdata)
 
-#summary(Temp_regional_SLA)  
+#summary(Temp_regional_SLA) 
+anova(Temp_regional_SLA)
 
 
 Temp_global_SLA <- lmer(Wmean_TRY ~scale(Temp) + (1|Site), data= Local_Global_traits)
@@ -68,6 +73,7 @@ Temp_global_SLA <- lmer(Wmean_TRY ~scale(Temp) + (1|Site), data= Local_Global_tr
 Temp_newdata$fit_global_SLA <- predict(Temp_global_SLA, re.form=NA, newdata=Temp_newdata)
 
 summary(Temp_global_SLA)  
+anova(Temp_global_SLA)
 
 
 
