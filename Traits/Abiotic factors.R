@@ -11,6 +11,19 @@ mean(wcommunity_df$SLA_mean_global, na.rm=TRUE)
 mean(wcommunity_df$Wmean_SLA, na.rm=TRUE)
 mean(wcommunity_df$Wmean_global_SLA, na.rm=TRUE)
 
+mean(wcommunity_df$Lth_ave, na.rm=TRUE)
+mean(wcommunity_df$Lth_mean, na.rm=TRUE)
+mean(wcommunity_df$Lth_mean_global, na.rm=TRUE)
+mean(wcommunity_df$Wmean_Lth, na.rm=TRUE)
+mean(wcommunity_df$Wmean_global_Lth, na.rm=TRUE)
+
+mean(wcommunity_df$LDMC, na.rm=TRUE)
+mean(wcommunity_df$LDMC_mean, na.rm=TRUE)
+mean(wcommunity_df$LDMC_mean_global, na.rm=TRUE)
+mean(wcommunity_df$Wmean_LDMC, na.rm=TRUE)
+mean(wcommunity_df$Wmean_global_LDMC, na.rm=TRUE)
+
+
 
 SLA_raw_Temp <- lmer(SLA ~ Temp + (1|Site), data= wcommunity_df)
 summary(SLA_raw_Temp)
@@ -34,6 +47,53 @@ pLot1<-wcommunity_df%>%
   geom_line(aes( x = Temp, y = fit), data=newdata_Temp, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666")+
   labs( y="SLA (cm2/g)", x="")+
   theme_minimal()
+
+
+var_com<-wcommunity_df%>%
+  group_by(Site, Species)%>%
+  mutate(var_SLA = var(SLA))%>%
+  mutate(var_height = var(Height))%>%
+  select(Site, Species, Temp, var_SLA, var_height)%>%
+  unique()
+
+try <- lmer(var_SLA ~ Temp + (1|Site), data= var_com)
+summary(try)
+
+try%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_try<-expand.grid( Temp=seq(5.5, 11, length=1000))
+
+newdata_try$fit <- predict(try, re.form=NA, newdata=newdata_try)
+
+ggplot(aes(x=Temp, y=var_SLA), data=var_com)+
+  geom_jitter(width=0.1)+
+  geom_line(aes( x = Temp, y = fit), data=newdata_try, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666")+
+  labs( y="SLA (cm2/g)", x="")+
+  theme_minimal()
+
+try2 <- lmer(var_height ~ Temp + (1|Site), data= var_com)
+summary(try2)
+
+try2%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+newdata_try<-expand.grid( Temp=seq(5.5, 11, length=1000))
+
+newdata_try$fit2 <- predict(try2, re.form=NA, newdata=newdata_try)
+
+ggplot(aes(x=Temp, y=var_height), data=var_com)+
+  geom_jitter(width=0.1)+
+  geom_line(aes( x = Temp, y = fit2), data=newdata_try, size = 1, inherit.aes = FALSE, show.legend = FALSE, color="#FF6666")+
+  labs( y="SLA (cm2/g)", x="")+
+  theme_minimal()
+
 
 
 SLA_raw_precip <- lmer(SLA ~Precip + (1|Site), data= wcommunity_df)
@@ -560,3 +620,372 @@ CWM_12<-Graminoids%>%
   theme_minimal()
 
 grid.arrange(CWM_1, CWM_2, CWM_3, CWM_4, CWM_5, CWM_6, CWM_7, CWM_8, CWM_9, CWM_10, CWM_11, CWM_12, ncol=2)
+
+
+########## Specific mean, fixed mean and spcific CWM #########
+
+### SLA ###
+
+SLA_specific_mean_Temp <- lmer(SLA_mean ~ Temp + (1|Site), data= wcommunity_df)
+summary(SLA_specific_mean_Temp)
+
+SLA_specific_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+SLA_specific_mean_precip <- lmer(SLA_mean ~Precip + (1|Site), data= wcommunity_df)
+summary(SLA_specific_mean_precip)
+
+SLA_specific_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### LDMC ###
+
+LDMC_specific_mean_Temp <- lmer(LDMC_mean ~ Temp + (1|Site), data= wcommunity_df)
+summary(LDMC_specific_mean_Temp)
+
+LDMC_specific_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+LDMC_specific_mean_precip <- lmer(LDMC_mean ~Precip + (1|Site), data= wcommunity_df)
+summary(LDMC_specific_mean_precip)
+
+LDMC_specific_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Leaf thickness ###
+
+Lth_specific_mean_Temp <- lmer(Lth_mean ~ Temp + (1|Site), data= wcommunity_df)
+summary(Lth_specific_mean_Temp)
+
+Lth_specific_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+Lth_specific_mean_precip <- lmer(Lth_mean ~Precip + (1|Site), data= wcommunity_df)
+summary(Lth_specific_mean_precip)
+
+Lth_specific_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### C/N ratio ###
+
+CN_specific_mean_Temp <- lmer(log(CN_ratio_mean) ~ Temp + (1|Site), data= wcommunity_df)
+summary(CN_specific_mean_Temp)
+
+CN_specific_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+CN_specific_mean_precip <- lmer(log(CN_ratio_mean) ~Precip + (1|Site), data= wcommunity_df)
+summary(CN_specific_mean_precip)
+
+CN_specific_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Height in forbs ###
+
+H_Forb_specific_mean_temp <- lmer(log(Height_mean) ~Temp + (1|Site), data= Forbs)
+summary(H_Forb_specific_mean_temp)
+
+H_Forb_specific_mean_temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+H_Forb_specific_mean_precip <- lmer(log(Height_mean) ~Precip + (1|Site), data= Forbs)
+summary(H_Forb_specific_mean_precip)
+
+H_Forb_specific_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Height i graiminois ###
+
+H_Gram_specific_mean_Temp <- lmer(log(Height_mean) ~Temp + (1|Site), data= Graminoids)
+summary(H_Gram_specific_mean_Temp)
+
+H_Gram_specific_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+H_Gram_specific_mean_precip <- lmer(log(Height_mean) ~Precip + (1|Site), data= Graminoids)
+summary(H_Gram_specific_mean_precip)
+
+H_Gram_specific_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+
+########## Fixed mean #########
+
+### SLA ###
+
+SLA_fixed_mean_Temp <- lmer(SLA_mean_global ~ Temp + (1|Site), data= wcommunity_df)
+summary(SLA_fixed_mean_Temp)
+
+SLA_fixed_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+SLA_fixed_mean_precip <- lmer(SLA_mean_global ~Precip + (1|Site), data= wcommunity_df)
+summary(SLA_fixed_mean_precip)
+
+SLA_fixed_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### LDMC ###
+
+LDMC_fixed_mean_Temp <- lmer(LDMC_mean_global ~ Temp + (1|Site), data= wcommunity_df)
+summary(LDMC_fixed_mean_Temp)
+
+LDMC_fixed_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+LDMC_fixed_mean_precip <- lmer(LDMC_mean_global ~Precip + (1|Site), data= wcommunity_df)
+summary(LDMC_fixed_mean_precip)
+
+LDMC_fixed_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Leaf thickness ###
+
+Lth_fixed_mean_Temp <- lmer(Lth_mean_global ~ Temp + (1|Site), data= wcommunity_df)
+summary(Lth_fixed_mean_Temp)
+
+Lth_fixed_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+Lth_fixed_mean_precip <- lmer(Lth_mean_global ~Precip + (1|Site), data= wcommunity_df)
+summary(Lth_fixed_mean_precip)
+
+Lth_fixed_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### C/N ratio ###
+
+CN_fixed_mean_Temp <- lmer(log(CN_ratio_mean_global) ~ Temp + (1|Site), data= wcommunity_df)
+summary(CN_fixed_mean_Temp)
+
+CN_fixed_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+CN_fixed_mean_precip <- lmer(log(CN_ratio_mean_global) ~Precip + (1|Site), data= wcommunity_df)
+summary(CN_fixed_mean_precip)
+
+CN_fixed_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Height in forbs ###
+
+H_Forb_fixed_mean_temp <- lmer(log(Height_mean_global) ~Temp + (1|Site), data= Forbs)
+summary(H_Forb_fixed_mean_temp)
+
+H_Forb_fixed_mean_temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+H_Forb_fixed_mean_precip <- lmer(log(Height_mean_global) ~Precip + (1|Site), data= Forbs)
+summary(H_Forb_fixed_mean_precip)
+
+H_Forb_fixed_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Height i graiminois ###
+
+H_Gram_fixed_mean_Temp <- lmer(log(Height_mean_global) ~Temp + (1|Site), data= Graminoids)
+summary(H_Gram_fixed_mean_Temp)
+
+H_Gram_fixed_mean_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+H_Gram_fixed_mean_precip <- lmer(log(Height_mean_global) ~Precip + (1|Site), data= Graminoids)
+summary(H_Gram_fixed_mean_precip)
+
+H_Gram_fixed_mean_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+
+########## Specific community weighted means #########
+
+### SLA ###
+
+SLA_specific_CWM_Temp <- lmer(Wmean_SLA ~ Temp + (1|Site), data= wcommunity_df)
+summary(SLA_specific_CWM_Temp)
+
+SLA_specific_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+SLA_specific_CWM_precip <- lmer(Wmean_SLA ~Precip + (1|Site), data= wcommunity_df)
+summary(SLA_specific_CWM_precip)
+
+SLA_specific_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### LDMC ###
+
+LDMC_specific_CWM_Temp <- lmer(Wmean_LDMC ~ Temp + (1|Site), data= wcommunity_df)
+summary(LDMC_specific_CWM_Temp)
+
+LDMC_specific_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+LDMC_specific_CWM_precip <- lmer(Wmean_LDMC ~Precip + (1|Site), data= wcommunity_df)
+summary(LDMC_specific_CWM_precip)
+
+LDMC_specific_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Leaf thickness ###
+
+Lth_specific_CWM_Temp <- lmer(Wmean_Lth ~ Temp + (1|Site), data= wcommunity_df)
+summary(Lth_specific_CWM_Temp)
+
+Lth_specific_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+Lth_specific_CWM_precip <- lmer(Wmean_Lth ~Precip + (1|Site), data= wcommunity_df)
+summary(Lth_specific_CWM_precip)
+
+Lth_specific_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### C/N ratio ###
+
+CN_specific_CWM_Temp <- lmer(log(Wmean_CN) ~ Temp + (1|Site), data= wcommunity_df)
+summary(CN_specific_CWM_Temp)
+
+CN_specific_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+CN_specific_CWM_precip <- lmer(log(Wmean_CN) ~Precip + (1|Site), data= wcommunity_df)
+summary(CN_specific_CWM_precip)
+
+CN_specific_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Height in forbs ###
+
+H_Forb_specific_CWM_temp <- lmer(log(Wmean_Height) ~Temp + (1|Site), data= Forbs)
+summary(H_Forb_specific_CWM_temp)
+
+H_Forb_specific_CWM_temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+H_Forb_specific_CWM_precip <- lmer(log(Wmean_Height) ~Precip + (1|Site), data= Forbs)
+summary(H_Forb_specific_CWM_precip)
+
+H_Forb_specific_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+### Height i graiminois ###
+
+H_Gram_specific_CWM_Temp <- lmer(log(Wmean_Height) ~Temp + (1|Site), data= Graminoids)
+summary(H_Gram_specific_CWM_Temp)
+
+H_Gram_specific_CWM_Temp%>%
+  tidy()%>%
+  filter(term == "Temp")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
+
+H_Gram_specific_CWM_precip <- lmer(log(Wmean_Height) ~Precip + (1|Site), data= Graminoids)
+summary(H_Gram_specific_CWM_precip)
+
+H_Gram_specific_CWM_precip%>%
+  tidy()%>%
+  filter(term == "Precip")%>%
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96))
