@@ -45,6 +45,7 @@ vignettes/*.pdf
 *.mdb
 *.csv
 *.txt
+*.sqlite
 
 # compressed files
 *.zip
