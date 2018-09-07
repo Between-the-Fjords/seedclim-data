@@ -47,7 +47,7 @@ taxa<-taxa[which(!is.na(taxa$speciesName)),]
 taxa$speciesName<-gsub(pattern = "not media",replacement = "sp1",x = taxa$speciesName,fixed = T)
 taxa<-taxa[grep(pattern = "sp\\b",x = taxa$speciesName,invert = T),]
 taxa$family[grep(pattern = "Dianthus",taxa$speciesName)]<-"Caryophyllaceae"
-
+write.csv(x = taxa,file = "phylogeny/tree_names_to_code_lookup.csv",row.names = F)
 
 
 #Make sunplin files
