@@ -41,23 +41,55 @@ cover_binary[which(cover_binary>0)]<-1
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#Calculating various phylo metrics
+#Calculating various phylo metrics: non-abundance weighted~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-cover.meta$pd<-pd.query(tree = tree_1,matrix = cover_binary)
-cover.meta$pd_std<-pd.query(tree = tree_1,matrix = cover_binary,standardize = T)
+#richness metrics
+pd_out<-replicated_pd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$pd<-rowMeans(pd_out)
+pd_out_std<-replicated_pd_std(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$pd_std<-rowMeans(pd_out_std)
+
+#divergence metrics
 cover.meta$mntd<-mntd.query(tree = tree_1,matrix = cover_binary)
 cover.meta$mntd_std<-mntd.query(tree = tree_1,matrix = cover_binary,standardize = T)
-cover.meta$mpd<-mpd.query(tree = tree_1,matrix = cover_binary)
-cover.meta$mpd_std<-mpd.query(tree = tree_1,matrix = cover_binary,standardize = T)
 
-mpd_out<-replicated_mpd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
-cover.meta$mpd_abd<-rowMeans(mpd_out)
 
-mntd_out<-replicated_mntd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
-cover.meta$mntd_abd<-rowMeans(mntd_out)
+mpd_out<-replicated_mpd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$mpd<-rowMeans(mpd_out)
 
-pd_out<-replicated_pd_abd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
-cover.meta$pd_abd<-rowMeans(pd_out)
+mpd_out_std<-replicated_mpd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$mpd_std<-rowMeans(mpd_out)
+
+mntd_out<-replicated_mntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$mntd<-rowMeans(mntd_out)
+
+mntd_out_std<-replicated_mntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$mntd_std<-rowMeans(mntd_out)
+
+
+
+#regularity metrics
+
+#vntd
+#
+  
+  
+#calculating phylo metrics: abundance weighted~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#richness
+pd_out_abd<-replicated_pd_abd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
+cover.meta$pd_abd<-rowMeans(pd_out_abd)
+
+#divergence
+mpd_out_abd<-replicated_mpd_abd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
+cover.meta$mpd_abd<-rowMeans(mpd_out_abd)
+
+mntd_out_abd<-replicated_mntd_abd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
+cover.meta$mntd_abd<-rowMeans(mntd_out_abd)
+
+#variance(?)
+
+#need to add standardized versions of abundance weighted metrics
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
