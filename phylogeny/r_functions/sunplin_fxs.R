@@ -114,7 +114,7 @@ for(i in 1:length(genera_to_add)){
     if(phylogeny$node.label[mrca_i-length(phylogeny$tip.label)]!=""){
       
       label_i<-phylogeny$node.label[mrca_i-length(phylogeny$tip.label)]
-      combined_taxa$put[which(combined_taxa$put_level=="mrca_genus" & combined_taxa$put==genus_i)]<-label_i
+      puts_info$put[which(puts_info$put_level=="mrca_genus" & puts_info$put==genus_i)]<-label_i
       rm(label_i)
       
     }else{stop("Something weird happened")}
@@ -150,7 +150,7 @@ for(i in 1:length(families_to_add)){
     if(phylogeny$node.label[mrca_i-length(phylogeny$tip.label)]!=""){
       
       label_i<-phylogeny$node.label[mrca_i-length(phylogeny$tip.label)]
-      puts_info$put[which(puts$put_level=="mrca_family" & puts_info$put==fam_i)]<-label_i
+      puts_info$put[which(puts_info$put_level=="mrca_family" & puts_info$put==fam_i)]<-label_i
       rm(label_i)
       
     }else{stop("Something weird happened")}
