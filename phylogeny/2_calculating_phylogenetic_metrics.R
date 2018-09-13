@@ -66,13 +66,17 @@ cover.meta$mntd<-rowMeans(mntd_out)
 mntd_out_std<-replicated_mntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$mntd_std<-rowMeans(mntd_out)
 
-
-
 #regularity metrics
 
+#vpd
+vpd_out<-replicated_vpd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$vpd<-rowMeans(vpd_out)
+
+
 #vntd
-#
-  
+vntd_out<-replicated_vntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$vntd<-rowMeans(vntd_out)
+
   
 #calculating phylo metrics: abundance weighted~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -87,9 +91,36 @@ cover.meta$mpd_abd<-rowMeans(mpd_out_abd)
 mntd_out_abd<-replicated_mntd_abd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/")
 cover.meta$mntd_abd<-rowMeans(mntd_out_abd)
 
-#variance(?)
+#variance
+vpd_out_abd<-replicated_vpd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$vpd_abd<-rowMeans(vpd_out_abd)
+
+#vntd
+vntd_out_abd<-replicated_vntd_abd(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$vntd_abd<-rowMeans(vntd_out_abd)
+
 
 #need to add standardized versions of abundance weighted metrics
+
+#richness
+
+#pd_abd_std<-
+
+
+#divergence
+mpd_abd_std<-replicated_mpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+cover.meta$mpd_abd_std<-rowMeans(mpd_abd_std)
+
+mntd_abd_std<-replicated_mntd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+cover.meta$mntd_abd_std<-rowMeans(mntd_abd_std)
+
+
+#variance
+vpd_abd_std<-replicated_vpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+cover.meta$vpd_abd_std<-rowMeans(vpd_abd_std)
+
+vntd_abd_std<-replicated_vntd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+cover.meta$vntd_abd_std<-rowMeans(vntd_abd_std)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

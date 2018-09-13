@@ -45,6 +45,8 @@ summary(pd.abd.out)
 summary(lm(formula = cover.meta$mpd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
 summary(lm(formula = cover.meta$mntd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
 summary(lm(formula = cover.meta$pd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
+summary(lm(formula = cover.meta$vntd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
+summary(lm(formula = cover.meta$vpd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
 
 
 
