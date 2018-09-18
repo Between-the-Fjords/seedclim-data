@@ -103,9 +103,8 @@ cover.meta$vntd_abd<-rowMeans(vntd_out_abd)
 #need to add standardized versions of abundance weighted metrics
 
 #richness
-
-#pd_abd_std<-
-
+pd_abd_std <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+cover.meta$pd_abd_std<-rowMeans(pd_abd_std)
 
 #divergence
 mpd_abd_std<-replicated_mpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/phylogenies/",n_reps_phylo = 100,nreps_null = 100)
@@ -127,4 +126,4 @@ cover.meta$vntd_abd_std<-rowMeans(vntd_abd_std)
 
 #Write needed outputs
 
-write_rds(x = cover.meta,path = "phylogeny/cover_phylo.rds")
+saveRDS(object = cover.meta,file = "phylogeny/cover_phylo.rds")

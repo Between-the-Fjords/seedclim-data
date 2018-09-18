@@ -471,7 +471,7 @@ replicated_mpd_abd_std<-function(comm_matrix,phylogeny_directory,n_reps_phylo=NU
     all_mpds<-cbind(obs_mpd_i,expected_mpds)
     
     
-    mpd_out[,i]<-apply(X = all_mpds,MARGIN = 1,FUN = function(x){(x[1]/mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    mpd_out[,i]<-apply(X = all_mpds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
     
     print(paste(i/n_reps_phylo*100," percent done",sep = ""))  
     
@@ -516,7 +516,7 @@ replicated_mntd_abd_std<-function(comm_matrix,phylogeny_directory,n_reps_phylo=N
     all_mntds<-cbind(obs_mntd_i,expected_mntds)
     
     
-    mntd_out[,i]<-apply(X = all_mntds,MARGIN = 1,FUN = function(x){(x[1]/mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    mntd_out[,i]<-apply(X = all_mntds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
     
     print(paste(i/n_reps_phylo*100," percent done",sep = ""))  
     
@@ -562,7 +562,7 @@ replicated_vpd_abd_std<-function(comm_matrix,phylogeny_directory,n_reps_phylo=NU
     all_vpds<-cbind(obs_vpd_i,expected_vpds)
     
     
-    vpd_out[,i]<-apply(X = all_vpds,MARGIN = 1,FUN = function(x){(x[1]/mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    vpd_out[,i]<-apply(X = all_vpds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
     
     print(paste(i/n_reps_phylo*100," percent done",sep = ""))  
     
@@ -608,13 +608,63 @@ replicated_vntd_abd_std<-function(comm_matrix,phylogeny_directory,n_reps_phylo=N
     all_vntds<-cbind(obs_vntd_i,expected_vntds)
     
     
-    vntd_out[,i]<-apply(X = all_vntds,MARGIN = 1,FUN = function(x){(x[1]/mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    vntd_out[,i]<-apply(X = all_vntds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
     
     print(paste(i/n_reps_phylo*100," percent done",sep = ""))  
     
     
   }#i loop  
   return(vntd_out)
+  
+}
+
+############################################
+
+replicated_pd_abd_std<-function(comm_matrix,phylogeny_directory,n_reps_phylo=NULL,nreps_null=100){
+  
+  phylogenies<-list.files(path = phylogeny_directory,pattern = ".tre",full.names = T)  
+  if(is.null(n_reps_phylo)){n_reps_phylo<-length(phylogenies)}  
+  if(n_reps_phylo>length(phylogenies)){stop("More replications specified than phylogenies available")}  
+  
+  pd_out<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = n_reps_phylo)
+  
+  
+  for(i in 1:n_reps_phylo){
+    
+    
+    phy_i<-read.tree(phylogenies[i])  
+    phy_i<-drop.tip(phy = phy_i,tip = phy_i$tip.label[which(!phy_i$tip.label%in%colnames(comm_matrix))],trim.internal = T,collapse.singles = T)
+    dist_i<-cophenetic(phy_i)
+    comm_matrix<-as.matrix(comm_matrix)
+    comm_matrix[which(is.na(comm_matrix))]<-0
+    comm_matrix<-apply(X = comm_matrix,MARGIN = 2,FUN = as.integer)
+    comm_perm<-permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
+    #
+    
+    #calc null expectations
+    expected_pds<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_null)
+    for(j in 1:ncol(expected_pds)){
+      #expected_pds[,j]<-pd(samp = comm_perm$perm[[j]],dis = dist_i,abundance.weighted = T)  
+      expected_pds[,j]<-weighted.faith(my.phylo = phy_i,my.sample = comm_perm$perm[[j]])
+      
+    }#j loop
+    
+    #calc SES (obs-randmean)/randsd
+    
+    #obs_vntd_i<-vntd(samp = comm_matrix,dis = dist_i,abundance.weighted = T)
+    obs_pd_i<-weighted.faith(my.phylo = phy_i,my.sample = comm_matrix)
+    
+    
+    all_pds<-cbind(obs_pd_i,expected_pds)
+    
+    
+    pd_out[,i]<-apply(X = all_pds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    
+    print(paste(i/n_reps_phylo*100," percent done",sep = ""))  
+    
+    
+  }#i loop  
+  return(pd_out)
   
 }
 

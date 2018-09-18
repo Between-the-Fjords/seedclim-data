@@ -1,5 +1,18 @@
-#analyzing and plotting phylogenetic patterns
+#Seedclim: analyzing and plotting phylogenetic patterns
+#Brian Maitner.  BMaitner at gmail
+#####################
+#Metadata:
 
+#Treaments (TTtreat)
+#Levels: TTC TT1 TT2 TT3 TT4
+#warmer (TT2) 
+#wetter (TT3)
+#warmer and wetter (TT4) climates, 
+
+#transplanting within blocks (to control for the transplanting itself)(TT1), 
+#untouched control plot (TTC)
+
+#####################
 
 #load packages
 library(lmerTest)
@@ -8,48 +21,45 @@ library(nlme)
 
 #read in data
 cover.meta<-readRDS(file = "phylogeny/cover_phylo.rds")
+cover.meta$summerTemperature<-scale(cover.meta$summerTemperature)
+cover.meta$annualPrecipitation<-scale(cover.meta$annualPrecipitation)
 
-#Quick looks at non-abundance-weighted metrics
-summary(lm(formula = cover.meta$mpd_std~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
-summary(lm(formula = cover.meta$pd_std~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
-mntd.out<- lme(mntd_std~TTtreat + precipitation_level +temperature_level+year +year*TTtreat,
-               random=~1|turfID,data=cover.meta)
+#Abundance weighted models
 
-pd.out<- lme(pd_std~TTtreat + precipitation_level +temperature_level+year +year*TTtreat,
-             random=~1|turfID,data=cover.meta)
+vntd.abd<- lme(vntd_abd_std~ annualPrecipitation +summerTemperature+year+TTtreat+year*TTtreat,
+                   random=~1|blockID,data=cover.meta)
 
-mpd.out<- lme(mpd_std~TTtreat + precipitation_level +temperature_level+year +year*TTtreat,
-              random=~1|turfID,data=cover.meta)
+vpd.abd<- lme(vpd_abd_std~ annualPrecipitation +summerTemperature+year+TTtreat+year*TTtreat,
+                  random=~1|blockID,data=cover.meta)
 
+pd.abd<- lme(pd_abd_std~ annualPrecipitation +summerTemperature+year+TTtreat+year*TTtreat,
+                 random=~1|blockID,data=cover.meta)
 
-summary(mntd.out)
-summary(pd.out)
-summary(mpd.out)
+mpd.abd<- lme(mpd_abd_std~ annualPrecipitation +summerTemperature+year+TTtreat+year*TTtreat,
+                  random=~1|blockID,data=cover.meta)
 
-
-mpd.abd.out<- lme(mpd_abd~TTtreat + precipitation_level +temperature_level+year +year*TTtreat,
-                  random=~1|turfID,data=cover.meta)
+mntd.abd<- lme(mntd_abd_std~ annualPrecipitation +summerTemperature+year+TTtreat+year*TTtreat,
+                   random=~1|blockID,data=cover.meta)
 
 
-mntd.abd.out<- lme(mntd_abd~TTtreat + precipitation_level +temperature_level+year +year*TTtreat,
-                   random=~1|turfID,data=cover.meta)
+summary(vntd.abd)#temp,precip, t1, t1:year
+summary(vpd.abd)#temp
+summary(pd.abd)#temp, t3 effects, t3:year
+summary(mpd.abd)#temp,T1,T1:year
+summary(mntd.abd)#temp, T4, T4:year 
 
-pd.abd.out<- lme(pd_abd~TTtreat + precipitation_level +temperature_level+year +year*TTtreat,
-                 random=~1|turfID,data=cover.meta)
-
-
-summary(mpd.abd.out)
-summary(mntd.abd.out)
-summary(pd.abd.out)
-
-summary(lm(formula = cover.meta$mpd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
-summary(lm(formula = cover.meta$mntd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
-summary(lm(formula = cover.meta$pd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
-summary(lm(formula = cover.meta$vntd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
-summary(lm(formula = cover.meta$vpd_abd~cover.meta$TTtreat + cover.meta$precipitation_level +cover.meta$temperature_level+cover.meta$year))
+library(r2glmm)
 
 
+r2glmm::r2beta(model = vntd.abd)#temp 0.05
+r2glmm::r2beta(model = vpd.abd)#temp 0.18
+r2glmm::r2beta(model = pd.abd)#temp 0.41
+r2glmm::r2beta(model = mpd.abd)#temp 0.043
+r2glmm::r2beta(model = mntd.abd)#temp 0.02
 
-######################
 
-#Make some figures!
+plot(cover.meta$pd_abd_std~cover.meta$summerTemperature)
+
+library(sjPlot)
+library(ggplot2)
+plot_model(model = pd.abd,type="pred",terms = "summerTemperature")
