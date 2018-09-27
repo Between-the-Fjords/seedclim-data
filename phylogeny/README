@@ -1,0 +1,19 @@
+The latest version of this package can be downloaded from
+https://sourceforge.net/projects/sunplin/
+
+This package should contain the following files:
+
+README						this file
+COPYING						the license terms for the files in this package
+UserManual.pdf				sunplin user manual
+sunplin.cpp					standalone version source code
+sunplin-r.cpp				r-package version source code
+sunplin-functions.r			R script to import data from the site
+Hum_146_spp.tree			sample tree in newick format
+Hum_158_spp.puts			sample PUT file
+
+Copyright (C) 2013 by Welton Cardoso
+
+All files in this package may be modified and/or distributed according to
+the GNU GPL, version 2, June 1991, that should have been distributed with
+this package.
