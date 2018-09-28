@@ -23,10 +23,11 @@ import_data <- function(file, con, merge_dictionary){
  
   names(dat) <- make.names(names(dat))
   dat <- dat %>%
-    filter(!is.na(turfID), turfID != "") %>% 
+    filter(!is.na(turfID), turfID != "", turfID != "turfID") %>% 
     mutate(
       turfID = trimws(turfID),
-      comment = as.character(comment)
+      comment = as.character(comment),
+      year = as.integer(year)
       )
   head(dat)
   names(dat)
@@ -37,6 +38,11 @@ import_data <- function(file, con, merge_dictionary){
   names(dat) <- gsub("_\\d$", "", names(dat))
 
   #extract turf data####
+  
+  #fix typo in turfID
+  dat <- dat %>% 
+    mutate(turfID = if_else(turfID == "515 TT4 247", "515 TT4 274", turfID))
+  
   turf <- dat %>% 
     select(turfID, matches("treat$"), one_of(c("originPlotID", "destinationPlotID"))) %>% 
     distinct() %>% 
