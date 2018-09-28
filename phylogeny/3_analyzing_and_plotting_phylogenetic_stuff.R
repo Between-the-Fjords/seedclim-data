@@ -42,19 +42,19 @@ mntd.abd<- lme(mntd_abd_std~ annualPrecipitation +summerTemperature+year+TTtreat
                    random=~1|blockID,data=cover.meta)
 
 
-summary(vntd.abd)#temp,precip, t1, t1:year
+summary(vntd.abd)#temp,precip
 summary(vpd.abd)#temp
-summary(pd.abd)#temp, t3 effects, t3:year
-summary(mpd.abd)#temp,T1,T1:year
-summary(mntd.abd)#temp, T4, T4:year 
+summary(pd.abd)#temp
+summary(mpd.abd)#temp
+summary(mntd.abd)#T4, T4:year 
 
 library(r2glmm)
 
 
 r2glmm::r2beta(model = vntd.abd)#temp 0.05
-r2glmm::r2beta(model = vpd.abd)#temp 0.18
-r2glmm::r2beta(model = pd.abd)#temp 0.41
-r2glmm::r2beta(model = mpd.abd)#temp 0.043
+r2glmm::r2beta(model = vpd.abd)#temp 0.20
+r2glmm::r2beta(model = pd.abd)#temp 0.38
+r2glmm::r2beta(model = mpd.abd)#temp 0.21
 r2glmm::r2beta(model = mntd.abd)#temp 0.02
 
 
@@ -62,4 +62,9 @@ plot(cover.meta$pd_abd_std~cover.meta$summerTemperature)
 
 library(sjPlot)
 library(ggplot2)
-plot_model(model = pd.abd,type="pred",terms = "summerTemperature")
+plot_model(model = pd.abd,type="pred",terms = c("summerTemperature"),axis.title = c("summer temperature","sesPD"),title = "Predicted values",axis.lim = c(-10,10))
+plot_model(model = vpd.abd,type="pred",terms = c("summerTemperature"),axis.title = c("summer temperature","sesVPD"),title = "Predicted values",axis.lim = c(-10,10))
+plot_model(model = mpd.abd,type="pred",terms = c("summerTemperature"),axis.title = c("summer temperature","sesMPD"),title = "Predicted values",axis.lim = c(-10,10))
+
+?plot_model
+
