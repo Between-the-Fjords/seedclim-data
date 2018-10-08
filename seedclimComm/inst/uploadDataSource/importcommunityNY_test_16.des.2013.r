@@ -39,9 +39,12 @@ import_data <- function(file, con, merge_dictionary){
 
   #extract turf data####
   
-  #fix typo in turfID
+  #fix typos in turfID
   dat <- dat %>% 
-    mutate(turfID = if_else(turfID == "515 TT4 247", "515 TT4 274", turfID))
+    mutate(turfID = recode(turfID, 
+                           "515 TT4 247" = "515 TT4 274", 
+                           "277 TTC" = "286 TTC",
+                           "192 TT4 29" = "192 TT4 299"))
   
   turf <- dat %>% 
     select(turfID, matches("treat$"), one_of(c("originPlotID", "destinationPlotID"))) %>% 
@@ -55,7 +58,8 @@ import_data <- function(file, con, merge_dictionary){
   newTurfs <- turf %>% anti_join(alreadyIn) #find which turfs IDs are not already in database
   
   if(nrow(newTurfs) > 0) {
-    message("adding ", nrow(newTurfs), " new turfs" )
+    message("adding ", paste(newTurfs$turfID, collapse = " "), " new turfs" )
+    
     dbPadWriteTable(con, "turfs", newTurfs, row.names = FALSE, append = TRUE)
     }
 
