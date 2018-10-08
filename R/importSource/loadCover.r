@@ -57,7 +57,7 @@ cover.thin %>% count(notbad)
 # #  distinct()
 
 #delete turfs with too much stomping  
-cover.thin <- cover.thin %>% filter(cover.thin$notbad > 10)
+cover.thin <- cover.thin %>% filter(notbad > 10)
 
 
  #correct covers for stomping
