@@ -37,13 +37,14 @@ subturf <- subturf.thin %>%
 
 subturf.meta <- subturf %>% 
   select(siteID:recorder) %>% 
-  mutate(TTtreat = factor(TTtreat, levels=c("TTC","TT1", "TT2", "TT3", "TT4")))
+  mutate(TTtreat = factor(TTtreat, levels=c("TTC","TT1", "TT2", "TT3", "TT4")), 
+         bad = bad == "x")
   
 subturf <- subturf %>% 
   select(-(siteID:recorder)) 
 
 #stomping correction
-boxplot(rowSums(subturf) ~ bad, data = subturf.meta, notch = TRUE, names = c("good", "stomped"))
+boxplot(rowSums(subturf) ~ bad, data = subturf.meta, notch = TRUE)
 boxplot(rowSums(subturf) ~ recorder + temperature_level, data=subturf.meta, notch = TRUE, las = 2)
 
 subturf.meta[subturf.meta$bad == "x",]
