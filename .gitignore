@@ -46,6 +46,10 @@ vignettes/*.pdf
 *.csv
 *.txt
 *.sqlite
+!seedclimstructure.txt
+
+#tmpfiles
+*~
 
 # compressed files
 *.zip

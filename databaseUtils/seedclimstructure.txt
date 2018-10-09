@@ -1,0 +1,184 @@
+-- ----------------------------------------------------------
+-- MDB Tools - A library for reading MS Access database files
+-- Copyright (C) 2000-2011 Brian Bruns and others.
+-- Files in libmdb are licensed under LGPL and the utilities under
+-- the GPL, see COPYING.LIB and COPYING files respectively.
+-- Check out http://mdbtools.sourceforge.net
+-- ----------------------------------------------------------
+
+-- That file uses encoding UTF-8
+-- Run this file with 
+-- source /home/gbsrt/Documents/DATA/transplant/community/databaseSetup/seedclimstructure.txt
+-- from MySQL
+
+-- DROP DATABASE transplant;
+-- CREATE DATABASE transplant;
+-- USE transplant;
+
+CREATE TABLE `sites`
+ (
+	`siteID`			varchar (40), 
+	`norwegianName`			varchar (40), 
+	`siteCode`			varchar (12), 
+	`latitude`			float, 
+	`longitude`			float, 
+	`x_UTM33_North`			float, 
+	`y_UTM33_north`			int, 
+	`altitude(DEM)`			int, 
+	`annualPrecipitation_gridded`			float, 
+	`temperature_level`			int, 
+	`summerTemperature_gridded`			float, 
+	`precipitation_level`			int, 
+	`geology`			varchar (100), 
+	`landUse`			varchar (100),
+	 PRIMARY KEY (siteID)
+);
+
+CREATE TABLE `site_attributes`
+ (
+	`siteID`			varchar (40), 
+	`variable`			varchar (40), 
+	`value`			        float, 
+	 PRIMARY KEY (siteID, variable),
+         FOREIGN KEY (siteID) REFERENCES sites(siteID)
+);
+
+
+
+CREATE TABLE `blocks`
+ (
+	`blockID`			varchar (20), 
+	`siteID`			varchar (40), 
+	`slope`			float, 
+	`aspect`			float, 
+	`comment`			text (255),
+	 PRIMARY KEY (blockID),
+	 FOREIGN KEY (siteID) REFERENCES sites(siteID)
+);
+
+CREATE TABLE `plots`
+ (
+	`plotID`			int, 
+	`blockID`			varchar (40), 
+	`aspect`			float, 
+	`slope`			float,
+	 PRIMARY KEY (plotID),
+	 FOREIGN KEY (blockID) REFERENCES blocks(blockID)
+);
+
+CREATE TABLE `turfs`
+ (
+	`turfID`			varchar (40), 
+	`TTtreat`			varchar (10), 
+        `RTtreat`                       varchar(10) DEFAULT NULL,
+        `GRtreat`                       varchar(10) DEFAULT NULL,
+	`originPlotID`			int, 
+	`destinationPlotID`		int,
+	 PRIMARY KEY (turfID),
+	 FOREIGN KEY (originPlotID) REFERENCES plots(plotID)
+);
+
+CREATE TABLE `taxon`
+ (
+	`species`			varchar (10), 
+	`speciesName`			varchar (200), 
+	`authority` varchar(200),
+	`family`			varchar (50), 
+	`comment`			varchar (510), 
+	 PRIMARY KEY (species)
+);
+
+
+CREATE TABLE `numeric_traits`
+ (
+	`species`			varchar (10), 
+	`trait`			        varchar (50), 
+	`value`                         float,
+	 PRIMARY KEY (species, trait)
+);
+
+CREATE TABLE `character_traits`
+ (
+	`species`			varchar (10), 
+	`trait`			        varchar (50), 
+	`value`                         varchar (50),
+	 PRIMARY KEY (species, trait)
+);
+
+CREATE TABLE `subTurfEnvironment`
+ (
+	`turfID`			varchar (100), 
+	`subTurf`			int, 
+	`year`				int, 
+	`pleuro`			int, 
+	`acro`	 			int, 
+	`liver` 			int, 
+	`lichen`			int, 
+	`litter`			int, 
+	`soil`				int, 
+	`rock`				int, 
+	`comment`			varchar (510), 
+	`bad`				varchar (2),
+	 PRIMARY KEY (turfID, subTurf, year),
+	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
+);
+
+CREATE TABLE `turfCommunity`
+ (
+	`turfID`			varchar (40), 
+	`year`			int, 
+	`species`			varchar (100), 
+	`cover`			float, 
+	`cf`			int default "",
+	`flag`    varchar(10) default "none",
+	 PRIMARY KEY (turfID, year, species, flag),
+	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
+
+);
+
+CREATE TABLE `turfEnvironment`
+ (
+	`turfID`			varchar (100), 
+	`year`			int, 
+	`pleuro` float DEFAULT NULL,
+  `acro` float DEFAULT NULL,
+  `liver` float DEFAULT NULL,
+	`lichen`			float, 
+	`litter`			float, 
+	`soil`			float, 
+	`rock`			float, 
+	`totalVascular`			float, 
+	`totalBryophytes`			float, 
+	`totalLichen`			float, 
+	`vegetationHeight`			float, 
+	`mossHeight`			float, 
+	`litterThickness`			float, 
+	`comment`			varchar (510), 
+	`recorder`			varchar (100), 
+	`date`			varchar (100),
+	 PRIMARY KEY (turfID, year),
+	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
+
+);
+
+
+CREATE TABLE `subTurfCommunity`
+ (
+	`turfID`			varchar (40), 
+	`subTurf`			int, 
+	`year`			  int, 
+	`species`			varchar (100), 
+	`presence`    varchar (30),
+	`seedlings`		int, 
+	`juvenile`		int, 
+	`adult`			  int NOT NULL, 
+	`fertile`     int,
+  `vegetative`  int,
+  `dominant`    int,
+
+	`cf`			int,
+	`flag`    varchar(10) default "none",
+	 PRIMARY KEY (turfID, subTurf, year, species, flag),
+	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
+
+);
