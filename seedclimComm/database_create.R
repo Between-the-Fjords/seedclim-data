@@ -202,3 +202,6 @@ datafiles %>% #grep("2017", ., value = TRUE) %>%
 datafiles %>% #grep("2017", ., value = TRUE) %>% 
   map(import_data, con = con, merge_dictionary = merge_dictionary)
 
+
+
+

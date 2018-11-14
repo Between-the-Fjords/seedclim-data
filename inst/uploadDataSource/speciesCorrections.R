@@ -1,12 +1,11 @@
 # making corrections
-library(DBI)
-con <- dbConnect(RMySQL::MySQL(), group = "seedclim")
-
 #load file
 corrections <- read.csv("speciesCorrections.csv", sep = ";")
 
 #check for taxon name anomalies
-taxon <- dbGetQuery(con, paste("SELECT species FROM taxon;"))$species
+taxon <- tbl(con, "taxon") %>% 
+  collect() %>% 
+  pull(species)
 
 stopifnot(
   all(corrections$old %in% taxon, na.rm = TRUE),
