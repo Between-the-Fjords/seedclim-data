@@ -70,6 +70,8 @@ Frag.vir,Fragaria viridis,Rosaceae,forb,perennial
 Hie.ore,Hieracium oreadea?,Asteraceae,forb,perennial
 Sch.gig,Schedonorus giganteus,Poaceae,graminoid,perennial
 Ste.bor,Stellaria borealis,Caryophyllaceae,forb,perennial
+Pop.tre,Populus tremula,Salicaceae,woody,perennial 
+Ped.pal,Pedicularis palustris,Orobanchaceae,forb,perennial
 "))
   
 
@@ -175,7 +177,8 @@ Vis.alp,Vis.alp
 Gen.sp.,Gen.sp
 Car.Cap,Car.cap
 Galeopsis.sp,Gale.sp
-Seedlings,NID.seedling"))
+Seedlings,NID.seedling,
+Sax.aiz.,Sax.aiz"))
 
 
 ## load main data ####
