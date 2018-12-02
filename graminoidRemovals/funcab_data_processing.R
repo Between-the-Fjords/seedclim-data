@@ -309,21 +309,31 @@ comp2$functionalGroup <- plyr::mapvalues(comp2$functionalGroup, from = "pteridop
 comp2$functionalGroup <- plyr::mapvalues(comp2$functionalGroup, from = "woody", to = "forb")
 
 # source Ragnhild's trait data
-source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/seedclimComm/ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
+source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
 
 traitdata <- traitdata %>% 
-  select(siteID, species, Height_mean, LA_mean)
+  select(siteID, species, Height_mean, LA_mean, SLA_mean)
+
+
+traits <- tbl(con, "taxon") %>% 
+  collect() %>% 
+  left_join(tbl(con, "moreTraits"), copy = TRUE, by = "species") %>% 
+  select(species, seedMass)
 
 # adding traits to my.GR.data
 composition <- comp2 %>%
   left_join(traitdata, by = c("species", "siteID")) %>%
+  left_join(traits, by = "species") %>% 
   mutate(functionalGroup = if_else(is.na(functionalGroup), "forb", functionalGroup))
 
 composition <- composition %>%
   #filter(!is.na(cover)) %>%
   group_by(turfID, siteID, functionalGroup, Year) %>% 
-  mutate(wmH= weighted.mean(Height_mean, cover, na.rm=TRUE)) %>% #, wmLA= weighted.mean(LA_mean, cover, na.rm=TRUE)
-  select(-Height_mean, -LA_mean, -TTtreat, -species, -cover) %>% 
+  mutate(wmH= weighted.mean(Height_mean, cover, na.rm=TRUE),
+         wmSM= weighted.mean(seedMass, cover, na.rm=TRUE),
+         wmSLA= weighted.mean(SLA_mean, cover, na.rm=TRUE),
+         wmLA= weighted.mean(LA_mean, cover, na.rm=TRUE)) %>% #, 
+  select(-Height_mean, -LA_mean, -SLA_mean, -seedMass, -TTtreat, -species, -cover) %>% 
   distinct(turfID, Year, functionalGroup, .keep_all = TRUE) %>% 
   group_by(turfID, siteID, Year) %>% 
   spread(key =functionalGroup, value = wmH) %>% 
@@ -331,7 +341,6 @@ composition <- composition %>%
          forb = if_else(grepl("F", Treatment), 0, forb),
          graminoid = if_else(grepl("G", Treatment), 0, graminoid)) %>% 
   ungroup()
-
 
 #save(composition, file = "/Volumes/Macintosh HD/Users/fja062/Desktop/funcabComp.RData")
 

@@ -7,12 +7,11 @@ library(DBI)
 library(dbplyr)
 library(SDMTools)
 con <- src_mysql(group = "seedclim", dbname = "seedclimComm", password = "password")
-setwd("/Users/fja062/Documents/seedclimComm/seedclimComm/")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ############### Cover data ###############
 ## ---- my.GR.data.import ---- 
-problems <- read.csv("speciesCorrections.csv", sep = ";", stringsAsFactors = FALSE) %>%
+problems <- read.csv("~/OneDrive - University of Bergen/Research/FunCaB/Data/speciesCorrections.csv", sep = ";", stringsAsFactors = FALSE) %>%
   filter(!old %in% c("Vio.can", "Com.ten", "Sel.sel")) %>%
   filter(cover != "WHAT HAPPENED") %>%
   mutate(cover = as.numeric(cover))
@@ -139,7 +138,7 @@ lowcover <- my.GR.data %>% group_by(turfID, Year, functionalGroup) %>% mutate(su
 ## ---- Traits.data.import ---- 
 
 # source Ragnhild's trait data
-source("~/Documents/seedclimComm/seedclimComm/ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
+source("ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
 
 #load from data base
 traits <- tbl(con, "taxon") %>% 
