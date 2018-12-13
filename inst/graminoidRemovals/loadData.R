@@ -3,17 +3,15 @@
 ##############################################################################
 
 library(tidyverse)
-library(stringr)
 library(DBI)
 library(dbplyr)
+library(SDMTools)
 con <- src_mysql(group = "seedclim", dbname = "seedclimComm", password = "password")
-setwd("/Users/fja062/Documents/seedclimComm/seedclimComm/")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ############### Cover data ###############
-
 ## ---- my.GR.data.import ---- 
-problems <- read.csv("speciesCorrections.csv", sep = ";", stringsAsFactors = FALSE) %>%
+problems <- read.csv("~/OneDrive - University of Bergen/Research/FunCaB/Data/speciesCorrections.csv", sep = ";", stringsAsFactors = FALSE) %>%
   filter(!old %in% c("Vio.can", "Com.ten", "Sel.sel")) %>%
   filter(cover != "WHAT HAPPENED") %>%
   mutate(cover = as.numeric(cover))
@@ -37,10 +35,11 @@ my.GR.data <-tbl(con, "subTurfCommunity") %>%
   left_join(tbl(con, "blocks"), by = "blockID", copy = TRUE) %>%
   left_join(tbl(con, "sites"), by = "siteID", copy = TRUE) %>%
   left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>%
-  filter(year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC") %>%
-  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight) %>%
-  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>% 
+  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter) %>%
+  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>%
   ungroup()
+
+my.GR.data <- my.GR.data %>% filter(Year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC")
 
 my.GR.data
 
@@ -142,22 +141,23 @@ lowcover <- my.GR.data %>% group_by(turfID, Year, functionalGroup) %>% mutate(su
 source("ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
 
 #load from data base
-con <- dbConnect(RMySQL::MySQL(), group = "seedclim")
-traits <- dbGetQuery(con, paste('SELECT taxon.* , Lower, Nem, BNem, SBor, MBor, NBor, LAlp, MAlp, HAlp, Upper, Min_height, Max_height
-                                FROM taxon LEFT JOIN moreTraits ON taxon.species = moreTraits.species
-                                ORDER BY taxon.species;'))
+traits <- tbl(con, "taxon") %>% 
+  collect() %>% 
+  left_join(tbl(con, "moreTraits"), copy = TRUE, by = "species") %>% 
+  select(species, Lower, Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp, Upper, Min_height, Max_height, height, leafSize, seedMass)
 
 traits <- traits[traits$species %in% my.GR.data$species,]
 traits$HAlp <- as.numeric(traits$HAlp)
-traits[,(12:19)][is.na(traits[,12:19])] <- 0 #change this to something more interpretable!
+traits[,(4:11)][is.na(traits[,4:11])] <- 0 #change this to something more interpretable!
 traits <- traits %>% 
   rowwise() %>% 
-  mutate(abundance = sum(Nem, BNem, SBor, MBor, NBor, LAlp, MAlp, HAlp, na.rm = TRUE)) %>%
-  mutate(specialism = factor(ifelse(
-    Nem == 0 & BNem == 0 & SBor == 0 & LAlp == 1, "alpine", 
-    ifelse(HAlp == 0 & MAlp == 0 & LAlp == 0 & Nem == 1, "lowland", 
-           ifelse(abundance > 5.5, "generalist", "other"))))) %>% # assign specialisms to species based on range limits
-  select(species, family, height:seedMass, specialism, Max_height, Min_height)
+  mutate(abundance = sum(Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp, na.rm = TRUE)) %>%
+  mutate(specialism = factor(case_when(
+    Nem == 0 & BNem == 0 & SBor == 0 & LAlp == 1 ~ "alpine", 
+    HAlp == 0 & MAlp == 0 & LAlp == 0 & Nem == 1 ~ "lowland", 
+    abundance > 5.5 ~ "generalist",
+    abundance < 5.5 ~ "other"))) %>% 
+  select(-c(Lower, Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp, Upper))
 
 head(traits)
 
@@ -170,11 +170,12 @@ identical(as.character(traitdata$species), my.GR.data$species) #this should be i
 # adding traits to my.GR.data
 my.GR.data <- my.GR.data %>%
   left_join(traits, by = "species") %>%
-  left_join(traitdata, by = c("species", "siteID"))
+  left_join(traitdata, by = c("species", "siteID")) %>%
+  mutate(temp = recode(siteID, Ulvhaugen = 6.5, Lavisdalen = 6.5,  Gudmedalen = 6.5, Skjellingahaugen = 6.5, Alrust = 8.5, Hogsete = 8.5, Rambera = 8.5, Veskre = 8.5, Fauske = 10.5, Vikesland = 10.5, Arhelleren = 10.5, Ovstedal = 10.5)) %>%
+  mutate(Temperature_level = recode(siteID, Ulvhaugen=6.17, Lavisdalen=6.45, Gudmedalen=5.87, Skjellingahaugen=6.58, Alrust=9.14, Hogsete=9.17, Rambera=8.77, Veskre=8.67, Fauske=10.3, Vikesland=10.55, Arhelleren=10.60, Ovstedal=10.78))%>%
+  mutate(Precipitation_level= recode(siteID, Ulvhaugen=596, Lavisdalen=1321, Gudmedalen=1925, Skjellingahaugen=2725, Alrust=789, Hogsete=1356, Rambera=1848, Veskre=3029, Fauske=600, Vikesland=1161, Arhelleren=2044, Ovstedal=2923))%>%
+  mutate(precip = recode(siteID, Ulvhaugen = 600, Alrust = 600, Fauske = 600, Lavisdalen = 1200, Hogsete = 1200, Vikesland = 1200, Gudmedalen = 2000, Rambera = 2000, Arhelleren = 2000, Skjellingahaugen = 2700, Veskre = 2700, Ovstedal = 2700)) 
   
-my.GR.data$Precipitation_level <- c(0.6,1.2,2.0,2.7)[my.GR.data$Precipitation_level]
-my.GR.data$Temperature_level <- c(6.5,8.5,10.5)[my.GR.data$Temperature_level]
-
 #comment these out depending on the analysis you want to run
 my.GR.data$TTtreat <- factor(as.character(my.GR.data$TTtreat), levels = c("TTC", "RTC"))
 my.GR.data$functionalGroup <- plyr::mapvalues(my.GR.data$functionalGroup, from = "pteridophyte", to = "forb")
@@ -210,26 +211,23 @@ my.GR.data <- my.GR.data %>%
 ###### weighted means for whole community
 wholecom <- my.GR.data %>% 
   group_by(ID, functionalGroup) %>%
-  mutate(wmean_height = weighted.mean(height, cover, na.rm = TRUE),
-         wmean_leafSize = weighted.mean(leafSize, cover, na.rm = TRUE),
-         wmean_seedMass = weighted.mean(seedMass, cover, na.rm = TRUE),
-         wmean_maxheight = weighted.mean(Max_height, cover, na.rm = TRUE),
-         wmean_minheight = weighted.mean(Min_height, cover, na.rm = TRUE),
-         sumcover = sum(cover),
+  mutate(sumcover = sum(cover),
          wmeanLDMC_local = weighted.mean(LDMC_mean, cover, na.rm = TRUE),
          wmeanSLA_local = weighted.mean(SLA_mean, cover, na.rm = TRUE),
          wmeanLTH_local = weighted.mean(Lth_mean, cover, na.rm = TRUE),
          wmeanLA_local = weighted.mean(LA_mean, cover, na.rm = TRUE),
          wmeanheight_local = weighted.mean(Height_mean, cover, na.rm = TRUE),
          wmeanCN_local = weighted.mean(CN_mean, cover, na.rm = TRUE),
-         wmeanLDMC_global = weighted.mean(LDMC_mean_global, cover, na.rm = TRUE),
-         wmeanSLA_global = weighted.mean(SLA_mean_global, cover, na.rm = TRUE),
-         wmeanCN_global = weighted.mean(CN_mean_global, cover, na.rm = TRUE),
-         wmeanLTH_global = weighted.mean(Lth_mean_global, cover, na.rm = TRUE),
-         wmeanLA_global = weighted.mean(LA_mean_global, cover, na.rm = TRUE),
-         wmeanheight_global = weighted.mean(Height_mean_global, cover, na.rm = TRUE)) %>%
+         wmeanseedMass_local = weighted.mean(seedMass, cover, na.rm = TRUE),
+         cwvLDMC_local = wt.var(LDMC_mean, wt = cover),
+         cwvSLA_local = wt.var(SLA_mean, wt = cover),
+         cwvLTH_local = wt.var(Lth_mean, wt = cover),
+         cwvLA_local = wt.var(LA_mean, wt = cover),
+         cwvheight_local = wt.var(Height_mean, wt = cover),
+         cwvCN_local = wt.var(CN_mean, wt = cover),
+         cwvseedMass_local = wt.var(seedMass, wt = cover)) %>% 
   ungroup() %>%
-  select(-(height:seedMass), -(Max_height:SLA), -recorder, -(SLA_mean_global:LA_mean_global)) %>%
+  select(-(height:seedMass), -(Max_height:SLA), -recorder) %>%
   #filter(!(functionalgroup == "graminoid" & Year == 2012) & !(functionalgroup == "graminoid" & Year == 2013) & !(functionalgroup == "graminoid" & Year == 2015) & !(functionalgroup == "graminoid" & Year == 2016)) %>%
   distinct(ID, functionalGroup, .keep_all = TRUE) %>%
   as.data.frame()
@@ -238,7 +236,6 @@ wholecom$funYear <- as.factor(paste(wholecom$functionalGroup, wholecom$Year, sep
 
 forbcom <- wholecom %>%
   filter(functionalGroup == "forb") 
-
 
 ## ---- Community.mean.weighting.end ---- 
 
@@ -251,7 +248,7 @@ forbcom <- wholecom %>%
 deltacalc <- sapply(1:nrow(forbcom[forbcom$TTtreat == "RTC",]), function(i){
   R <- forbcom[forbcom$TTtreat == "RTC",][i,]
   #browser()
-  cols <- c("wmean_height","wmean_leafSize", "sumcover", "totalBryophytes", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "evenness", "wmeanLDMC_global", "wmeanSLA_global", "wmeanLTH_global", "wmeanLA_global", "wmeanheight_global", "wmeanCN_global", "wmeanLDMC_local", "wmeanSLA_local", "wmeanLTH_local", "wmeanLA_local", "wmeanheight_local", "wmeanCN_local")
+  cols <- c("sumcover", "wmeanseedMass_local", "diversity", "richness", "evenness", "wmeanLDMC_local", "wmeanSLA_local", "wmeanLTH_local", "wmeanLA_local", "wmeanheight_local", "wmeanCN_local", "cwvLDMC_local", "cwvSLA_local", "cwvLTH_local", "cwvLA_local", "cwvheight_local", "cwvCN_local", "cwvseedMass_local")
   friend <- forbcom$Year == R$Year & forbcom$blockID == R$blockID & forbcom$functionalGroup == R$functionalGroup & forbcom$TTtreat == "TTC"
   if(all (!friend)) {print(R$turfID)
     return(rep(NA, length(cols)))}
@@ -273,7 +270,7 @@ rtcmeta$Year <- factor(rtcmeta$Year)
 timedeltacalc <- sapply(1:nrow(forbcom[forbcom$Year != 2011,]), function(i){
  R <- forbcom[forbcom$Year != 2011,][i,]
    #browser()
-  cols <- c("wmean_height","wmean_leafSize", "sumcover", "totalBryophytes", "wmean_seedMass", "wmean_maxheight", "wmean_minheight", "diversity", "richness", "evenness", "wmeanLDMC_global", "wmeanSLA_global", "wmeanLTH_global", "wmeanLA_global", "wmeanheight_global", "wmeanCN_global", "wmeanLDMC_local", "wmeanSLA_local", "wmeanLTH_local", "wmeanLA_local", "wmeanheight_local", "wmeanCN_local")
+  cols <- c("sumcover", "wmeanseedMass_local", "diversity", "richness", "evenness", "wmeanLDMC_local", "wmeanSLA_local", "wmeanLTH_local", "wmeanLA_local", "wmeanheight_local", "wmeanCN_local", "cwvLDMC_local", "cwvSLA_local", "cwvLTH_local", "cwvLA_local", "cwvheight_local", "cwvCN_local", "cwvseedMass_local")
    friend <- forbcom$turfID == R$turfID & forbcom$Year == 2011
   if(all (!friend)) {print(R$turfID)
      return(rep(NA, length(cols)))}
@@ -287,3 +284,4 @@ timedeltacalc <- as.data.frame(t(timedeltacalc))
 colnames(timedeltacalc) <- paste0("delta", colnames(timedeltacalc))
 timedelta <- cbind((forbcom[forbcom$Year != 2011,]), timedeltacalc)
 timedelta <- filter(timedelta, deltasumcover > -80)
+

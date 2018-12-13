@@ -21,291 +21,122 @@ resp.traits.delta <- rtcmeta %>%
 
 #### Scaling explanatory variables ####
 
-forbcom$annPrecip <- as.numeric(scale(forbcom$annPrecip))
-forbcom$summer_temp <- as.numeric(scale(forbcom$summer_temp))
-forbcom$Year <- as.numeric(scale(forbcom$Year))
+forbcom <- forbcom %>% 
+  filter(!is.infinite(cwvSLA_local)) %>% 
+  mutate(SannPrecip = as.numeric(scale(annPrecip)),
+         Ssummer_temp = as.numeric(scale(summer_temp)),
+         SYear = as.numeric(scale(Year)),
+         wmeanLDMC_local = as.numeric(scale(wmeanLDMC_local)),
+         wmeanseedMass_local = as.numeric(scale(wmeanseedMass_local)),
+         wmeanCN_local = as.numeric(scale(wmeanCN_local)),
+         wmeanheight_local = as.numeric(scale(wmeanheight_local)),
+         wmeanSLA_local = as.numeric(scale(wmeanSLA_local)),
+         wmeanLA_local = as.numeric(scale(wmeanLA_local)),
+         wmeanLTH_local = as.numeric(scale(wmeanLTH_local)),
+         sumcover = as.numeric(scale(sumcover)),
+         evenness = as.numeric(scale(evenness)),
+         richness = as.numeric(scale(richness)),
+         cwvLDMC_local = as.numeric(scale(cwvLDMC_local)),
+         cwvseedMass_local = as.numeric(scale(cwvseedMass_local)),
+         cwvCN_local = as.numeric(scale(cwvCN_local)),
+         cwvheight_local = as.numeric(scale(cwvheight_local)),
+         cwvSLA_local = as.numeric(scale(cwvSLA_local)),
+         cwvLA_local = as.numeric(scale(cwvLA_local)),
+         cwvLTH_local = as.numeric(scale(cwvLTH_local)))
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-modx <- forbcom %>% 
-  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, totalBryophytes, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, totalBryophytes, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
-  group_by(trait) %>%
-  do({
-    mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip +TTtreat:annPrecip:Year + TTtreat:summer_temp:Year + (1|siteID/turfID), REML = FALSE, data = .)
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year +TTtreat:summer_temp:Year + TTtreat:summer_temp:Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
-    an <- anova(mod, mod0)}
-  )
+                            
 
-precTraits <- mod1precip %>% 
-  filter(`Pr(>Chisq)` < 0.07) %>% 
-  distinct(trait)
 
-mod1precip <- forbcom %>% 
-  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>%
-  #filter(trait %in% c(precTraits$trait)) %>% 
-  group_by(trait) %>%
-  do({
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year +TTtreat:summer_temp:Year + TTtreat:summer_temp:Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
-  tidy(mod)
-  #qqnorm(residuals(mod), main = .$trait); qqline(residuals(mod))
-  }) %>% 
-#filter(term == "TTtreatRTC:annPrecip:Year") %>% 
-  arrange(desc(trait)) %>% 
-  as.data.frame()
-
-capture.output(mod1temp, file = "~/Documents/seedclimComm/gramRemResults/mod1temp.csv")
-
-forbcom %>% 
-  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, totalBryophytes, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, totalBryophytes, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
-  group_by(trait) %>%
-  do({
-    mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
-    an <- anova(mod, mod0)}
-  )
-
-tempTraits <- mod1temp %>% 
-  filter(`Pr(>Chisq)` < 0.07) %>% 
-  distinct(trait)
-
+  
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mod1temp <- forbcom %>% 
-  select(TTtreat, Year, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
+  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC_local:cwvseedMass_local)) %>% 
+  filter(!is.na(measurement)) %>% 
   #filter(trait %in% c(tempTraits$trait)) %>% 
   group_by(trait) %>%
   do({
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/turfID), REML = FALSE, data = .)
+    mod <- lmer(measurement ~ TTtreat*Ssummer_temp*SannPrecip*SYear - TTtreat:Ssummer_temp:SannPrecip:SYear + (1|siteID/blockID), REML = FALSE, data = .)
     tidy(mod)}) %>% 
-  filter(term == "TTtreatRTC:summer_temp:Year") %>% 
+  #filter(term %in% c("TTtreatRTC","TTtreatRTC:Ssummer_temp:SYear", "TTtreatRTC:SannPrecip:SYear", "TTtreatRTC:SYear")) %>% 
   arrange(desc(trait)) %>% 
+  mutate(lower = (estimate - std.error*1.96),
+         upper = (estimate + std.error*1.96)) %>%
   as.data.frame()
 
+mod1temp <- mod1temp %>% 
+  mutate(test = case_when(
+    grepl("wmean", trait) ~ "Mean",
+    grepl("cwv", trait) ~ "Variance",
+    grepl("^s|^r|^e", trait) ~ "Mean"),
+    term = case_when(
+    grepl("TTtreatRTC:Ssummer_temp:SYear", term) ~ "t x year x removal",
+    grepl("TTtreatRTC:SannPrecip:SYear", term) ~ "P x year x removal", 
+    grepl("TTtreatRTC:SYear", term) ~ "Year x removal",
+    grepl("TTtreatRTC", term) ~ "removal")) %>% 
+  mutate(trait = if_else(grepl("wmean", trait), substr(trait, 6, regexpr("_", trait)),
+                         if_else(grepl("cwv", trait), substr(trait, 4, regexpr("_", trait)), trait))) %>% 
+  mutate(trait = if_else(grepl("_", trait), substr(trait, 1, (nchar(trait) -1)), trait)) %>% 
+  mutate(sign = recode(trait, sumcover = 1, evenness = 1, richness = 1, seedMass = 1, height = 0, LA = 0, LTH = 0, LDMC = 0, CN = 1, SLA = 1))
+
+
+coefEst <- mod1temp %>%
+  ggplot(aes(x = trait, y = estimate, ymin = lower, ymax = upper, fill = factor(term, levels = c("P x year x removal", "t x year x removal", "Year x removal", "removal")), shape = factor(term, levels = c("P x year x removal", "t x year x removal", "Year x removal", "removal")), alpha = as.factor(sign))) +
+  geom_errorbar(width = 0, position = position_dodge(width = 0.5), aes(colour = factor(term, levels = c("P x year x removal", "t x year x removal", "Year x removal", "removal")))) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_point(position = position_dodge(width = 0.5), size = 2.9) +
+  coord_flip() +
+  geom_vline(xintercept =  c(1.5,2.5,3.5,5.5,6.5,8.5,9.5), colour = "grey90") +
+  geom_vline(xintercept =  7.5, colour = "black") +
+  geom_vline(xintercept =  4.5, colour = "grey50") +
+  scale_alpha_manual(values = c(0.6, 1), guide = FALSE) +
+  scale_fill_manual(legend.title.climate, values = c("#1C9099", "#E69F00", "grey90", "black")) +
+  scale_colour_manual(legend.title.climate, values = c("black", "black", "black", "black")) +
+  scale_shape_manual(legend.title.climate, values = c(25, 24, 23, 21)) +
+  #scale_linetype_manual(legend.title.climate, values = c(1,1,3, 21,21,23, 25)) +
+  scale_x_discrete(limits = c("SLA", "CN", "LDMC", "LTH", "LA", "height", "seedMass", "richness", "evenness", "sumcover"), labels = c("SLA", "C:N ratio", "Leaf dry \n matter content", "Leaf thickness", "Leaf area", "Height", "Seed mass", "Richness", "Evenness", "Cover")) +
+  facet_wrap(~test, strip.position = "top", scales = "free_x") +
+  labs(y = "Standardised coefficients", x = "Leaf economic traits                 Structural traits               Community structure") +
+  theme_cowplot(font_family = "Helvetica") +
+  ylim(c(-0.4, 0.6)) +
+  theme(strip.background = element_rect(fill="white"),
+        legend.position = "bottom",
+        legend.justification = "centre",
+        legend.background = element_rect(fill = "white"),
+        strip.text = element_text(size = 14, hjust = 0.42),
+        axis.ticks.y = element_blank()) +
+  theme(axis.text.y = element_text(colour = c("black", "black", "grey40", "grey40", "grey40", "grey40", "black", "black", "black", "black")))
+  
+coefEst <- plot_grid(coefEst, labels = c("B                                                       C"), label_x = 0)
+
+leg <- ""  
+leg <- "Functional groups \n in 2011 and 2016"
+# plot 2 for IAVS conference
+slaVar <- traitScale %>% 
+  mutate(temp = if_else(grepl("6.5", temp), "Alpine", if_else(grepl("8.5", temp), "Sub-alpine", "Boreal"))) %>% 
+  mutate(temp = factor(temp, levels = c("Alpine", "Sub-alpine", "Boreal"))) %>% 
+  filter(TTtreat == "RTC", trait == "wmeanseedMass") %>% 
+  filter(funYear %in% c("forb_2011", "forb_2016", "graminoid_2011")) %>% 
+  ggplot(aes(measurement, fill = factor(funYear), colour = factor(funYear), group = factor(funYear))) +
+  scale_fill_manual(leg, values = c("#F0E442", "#E69F00", "#81A88D"), labels = c("forbs 2011", "forbs 2016", "graminoids 2011")) +
+  scale_colour_manual(leg, values = c("#F0E442", "#E69F00", "#81A88D"), labels = c("forbs 2011", "forbs 2016", "graminoids 2011")) +
+  geom_density(alpha = 0.5, trim = FALSE, size = 0.9) +
+  geom_rug(aes(colour = as.factor(funYear)), size = 0.8) +
+  theme_cowplot(font_family = "Helvetica") +
+  axis.dim +
+  facet_grid( ~ temp) +
+  theme(legend.position = c(0.8, 0.73),
+        strip.background = element_blank(),
+        plot.margin = unit(c(0,0,1,0), "cm")) +
+  labs(x = expression("Community weighted mean SLA "(cm^2/g))) +
+  xlim(0,3)
+
+slaVar <- plot_grid(slaVar, labels = "A")
+
+TEST <- plot_grid(slaVar, coefEst, nrow = 2, rel_heights = c(0.35,1))
+
+ggsave(TEST, filename = "fig16coefEst_v4TEST.jpg", height = 12.5, width = 8, dpi = 300)
 
-mod1temp %>% filter(term == "TTtreatRTC:summer_temp:Year")
-mod1precip %>% filter(term == "TTtreatRTC:annPrecip:Year")
 
-
-
-# testing
-mod9 <- forbcom %>% 
-  filter(Year == 2016) %>% 
-  select(TTtreat, Temperature_level, Precipitation_level, summer_temp, annPrecip, siteID, blockID, turfID, functionalGroup, sumcover, totalBryophytes, richness, evenness, c(wmeanLDMC_local:funYear), wmean_seedMass, species) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, totalBryophytes, sumcover, wmeanLDMC_local:wmeanCN_local, wmean_seedMass)) %>% 
-  group_by(trait) %>%
-  do({
-    mod0 <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + TTtreat:summer_temp + TTtreat:annPrecip + summer_temp:annPrecip + (1|siteID), REML = FALSE, data = .)
-    mod <- lmer(measurement ~ TTtreat + summer_temp + annPrecip + TTtreat:summer_temp + TTtreat:annPrecip + summer_temp:annPrecip + summer_temp:annPrecip:TTtreat + (1|siteID), REML = FALSE, data = .)
-    an <- anova(mod, mod0)}
-  )
-
-
-
-
-
-########## COVER ##########
-mod <- lme(measurement ~ Temperature_level, data = ., subset = funYear %in% c("forb_2011", "forb_2016"), random = ~ 1|siteID, weights = varIdent(form = ~ 1|funYear), na.action = "na.omit")
-mod0 <- lme(measurement ~ Temperature_level, data = ., subset = funYear %in% c("forb_2011", "forb_2016"), random = ~ 1|siteID, na.action = "na.omit")
-
-## ---- SumCover start ---- 
-car::qqp(rtcmeta$deltasumcover, "norm")
-
-#faceting by secondary explanatory variable
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltasumcover, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltasumcover, colour = Year)) + geom_boxplot()
-ggplot(timedelta, aes(x = Year, y = deltasumcover, colour = TTtreat)) + geom_boxplot()
-
-rtcmeta.sumcover <- filter(timedelta, deltasumcover != "NA")
-
-model.dsc.ba <- lmer(sumcover ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), REML = FALSE, data = forbcom)
-
-model.dsc.wp <- lmer(sumcover ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), REML = FALSE, data = forbcom)
-
-model.dsc.wt <- lmer(sumcover ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), REML = FALSE, data = forbcom)
-
-anova(model.dsc.ba, model.dsc.wt)
-anova(model.dsc.ba, model.dsc.wp)
-
-summary(model.dsc.ba)
-qqnorm(residuals(model.dsc.wt)); qqline(residuals(model.dsc.wt))
-plot(model.dsc.wt)
-
-## ---- SumCover end ---- 
-
-
-
-## ---- richness start ---- is interannual variability more important than treatment effect???
-rtcmeta.richness <- filter(timedelta, deltarichness != "NA")
-
-car::qqp(rtcmeta.richness$deltarichness, "norm")
-
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltarichness, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltarichness, colour = Year)) + geom_boxplot()
-
-
-model.rich.tr <- lmer(richness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip +  (1|siteID/blockID/turfID), REML = FALSE, na.action = "na.fail", data = forbcom)
-
-model.rich.wp <- lmer(richness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year +  (1|siteID/blockID/turfID), REML = FALSE, na.action = "na.fail", data = forbcom)
-
-model.rich.wt <- lmer(richness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip +  (1|siteID/blockID/turfID), REML = FALSE, na.action = "na.fail", data = forbcom)
-
-anova(model.rich.tr, model.rich.wt)
-anova(model.rich.tr, model.rich.wp)
-
-summary(model.rich.tr)
-qqnorm(residuals(model.div.tr)); qqline(residuals(model.div.tr))
-plot(model.div.tr)
-
-## ---- richness end ---- 
-
-
-## ---- evenness start ---- 
-poisson <- MASS::fitdistr(forbcomfilter$evenness, "Poisson")
-
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltaevenness, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltaevenness, colour = Year)) + geom_boxplot()
-
-rtcmeta.evenness <- filter(timedelta, deltaevenness != "NA")
-rtcmeta.evenness <- filter(timedelta, deltaevenness != "Inf") #removing infinite values from Ovs2RTC and Ovs3RTC
-
-car::qqp(rtcmeta$deltaevenness, "norm")
-
-model.eve.tr <- lmer(evenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), REML = FALSE, data = forbcom)
-
-model.eve.wp <- lmer(evenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), REML = FALSE, data = forbcom)
-
-model.eve.wt <- lmer(evenness ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), REML = FALSE, data = forbcom)
-
-anova(model.eve.tr, model.eve.wt)
-anova(model.eve.tr, model.eve.wp)
-
-summary(model.eve.tr)
-qqnorm(residuals(model.eve.tr)); qqline(residuals(model.eve.tr))
-plot(model.eve.tr)
-
-## ---- evenness end ---- 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-############### Traits analysis ###############
-
-
-## ---- SLA start ---- 
-rtcmeta.sla <- filter(timedelta, deltawmean_SLA_local != "NA")
-car::qqp(timedelta$deltawmean_SLA_local, "norm")
-
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltawmean_SLA_local, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltawmean_SLA_local, colour = Year)) + geom_boxplot()
-
-
-model.sla.tr <- lmer(wmean_SLA_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = forbcom)
-
-model.sla.wp <- lmer(wmean_SLA_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = forbcom)
-
-model.sla.wt <- lmer(wmean_SLA_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = forbcom)
-
-anova(model.sla.tr, model.sla.wt)
-anova(model.sla.tr, model.sla.wp)
-
-summary(model.sla.tr)
-qqnorm(residuals(model.sla.tr)); qqline(residuals(model.sla.tr))
-plot(model.sla.tr)
-
-
-## ---- SLA end ---- 
-
-## ---- CN start ---- 
-rtcmeta.CN <- filter(timedelta, deltawmean_CN_local != "NA")
-car::qqp(timedelta$deltawmean_CN_local, "norm")
-
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltawmean_CN_local, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltawmean_CN_local, colour = Year)) + geom_boxplot()
-
-
-model.CN.tr <- lmer(wmean_CN_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = forbcom)
-
-model.CN.wp <- lmer(wmean_CN_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = forbcom)
-
-model.CN.wt <- lmer(wmean_CN_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = "na.fail", REML = FALSE, data = forbcom)
-
-anova(model.CN.tr, model.CN.wt)
-anova(model.CN.tr, model.CN.wp)
-
-summary(model.CN.tr)
-qqnorm(residuals(model.CN.tr)); qqline(residuals(model.CN.tr))
-plot(model.CN.tr)
-
-
-## ---- CN end ---- 
-
-## ---- LDMC start ---- 
-car::qqp(rtcmeta$deltawmean_LDMC_local, "lnorm")
-
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltawmean_LDMC_local, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltawmean_LDMC_local, colour = Year)) + geom_boxplot()
-
-rtcmeta.LDMC <- filter(timedelta, deltawmean_LDMC_local != "NA")
-
-model.LDMC.ba <- lmer(wmean_LDMC_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-model.LDMC.wp <- lmer(wmean_LDMC_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-model.LDMC.wt <- lmer(wmean_LDMC_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-anova(model.LDMC.ba, model.LDMC.wt)
-anova(model.LDMC.ba, model.LDMC.wp)
-
-summary(model.LDMC.ba)
-qqnorm(residuals(model.LDMC.ba)); qqline(residuals(model.LDMC.ba))
-plot(model.LDMC.ba)
-
-## ---- LDMC end ---- 
-
-
-## ---- HEIGHT start ---- 
-rtcmeta.height <- filter(timedelta, deltawmean_height_local != "NA")
-
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltawmean_height_local, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltawmean_height_local, colour = Year)) + geom_boxplot()
-
-model.height.ba <- lmer(wmean_height_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom) #factor contrast error - come back to this
-
-model.height.wp <- lmer(wmean_height_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom) #factor contrast error - come back to this
-
-model.height.wt <- lmer(wmean_height_local ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom) #factor contrast error - come back to this
-
-anova(model.height.ba, model.height.wt)
-anova(model.height.ba, model.height.wp)
-
-summary(model.height.wt)
-qqnorm(residuals(model.height.ba)); qqline(residuals(model.height.ba))
-plot(model.height.ba)
-
-
-## ---- HEIGHT end ---- 
-
-
-## ---- SEEDMASS start ---- 
-car::qqp(timedelta$deltawmean_seedMass, "lnorm")
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltawmean_seedMass, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltawmean_seedMass, colour = Year)) + geom_boxplot()
-
-rtcmeta.seedmass <- filter(timedelta, deltawmean_seedMass != "NA")
-
-model.seedmass.ba <- lmer(wmean_seedMass ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-model.seedmass.wp <- lmer(wmean_seedMass ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-model.seedmass.wt <- lmer(wmean_seedMass ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-anova(model.seedmass.ba, model.seedmass.wt)
-anova(model.seedmass.ba, model.seedmass.wp)
-
-summary(model.seedmass.ba)
-qqnorm(residuals(model.seedmass.ba)); qqline(residuals(model.seedmass.ba))
-plot(model.seedmass.ba)
-
-## ---- SEEDMASS end ---- 
 
 
 ############### SEEDLINGS ###############
@@ -418,34 +249,3 @@ plot(m02, dis="sp", type="n", xlim=c(-3,2), ylim=c(-2,4))
 abundance <- colSums(freqsubturf)
 orditorp(m02, "sp", cex=1, air=1, pch="", priority=abundance[abundance>0]) #"Priority" makes sure you don't plot all species at once... Adjust number to adjust number of species plotted
 mytext.cca(m02, dis = "bp", arrow.mul = 3.4, adj=1, font=2, labels=c("Height", "Seedmass", "SLA", "Height:SLA", "Height:Seedmass"))
-
-###########################################################################
-
-############### Diversity analysis ###############
-
-## ---- diversity start ---- 
-
-# treatment delta
-ggplot(rtcmeta, aes(x = as.factor(Temperature_level), y = deltadiversity, colour = Year)) + geom_boxplot()
-ggplot(rtcmeta, aes(x = as.factor(Precipitation_level), y = deltadiversity, colour = Year)) + geom_boxplot()
-
-
-# remove nas
-rtcmeta.diversity <- filter(timedelta, deltadiversity != "NA")
-car::qqp(rtcmeta.diversity$deltadiversity, "norm")
-
-model.div.tr <- lmer(diversity ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), REML = FALSE, data = wholecom)
-
-model.div.wp <- lmer(diversity ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + TTtreat:annPrecip:Year + (1|siteID/blockID/turfID), REML = FALSE, data = wholecom)
-
-model.div.wt <- lmer(diversity ~ TTtreat + summer_temp + annPrecip + Year + TTtreat:summer_temp + TTtreat:Year + TTtreat:summer_temp:Year + summer_temp:Year + TTtreat:annPrecip + Year:annPrecip + (1|siteID/blockID/turfID), na.action = na.fail, REML = FALSE, data = forbcom)
-
-anova(model.div.tr, model.div.wt)
-anova(model.div.tr, model.div.wp, test = "Chisq")
-
-summary(model.div.tr)
-qqnorm(residuals(model.div.tr)); qqline(residuals(model.div.tr))
-plot(model.div.tr)
-
-
-## ---- diversity end ---- 
