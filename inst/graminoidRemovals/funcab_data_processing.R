@@ -343,7 +343,7 @@ composition <- composition %>%
          wmLTH = weighted.mean(Lth_mean, cover, na.rm=TRUE),
          wmCN = weighted.mean(CN_mean, cover, na.rm=TRUE)) %>% #, 
   select(-Height_mean, -LA_mean, -SLA_mean, -seedMass, -Lth_mean, -LDMC_mean, -CN_mean, -TTtreat, -species, -cover) %>% 
-  distinct(turfID, Year, functionalGroup, .keep_all = TRUE) #%>% 
+  distinct(turfID, Year, functionalGroup, .keep_all = TRUE) %>% 
   group_by(turfID, siteID, Year) %>% 
   spread(key =functionalGroup, value = wmH) %>% 
   mutate(mossHeight = if_else(grepl("B", Treatment), 0, mossHeight),
