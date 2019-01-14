@@ -1,4 +1,6 @@
 source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/inst/graminoidRemovals/plotting_dim.R")
+library(cowplot)
+library(wesanderson)
 
 ##### FUNCTIONS FOR PLOTTING #####
 # per response variable
@@ -104,8 +106,16 @@ time.plots.precip(timedelta, response = "deltatotalBryophytes", save = TRUE, yla
 #### COVER ####
 # if we dig deeper, and look at the cover of the functional groups, things start to look interesting.
 
-time.plots.temp(timedelta, response = "deltasumcover", save = TRUE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltasumcover")
+supfig1 <- wholecom %>% 
+  filter(Year == 2011) %>% 
+  ggplot(aes(x = factor(temp), y = sumcover, fill = functionalGroup)) +
+  geom_boxplot() +
+  scale_fill_manual("",values = c("grey60", "grey90")) +
+  facet_wrap(~precip) +
+  axis.dimLarge +
+  labs(x = "Mean summer temperature (°C)", y = "Total vegetation cover")
+
+ggsave(supfig1, file = "~/OneDrive - University of Bergen/Research/FunCaB/figures/supfig1.jpg")
 
 
 deltaevenness <- ggplot(timedelta, aes(x = Year, y = deltaevenness, colour = interaction(precip, TTtreat), alpha = interaction(precip, TTtreat), shape = interaction(precip, TTtreat), linetype = interaction(precip, TTtreat), group = interaction(precip, TTtreat))) +
@@ -285,7 +295,15 @@ my.GR.data %>%
   ggsave(filename = "moss_coverPRECIP.jpg", width = 7.5, height = 4, path = "/Users/fja062/Documents/seedclimComm/figures")
 
 
-my.GR.data %>% 
-  filter(Year == 2016) %>% 
-  ggplot(aes(x = seedMass, colour = TTtreat)) +
-  geom_density()
+wholecom %>%
+  filter(Year == 2011) %>% 
+  ggplot(aes(x = wmeanSLA_local, colour = as.factor(temp), fill = as.factor(temp), shape = as.factor(temp))) +
+geom_density(alpha = 0.3)  +
+  scale_colour_manual("Mean summer\ntemperature (°C)", values = cbPalette) +
+  scale_fill_manual("Mean summer\ntemperature (°C)", values = cbPalette) +
+  facet_grid(.~functionalGroup) +
+  theme_classic() +
+  axis.dimLarge +
+  labs(x = expression("Community weighted mean SLA "(cm^2/g)), y = "Frequency density")
+
+ggsave(filename = paste0("figsupp1.jpg"), width = 11, height = 4.5, dpi = 300, path = "~/OneDrive - University of Bergen/Research/FunCaB/figures")

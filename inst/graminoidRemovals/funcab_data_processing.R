@@ -352,8 +352,3 @@ composition <- composition %>%
   ungroup()
 
 #save(composition, file = "/Volumes/Macintosh HD/Users/fja062/Desktop/funcabComp.RData")
-
-source("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/ibutton_dataCompilation.R")
-
-
-

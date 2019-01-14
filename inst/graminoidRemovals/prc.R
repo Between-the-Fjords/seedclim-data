@@ -272,12 +272,17 @@ env.var.all <- my.GR.data %>%
 
 spp <- my.GR.data %>% 
   ungroup() %>% 
-  filter(functionalGroup == "forb") %>% 
-  distinct(species, ID, cover) %>%
-  spread(key = species, value = cover)
+  filter(!functionalGroup == "graminoid", !is.na(cover), !is.na(Year)) %>% 
+  mutate(cover = as.numeric(cover)) %>% 
+  distinct(species, ID, .keep_all = TRUE) %>%
+  select(species, ID, cover) %>% 
+  spread(key = species, value = cover, fill = 0)
 
 siteEnv <- my.GR.data %>% 
   ungroup() %>% 
+  filter(!functionalGroup == "graminoid", !is.na(cover), !is.na(Year)) %>% 
+  mutate(cover = as.numeric(cover)) %>% 
+  distinct(species, ID, .keep_all = TRUE) %>% 
   select(siteID, turfID, temp, precip, TTtreat, Year) %>% 
   distinct(turfID, Year, .keep_all = TRUE)
 
@@ -301,13 +306,17 @@ distMat <- distMat %>%
 
 distmatPlot <- distMat %>% 
   full_join(siteEnv, by = "turfID") %>% 
-  filter(!Yearcomp == 2011) %>% 
+  filter(!is.na(Yearcomp)) %>% 
   ggplot(aes(x = Yearcomp, y = dist, colour = TTtreat)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
-  facet_wrap(~precip) +
-  theme_cowplot() +
-  scale_colour_manual(values = cbPalette)
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.8) +
+  #stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
+  facet_grid(temp~precip) +
+  scale_colour_manual("", values = c("grey60", "Black")) +
+  theme_classic() +
+  axis.dimLarge +
+  labs(x = "Year", y = "Dissimilarity") +
+  theme(axis.text.x = element_text(angle = 25))
+
   
-ggsave(distmatPlot, file = "~/Documents/seedclimComm/figures/distmatPlot.jpg")
+ggsave(distmatPlot, file = "~/OneDrive - University of Bergen/Research/FunCaB/figures/distmatPlot.jpg")
 

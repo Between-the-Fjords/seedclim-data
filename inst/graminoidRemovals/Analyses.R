@@ -6,7 +6,6 @@ library(lme4)
 library(MuMIn)
 library(GGally)
 library(tibble)
-library(lmerTest)
 library(broom)
 
 forbcom %>%
@@ -78,6 +77,7 @@ mod1temp <- mod1temp %>%
   mutate(trait = if_else(grepl("_", trait), substr(trait, 1, (nchar(trait) -1)), trait)) %>% 
   mutate(sign = recode(trait, sumcover = 1, evenness = 1, richness = 1, seedMass = 1, height = 0, LA = 0, LTH = 0, LDMC = 0, CN = 1, SLA = 1))
 
+write.csv(mod1temp, file = "~/OneDrive - University of Bergen/Research/mod1tempOUT.csv")
 
 coefEst <- mod1temp %>%
   ggplot(aes(x = trait, y = estimate, ymin = lower, ymax = upper, fill = factor(term, levels = c("P x year x removal", "t x year x removal", "Year x removal", "removal")), shape = factor(term, levels = c("P x year x removal", "t x year x removal", "Year x removal", "removal")), alpha = as.factor(sign))) +

@@ -7,6 +7,7 @@ library(readxl)
 library(cowplot)
 library(lubridate)
 library(wesanderson)
+library(lme4)
 
 
 # load data
@@ -21,7 +22,8 @@ seed <- seed %>%
          Temperature_level = recode(siteID, Ulvhaugen=6.17, Lavisdalen=6.45, Gudmedalen=5.87, Skjellingahaugen=6.58, Alrust=9.14, Hogsete=9.17, Rambera=8.77, Veskre=8.67, Fauske=10.3, Vikesland=10.55, Arhelleren=10.60, Ovstedal=10.78),
          Precipitation_level= recode(siteID, Ulvhaugen=596, Lavisdalen=1321, Gudmedalen=1925, Skjellingahaugen=2725, Alrust=789, Hogsete=1356, Rambera=1848, Veskre=3029, Fauske=600, Vikesland=1161, Arhelleren=2044, Ovstedal=2923),
          precip = recode(siteID, Ulvhaugen = 600, Alrust = 600, Fauske = 600, Lavisdalen = 1200, Hogsete = 1200, Vikesland = 1200, Gudmedalen = 2000, Rambera = 2000, Arhelleren = 2000, Skjellingahaugen = 2700, Veskre = 2700, Ovstedal = 2700)) %>% 
-  mutate(Date = dmy(Date)) %>%
+  mutate(Date1 = dmy(Date1),
+         Date2 = dmy(Date2)) %>%
   mutate(Leuc_sp = as.numeric(Leuc_sp), Tara_sp = as.numeric(Tara_sp)) %>% 
   group_by(turfID, Round) %>% 
   mutate(seedSum = sum(n())) %>% 
@@ -32,6 +34,7 @@ seed %>% group_by(turfID, seedID) %>% summarise(n = n()) %>% filter(n>1) %>% arr
 seed <- seed %>% 
   group_by(turfID, seedID) %>%
   gather(unID:Viola, key = "species", value = "seedN") %>% 
+  mutate(seedN = as.numeric(as.factor(seedN))) %>% 
   group_by(turfID, seedID) %>%
   mutate(seedNTest = sum(seedN, na.rm = TRUE)) %>% 
   spread(species, seedN) %>% 
@@ -47,7 +50,6 @@ seed <- seed %>%
 anti_join(seed, composition, by = "turfID") %>% distinct(turfID)
 # funcab composition
 composition <- filter(composition, Year == 2017) %>% 
-  select(-functionalGroup) %>% 
   distinct(siteID, blockID, Treatment, turfID, vegetationHeight, .keep_all = TRUE)
 
 seedComp <- seed %>% 
@@ -61,9 +63,14 @@ seedComp %>%
   geom_boxplot() +
   facet_grid(Round~temp) +
   scale_fill_manual(values = cbPalette) +
-  ggsave(filename = paste0("seeds_drought_temp.jpg"), height = 4, width = 10, dpi = 300)
+  ggsave(filename = paste0("seeds_drought_temp.jpg"), height = 4, width = 10.5, dpi = 300)
 
-
+seedComp %>% 
+  ggplot(aes(x = Treatment, y = seedSum, fill = Treatment)) +
+  geom_boxplot() +
+  facet_grid(Round~temp) +
+  scale_fill_manual(values = cbPalette)
+  
 
 #seedlings with precip
 seedComp %>% 
@@ -71,8 +78,24 @@ seedComp %>%
   geom_boxplot() +
   facet_grid(Round~precip) +
   scale_fill_manual(values = cbPalette) +
-  ggsave(filename = paste0("seeds_drought_precip.jpg"), height = 4, width = 10, dpi = 300)
+  ggsave(filename = paste0("seeds_drought_precip.jpg"), height = 4, width = 10.5, dpi = 300)
 
+
+seedComp <- seedComp %>% 
+  mutate(Treatment = recode(Treatment, "C" = "aC")) %>% 
+  mutate(Round = as.factor(Round))
+
+glmerTemp <- glmer(seedSum ~ Treatment*scale(temp)*Round + (1|siteID), data = seedComp, family = "poisson")
+
+summary(glmerTemp)
+plot(glmerTemp)
+
+glmerPrecip <- glmer(seedSum ~ Treatment*scale(precip)*Round + (1|siteID), data = seedComp, family = "poisson")
+
+summary(glmerPrecip)
+plot(glmerPrecip)
+
+MCMCglmm
 
 #### MOSS ####
 #seedlings with moss depth
