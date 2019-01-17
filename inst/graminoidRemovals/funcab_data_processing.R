@@ -285,6 +285,7 @@ comp2 <- within(comp2, mossHeight[turfID == 'Alr1F' & Year == "2017"] <- 0,
                       totalGraminoids[turfID == 'Vik2C' & Year == 2015] <- 30,
                       totalForbs[turfID == 'Vik2C' & Year == 2015] <- 60)
 
+
 comp2 <- comp2 %>% 
   filter(!grepl("RTC", turfID)) %>% 
   group_by(turfID, Year) %>% 
@@ -307,6 +308,11 @@ comp2 <- comp2 %>%
 # .Last.value
 comp2$functionalGroup <- plyr::mapvalues(comp2$functionalGroup, from = "pteridophyte", to = "forb")
 comp2$functionalGroup <- plyr::mapvalues(comp2$functionalGroup, from = "woody", to = "forb")
+
+comp2 <- comp2 %>% 
+  filter(!is.na(Treatment))
+
+save(comp2, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/funcabCompdatKonsta.RData")
 
 # source Ragnhild's trait data
 source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
