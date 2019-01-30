@@ -20,6 +20,22 @@ problems.cover <- filter(problems, !is.na(cover)) %>%
   select(turfID, year = Year, species = old, cover)
 
 
+my.GR.data.FERT <- tbl(con, "subTurfCommunity") %>% 
+  collect() %>% 
+  left_join(tbl(con, "taxon"), copy = TRUE) %>%
+  left_join(tbl(con, "turfs"), copy = TRUE) %>%
+  left_join(tbl(con, "plots"), by = c("destinationPlotID" = "plotID"), copy = TRUE) %>%
+  left_join(tbl(con, "blocks"), by = "blockID", copy = TRUE) %>%
+  left_join(tbl(con, "sites"), by = "siteID", copy = TRUE) %>%
+  left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>% 
+  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, seedlings, juvenile, adult, fertile, vegetative, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter, pleuro, acro, liver, lichen, soil, rock, totalLichen, comment, date) %>%
+  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>%
+  ungroup() %>% 
+  filter(Year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC")
+
+
+save(my.GR.data.FERT, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/gramRemFert_dataDoc_FJ_SLO.RData")
+
 my.GR.data <-tbl(con, "subTurfCommunity") %>%
   group_by(turfID, year, species) %>% 
   summarise(n_subturf = n()) %>% 
@@ -35,7 +51,7 @@ my.GR.data <-tbl(con, "subTurfCommunity") %>%
   left_join(tbl(con, "blocks"), by = "blockID", copy = TRUE) %>%
   left_join(tbl(con, "sites"), by = "siteID", copy = TRUE) %>%
   left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>%
-  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter) %>%
+  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter, pleuro, acro, liver, lichen, soil, rock, totalLichen, comment, date) %>%
   mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>%
   ungroup()
 
@@ -51,7 +67,7 @@ levels(my.GR.data$TTtreat) <- c(levels(my.GR.data$TTtreat),levels(my.GR.data$GRt
 my.GR.data$TTtreat[my.GR.data$TTtreat == ""| is.na(my.GR.data$TTtreat)] <- my.GR.data$GRtreat[my.GR.data$TTtreat == ""| is.na(my.GR.data$TTtreat)] # merge the GRtreat and TTtreat into one column
 my.GR.data$GRtreat <- NULL
 my.GR.data <- my.GR.data[!(my.GR.data$blockID == "Gud5" & my.GR.data$Year == 2010), ]
-my.GR.data <- my.GR.data[!(my.GR.data$turfID == "Fau1RTC" & my.GR.data$Year == 2010), ]
+#my.GR.data <- my.GR.data[!(my.GR.data$turfID == "Fau1RTC" & my.GR.data$Year == 2010), ]
 my.GR.data <- my.GR.data[!(my.GR.data$functionalGroup == "graminoid" & my.GR.data$Year >2011 & my.GR.data$TTtreat == "RTC"), ]
 my.GR.data$Year[my.GR.data$Year == 2010] <- 2011
 
@@ -84,8 +100,8 @@ my.GR.data$cover[owen.fix] <- my.GR.data$cover[owen.fix]/1.5
 
 
 my.GR.data <- my.GR.data %>% 
-  filter(!(blockID == "Fau1" & Year == "2011")) %>% 
-  filter(!(blockID == "Fau4" & Year == "2011")) %>% 
+  #filter(!(blockID == "Fau1" & Year == "2011")) %>% 
+  #filter(!(blockID == "Fau4" & Year == "2011")) %>% 
   filter(!(blockID %in% c("Skj11", "Skj12", "Gud11", "Gud12", "Gud13")))
 
 # replace species names where mistakes have been found in database

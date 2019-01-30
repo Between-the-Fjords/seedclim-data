@@ -8,6 +8,7 @@ library(cowplot)
 library(lubridate)
 library(wesanderson)
 library(lme4)
+library(MCMCglmm)
 
 
 # load data
@@ -44,7 +45,8 @@ seed <- seed %>%
 seed <- seed %>% 
   filter(is.na(survival)) %>% 
   filter(is.na(NS)) %>% 
-  filter(!Comment %in% c("out of plot"))
+  filter(!Comment %in% c("out of plot")) %>% 
+  mutate(Round = factor(Round))
 
 
 anti_join(seed, composition, by = "turfID") %>% distinct(turfID)
@@ -55,47 +57,80 @@ composition <- filter(composition, Year == 2017) %>%
 seedComp <- seed %>% 
   select(-(Ach_mil:Viola)) %>% 
   mutate(blockID = as.character(blockID)) %>% 
-  left_join(composition, by = c("siteID", "blockID", "turfID", "Treatment"))
+  left_join(composition, by = c("siteID", "turfID", "Treatment"))
 
 # seedlings with temp
 seedComp %>% 
-  ggplot(aes(x = Treatment, y = seedSum, fill = Treatment)) +
+  filter(Treatment %in% c("aC", "FGB", "GB", "G", "B")) %>% 
+  ggplot(aes(x = factor(Round), y = seedSum, fill = factor(Round))) +
   geom_boxplot() +
-  facet_grid(Round~temp) +
+  facet_grid(temp~Treatment) +
   scale_fill_manual(values = cbPalette) +
-  ggsave(filename = paste0("seeds_drought_temp.jpg"), height = 4, width = 10.5, dpi = 300)
+  ggsave(filename = paste0("seeds_drought_temp_byRound.jpg"), height = 7, width = 9, dpi = 300)
 
 seedComp %>% 
-  ggplot(aes(x = Treatment, y = seedSum, fill = Treatment)) +
+  filter(Treatment %in% c("aC", "FGB", "GB", "G", "B")) %>% 
+  ggplot(aes(x = factor(Round), y = seedSum, fill = Treatment)) +
   geom_boxplot() +
-  facet_grid(Round~temp) +
-  scale_fill_manual(values = cbPalette)
+  scale_alpha_manual(values = c(1, 0.7)) +
+  facet_grid(precip~temp) +
+  scale_fill_manual(values = cbPalette) 
+  ggsave(filename = paste0("seeds_drought_temp.jpg"), height = 4, width = 10.5, dpi = 300)
   
 
 #seedlings with precip
 seedComp %>% 
+  filter(Treatment %in% c("aC", "FGB", "GB", "G", "B")) %>% 
   ggplot(aes(x = Treatment, y = seedSum, fill = Treatment)) +
   geom_boxplot() +
   facet_grid(Round~precip) +
-  scale_fill_manual(values = cbPalette) +
+  scale_fill_manual(values = cbPalette)
   ggsave(filename = paste0("seeds_drought_precip.jpg"), height = 4, width = 10.5, dpi = 300)
+
+seedComp %>% 
+  filter(Treatment %in% c("aC", "FGB", "GB", "G", "B")) %>% 
+  ggplot(aes(x = Round, y = seedSum, fill = Round)) +
+  geom_boxplot() +
+  facet_grid(precip~Treatment) +
+  scale_fill_manual(values = cbPalette)
+  ggsave(filename = paste0("seeds_drought_precip_byRound.jpg"), height = 7, width = 7, dpi = 300)
 
 
 seedComp <- seedComp %>% 
   mutate(Treatment = recode(Treatment, "C" = "aC")) %>% 
   mutate(Round = as.factor(Round))
 
-glmerTemp <- glmer(seedSum ~ Treatment*scale(temp)*Round + (1|siteID), data = seedComp, family = "poisson")
+glmerTEMP <- MASS::glmmPQL(seedSum ~ Treatment*scale(temp)*Round, random = ~ 1|blockID/siteID, family = "quasipoisson", data = seedComp)
 
-summary(glmerTemp)
-plot(glmerTemp)
+
+bryMod <- MASS::glmmPQL(seedSum ~ totalBryophytes*scale(temp)*Round, random =  ~ 1|blockID.x/siteID, family = "quasipoisson", data = seedComp)
+
+summary(glmerTEMP)
+plot(glmerTEMP)
 
 glmerPrecip <- glmer(seedSum ~ Treatment*scale(precip)*Round + (1|siteID), data = seedComp, family = "poisson")
 
 summary(glmerPrecip)
 plot(glmerPrecip)
 
+
+modTEST <- seedComp %>% 
+  filter(Treatment %in% c("aC", "B", "G", "GB", "FGB")) %>% 
+  rowid_to_column(var = "ID") %>%
+  mutate(ID = factor(ID)) %>% 
+  MCMCglmm(seedSum ~ Treatment*scale(temp)*Round, random = ~ siteID + ID, family = "poisson", data = ., nitt = 2000, burnin = 300, thin = 5, verbose = FALSE)
+
+summary(modTEST)
+plot(modTEST$VCV)
+modTEST$Residual
+
 MCMCglmm
+
+seedComp %>% filter(Treatment %in% c("C", "F", "G", "GF", "FGB")) %>% 
+  ggplot(aes(x = totalBryophytes, y = seedSum, colour = Treatment)) +
+  geom_point() +
+  facet_grid(temp~Round) +
+  geom_smooth(method = "glm", formula=y~poly(x, 2), method.args = list(family = "quasipoisson"))
 
 #### MOSS ####
 #seedlings with moss depth
