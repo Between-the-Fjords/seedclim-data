@@ -192,6 +192,8 @@ my.GR.data <- my.GR.data %>%
 
 ## ---- Diversity.data.end ---- 
 
+#save(my.GR.data, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/myGRdata.RData")
+#load("~/OneDrive - University of Bergen/Research/FunCaB/Data/myGRdata.RData")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ############## WEIGHTED MEANS ###############

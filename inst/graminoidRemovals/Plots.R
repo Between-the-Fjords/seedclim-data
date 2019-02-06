@@ -1,6 +1,4 @@
 source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/inst/graminoidRemovals/plotting_dim.R")
-library(cowplot)
-library(wesanderson)
 
 ##### FUNCTIONS FOR PLOTTING #####
 # per response variable
