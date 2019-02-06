@@ -59,6 +59,9 @@ seedComp <- seed %>%
   mutate(blockID = as.character(blockID)) %>% 
   left_join(composition, by = c("siteID", "turfID", "Treatment"))
 
+seedComp <- seedComp %>% 
+  filter(Treatment %in% c("G", "B", "GB", "C", "FGB"))
+
 # seedlings with temp
 seedComp %>% 
   filter(Treatment %in% c("aC", "FGB", "GB", "G", "B")) %>% 
