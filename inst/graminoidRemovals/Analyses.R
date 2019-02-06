@@ -1,66 +1,49 @@
 #load packages
 
-# site averages from 2009 to 2016 for temp and precip
-
 library(lme4)
 library(MuMIn)
 library(GGally)
 library(tibble)
 library(broom)
 
+# site averages from 2009 to 2016 for temp and precip
+
 forbcom %>%
   filter(TTtreat == "RTC") %>%
-  select(Year, annPrecip, summer_temp, sumcover, wmeanSLA_local, wmeanheight_local, wmeanLDMC_local, richness, diversity) %>%
+  select(Year, precip0916, temp0916, sumcover, wmeanSLA, wmeanheight, wmeanLDMC, richness, diversity) %>%
   ggpairs()
 
 resp.traits.delta <- rtcmeta %>%
   filter(TTtreat == "RTC") %>%
-  select(Year, annPrecip, summer_temp, deltasumcover, deltawmean_SLA_local, deltawmean_height_local, deltawmean_LDMC_local, deltarichness, deltadiversity) %>%
+  select(Year, precip0916, temp0916, deltasumcover, deltawmean_SLA, deltawmean_height, deltawmean_LDMC, deltarichness, deltadiversity) %>%
   ggpairs(resp.traits.delta)
 
 #### Scaling explanatory variables ####
-
 forbcom <- forbcom %>% 
-  filter(!is.infinite(cwvSLA_local)) %>% 
-  mutate(SannPrecip = as.numeric(scale(annPrecip)),
-         Ssummer_temp = as.numeric(scale(summer_temp)),
-         SYear = as.numeric(scale(Year)),
-         wmeanLDMC_local = as.numeric(scale(wmeanLDMC_local)),
-         wmeanseedMass_local = as.numeric(scale(wmeanseedMass_local)),
-         wmeanCN_local = as.numeric(scale(wmeanCN_local)),
-         wmeanheight_local = as.numeric(scale(wmeanheight_local)),
-         wmeanSLA_local = as.numeric(scale(wmeanSLA_local)),
-         wmeanLA_local = as.numeric(scale(wmeanLA_local)),
-         wmeanLTH_local = as.numeric(scale(wmeanLTH_local)),
-         sumcover = as.numeric(scale(sumcover)),
-         evenness = as.numeric(scale(evenness)),
-         richness = as.numeric(scale(richness)),
-         cwvLDMC_local = as.numeric(scale(cwvLDMC_local)),
-         cwvseedMass_local = as.numeric(scale(cwvseedMass_local)),
-         cwvCN_local = as.numeric(scale(cwvCN_local)),
-         cwvheight_local = as.numeric(scale(cwvheight_local)),
-         cwvSLA_local = as.numeric(scale(cwvSLA_local)),
-         cwvLA_local = as.numeric(scale(cwvLA_local)),
-         cwvLTH_local = as.numeric(scale(cwvLTH_local)))
+  mutate(Sprecip0916 = as.numeric(scale(precip0916)),
+         Stemp0916 = as.numeric(scale(temp0916)),
+         SYear = as.numeric(scale(Year)))
 
-                            
-
+# gather traits for analyses, relevel treatment so that TTC is the intercept
+forbcom <- forbcom %>% 
+  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvseedMass)) %>% 
+  filter(!is.na(measurement)) %>% 
+  mutate(TTtreat = factor(TTtreat, levels = c("TTC", "RTC")))
+    
+#wmeanLDMC = as.numeric(scale(wmeanLDMC)), wmeanseedMass = as.numeric(scale(wmeanseedMass)), wmeanCN = as.numeric(scale(wmeanCN)), wmeanheight = as.numeric(scale(wmeanheight)), wmeanSLA = as.numeric(scale(wmeanSLA)), wmeanLA = as.numeric(scale(wmeanLA)), wmeanLTH = as.numeric(scale(wmeanLTH)), sumcover = as.numeric(scale(sumcover)), evenness = as.numeric(scale(evenness)), richness = as.numeric(scale(richness)), cwvLDMC = as.numeric(scale(cwvLDMC)), cwvseedMass = as.numeric(scale(cwvseedMass)), cwvCN = as.numeric(scale(cwvCN)), cwvheight = as.numeric(scale(cwvheight)), cwvSLA = as.numeric(scale(cwvSLA)), cwvLA = as.numeric(scale(cwvLA)), cwvLTH = as.numeric(scale(cwvLTH))
 
   
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mod1temp <- forbcom %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC_local:cwvseedMass_local)) %>% 
-  filter(!is.na(measurement)) %>% 
-  #filter(trait %in% c(tempTraits$trait)) %>% 
   group_by(trait) %>%
   do({
-    mod <- lmer(measurement ~ TTtreat*Ssummer_temp*SannPrecip*SYear - TTtreat:Ssummer_temp:SannPrecip:SYear + (1|siteID/blockID), REML = FALSE, data = .)
+    mod <- lmer(measurement ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), REML = FALSE, data = .)
     tidy(mod)}) %>% 
-  #filter(term %in% c("TTtreatRTC","TTtreatRTC:Ssummer_temp:SYear", "TTtreatRTC:SannPrecip:SYear", "TTtreatRTC:SYear")) %>% 
+  #filter(term %in% c("TTtreatRTC","TTtreatRTC:Stemp0916:SYear", "TTtreatRTC:Sprecip0916:SYear", "TTtreatRTC:SYear")) %>% 
   arrange(desc(trait)) %>% 
   mutate(lower = (estimate - std.error*1.96),
-         upper = (estimate + std.error*1.96)) %>%
-  as.data.frame()
+         upper = (estimate + std.error*1.96)) %>% 
+  ungroup()
 
 mod1temp <- mod1temp %>% 
   mutate(test = case_when(
@@ -68,13 +51,23 @@ mod1temp <- mod1temp %>%
     grepl("cwv", trait) ~ "Variance",
     grepl("^s|^r|^e", trait) ~ "Mean"),
     term = case_when(
-    grepl("TTtreatRTC:Ssummer_temp:SYear", term) ~ "t x year x removal",
-    grepl("TTtreatRTC:SannPrecip:SYear", term) ~ "P x year x removal", 
-    grepl("TTtreatRTC:SYear", term) ~ "Year x removal",
-    grepl("TTtreatRTC", term) ~ "removal")) %>% 
-  mutate(trait = if_else(grepl("wmean", trait), substr(trait, 6, regexpr("_", trait)),
-                         if_else(grepl("cwv", trait), substr(trait, 4, regexpr("_", trait)), trait))) %>% 
-  mutate(trait = if_else(grepl("_", trait), substr(trait, 1, (nchar(trait) -1)), trait)) %>% 
+      term == "(Intercept)" ~ "Control",
+      term == "Stemp0916" ~ "t",
+      term == "Sprecip0916" ~ "P",
+      term == "SYear" ~ "year",
+      term =="TTtreatRTC:Stemp0916" ~ "t x removal",
+      term =="TTtreatRTC:Sprecip0916" ~ "P x removal",
+      term =="TTtreatRTC:Stemp0916:SYear" ~ "t x year x removal",
+      term =="TTtreatRTC:Sprecip0916:SYear" ~ "P x year x removal",
+      term =="TTtreatRTC:Stemp0916:Sprecip0916" ~ "P x t x removal",
+      term =="Stemp0916:SYear" ~ "t x year",
+      term =="Sprecip0916:SYear" ~ "P x year",
+      term =="Stemp0916:Sprecip0916" ~ "P x t",
+      term =="Stemp0916:Sprecip0916:SYear" ~ "P x t x year",
+      term =="TTtreatRTC:SYear" ~ "Year x removal",
+      term == "TTtreatRTC" ~ "removal")) %>% 
+  mutate(trait = if_else(grepl("wmean", trait), substr(trait, 6, n()),
+                         if_else(grepl("cwv", trait), substr(trait, 4, n()), trait))) %>% 
   mutate(sign = recode(trait, sumcover = 1, evenness = 1, richness = 1, seedMass = 1, height = 0, LA = 0, LTH = 0, LDMC = 0, CN = 1, SLA = 1))
 
 write.csv(mod1temp, file = "~/OneDrive - University of Bergen/Research/mod1tempOUT.csv")
@@ -187,11 +180,11 @@ m02 <- update(m02, .~. + Height:Seedmass)
 
 
 #start with the full model
-mycca <- cca(freqsubturf ~ TTtreat*Year*Temperature_level*Precipitation_level, data = cover.meta)
+mycca <- cca(freqsubturf ~ TTtreat*Year*tempLevel*precipLevel, data = cover.meta)
 m0 <- cca(freqsubturf ~1, data = cover.meta)
 
 add1(m0, scope=formula(mycca), test = "perm")
-m0 <- update(m0, .~. + Year:Precipitation_level)
+m0 <- update(m0, .~. + Year:precipLevel)
 
 anova.cca(m0)
 
@@ -200,7 +193,7 @@ m0score2<-scores(m0,display="sites",origin=FALSE)[,2]
 
 plot(m0score1,m0score2,xlab="cca1",ylab="cca2",type="n",cex.axis=1.25,cex.lab=1.25, xlim=c(-2,2), ylim=c(-2,2)) 
 text(m0, display = "spec", cex=0.7, col="blue")
-# final model = m0<- cca(freqsubturf ~ Precipitation_level + Temperature_level + TTtreat + Year + Temperature_level:TTtreat + Temperature_level:Year + Precipitation_level:Temperature_level + Precipitation_level:TTtreat + Precipitation_level:Year + Precipitation_level:Temperature_level:TTtreat, data = cover.meta)
+# final model = m0<- cca(freqsubturf ~ precipLevel + tempLevel + TTtreat + Year + tempLevel:TTtreat + tempLevel:Year + precipLevel:tempLevel + precipLevel:TTtreat + precipLevel:Year + precipLevel:tempLevel:TTtreat, data = cover.meta)
 
 # Nice function for plotting 
 mytext.cca<-function (x, display = "sites", labels, choices = c(1, 2), scaling = 2, 

@@ -108,37 +108,14 @@ time.plots.precip(timedelta, response = "deltatotalBryophytes", save = TRUE, yla
 
 supfig1 <- wholecom %>% 
   filter(Year == 2011) %>% 
-  ggplot(aes(x = factor(temp), y = sumcover, fill = functionalGroup)) +
+  ggplot(aes(x = factor(tempLevel), y = sumcover, fill = functionalGroup)) +
   geom_boxplot() +
   scale_fill_manual("",values = c("grey60", "grey90")) +
-  facet_wrap(~precip) +
+  facet_wrap(~precipLevel) +
   axis.dimLarge +
   labs(x = "Mean summer temperature (°C)", y = "Total vegetation cover")
 
 ggsave(supfig1, file = "~/OneDrive - University of Bergen/Research/FunCaB/figures/supfig1.jpg")
-
-
-deltaevenness <- ggplot(timedelta, aes(x = Year, y = deltaevenness, colour = interaction(precip, TTtreat), alpha = interaction(precip, TTtreat), shape = interaction(precip, TTtreat), linetype = interaction(precip, TTtreat), group = interaction(precip, TTtreat))) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  scale_alpha_manual(legend.title.prec, values = c(0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1)) +
-  scale_color_manual(legend.title.prec, values = cbPalette[c(1, 1, 1, 1, 7, 2, 4, 3)]) +
-  scale_linetype_manual(legend.title.prec, values = c("dashed", "dashed", "dashed", "dashed", "solid", "solid", "solid", "solid")) +
-  scale_shape_manual(legend.title.prec, values = c(0, 1, 2, 8, 15, 16, 17, 8)) +
-  theme_classic() +
-  axis.dim +
-  facet_wrap(~ temp) +
-  theme(legend.position = "none",
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.title.x = element_blank()) 
-#theme(legend.text = c("Control", "Treatment")) +
-
-
-delta <- plot_grid(deltasumcover, deltaevenness, labels = c('A', 'B'), ncol = 1, align = 'h')
-ggsave(filename = paste0("fig7_deltaComm_gramRem.jpg"), width = 8, height = 7, dpi = 300, path = "/Users/fja062/Documents/seedclimComm/figures")
 
 
 ###################
@@ -179,15 +156,15 @@ timedelta %>%
 ggsave(filename = paste0("fig2A_coverSLA_v2.jpg"), width = 11, height = 4.5, dpi = 300, path = "/Users/fja062/Documents/seedclimComm/figures")
 
 cover_temp.orig <- timedelta %>% 
-  mutate(temp = if_else(grepl("6.5", temp), "alpine", if_else(grepl("8.5", temp), "sub-alpine", "boreal"))) %>% 
+  mutate(temp = if_else(grepl("6.5", tempLevel), "alpine", if_else(grepl("8.5", tempLevel), "sub-alpine", "boreal"))) %>% 
   mutate(temp = factor(temp, levels = c("alpine", "sub-alpine", "boreal"))) %>% 
   ggplot(aes(x = Year, y = deltasumcover, colour = TTtreat, shape = TTtreat, group = TTtreat)) +
     stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.75) +
     stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75) +
-  scale_colour_manual(legend.title.climate, values = c("grey80", "Black"), labels = c("Untreated", "Removal")) +
+  scale_colour_manual(legend.title.climate, values = c("Black", "grey80"), labels = c("Removal", "Untreated")) +
   geom_hline(yintercept = 0, linetype = "dashed") +
     facet_wrap(~ temp) +
-  scale_shape_manual(legend.title.climate, values = c(1, 16), labels = c("Untreated", "Removal")) +
+  scale_shape_manual(legend.title.climate, values = c(16, 1), labels = c( "Removal", "Untreated")) +
   theme_classic() +
     labs(y = paste("Δ forb cover (%)")) +
   theme(legend.direction = "horizontal",
@@ -199,15 +176,15 @@ cover_temp.orig <- timedelta %>%
 
 
 sla_temp.orig <- timedelta %>% 
-  mutate(temp = if_else(grepl("6.5", temp), "alpine", if_else(grepl("8.5", temp), "sub-alpine", "boreal"))) %>% 
+  mutate(temp = if_else(grepl("6.5", tempLevel), "alpine", if_else(grepl("8.5", tempLevel), "sub-alpine", "boreal"))) %>% 
   mutate(temp = factor(temp, levels = c("alpine", "sub-alpine", "boreal"))) %>% 
-  ggplot(aes(x = Year, y = deltawmeanSLA_local, shape = TTtreat, colour = TTtreat, group = TTtreat)) +
+  ggplot(aes(x = Year, y = deltawmeanSLA, shape = TTtreat, colour = TTtreat, group = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.75) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   facet_grid(. ~ temp) +
-  scale_colour_manual(legend.title.climate, values = c("grey80", "Black"), labels = c("Untreated", "Removal")) +
-  scale_shape_manual(legend.title.climate, values = c(1, 16), labels = c("Untreated", "Removal")) +
+  scale_colour_manual(legend.title.climate, values = c("Black", "grey80"), labels = c("Untreated", "Removal")) +
+  scale_shape_manual(legend.title.climate, values = c(16, 1), labels = c("Untreated", "Removal")) +
   theme_classic() +
   labs(y = paste("Δ SLA")) +
   theme(legend.position = "none",
@@ -217,7 +194,7 @@ sla_temp.orig <- timedelta %>%
 
 
 delta <- plot_grid(cover_temp.orig, sla_temp.orig, labels = c('A', 'B'), ncol = 2, align = 'h')
-ggsave(filename = "fig2A_coverSLA_v2.jpg", width = 11, height = 4.5, dpi = 300, path = "~/OneDrive - University of Bergen/Research/FunCaB/figures")
+ggsave(delta, width = 11, height = 4.5, dpi = 300, filename = "~/OneDrive - University of Bergen/Research/FunCaB/paper 1/figures/fig2ab.jpg")
 
 
 abund <- my.GR.data %>% 
@@ -315,11 +292,7 @@ rtcLDMC <- forbcom %>%
 modLDMC <- rtcLDMC %>% 
   lmer(wmeanLDMC_local ~ TTtreat*scale(summer_temp)*scale(annPrecip)*scale(nYear) - TTtreat*scale(summer_temp)*scale(annPrecip)*scale(nYear) + (1|siteID), REML = FALSE, data = .)
 
-
-LDMCnewDat <- 
-
 LDMCpred <- predict(modLDMC, newdata = LDMCnewDat)
-
 
 rtcLDMC <- rtcLDMC %>% 
   mutate(LDMCpredL = (LDMCpred - sqrt(wmeanLDMC_local)*1.96),
