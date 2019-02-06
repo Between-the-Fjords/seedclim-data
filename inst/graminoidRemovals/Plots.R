@@ -307,3 +307,35 @@ geom_density(alpha = 0.3)  +
   labs(x = expression("Community weighted mean SLA "(cm^2/g)), y = "Frequency density")
 
 ggsave(filename = paste0("figsupp1.jpg"), width = 11, height = 4.5, dpi = 300, path = "~/OneDrive - University of Bergen/Research/FunCaB/figures")
+
+rtcLDMC <- forbcom %>%
+  mutate(nYear = as.numeric(as.character(Year))) %>% 
+  filter(!is.na(wmeanLDMC_local))
+
+modLDMC <- rtcLDMC %>% 
+  lmer(wmeanLDMC_local ~ TTtreat*scale(summer_temp)*scale(annPrecip)*scale(nYear) - TTtreat*scale(summer_temp)*scale(annPrecip)*scale(nYear) + (1|siteID), REML = FALSE, data = .)
+
+
+LDMCnewDat <- 
+
+LDMCpred <- predict(modLDMC, newdata = LDMCnewDat)
+
+
+rtcLDMC <- rtcLDMC %>% 
+  mutate(LDMCpredL = (LDMCpred - sqrt(wmeanLDMC_local)*1.96),
+         LDMCpredH = (LDMCpred + sqrt(wmeanLDMC_local)*1.96)) %>% 
+  group_by(Year, siteID, TTtreat) %>% 
+  mutate(mLDMCpredL = mean(LDMCpredL),
+         mLDMCpredH = mean(LDMCpredH))
+  
+rtcLDMC %>% 
+  #gather(deltawmeanCN_local,deltawmeanheight_local,deltawmeanLA_local,deltawmeanLDMC_local,deltawmeanLTH_local,deltawmeanSLA_local, key = "trait", value = "value") %>% 
+ggplot(aes(nYear, LDMCpred, colour = factor(temp), fill = factor(temp), group = factor(temp))) +
+  geom_point(aes(nYear, wmeanLDMC_local)) +
+  geom_line() +
+  #stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.5), geom = "line") +
+  geom_ribbon(aes(ymin = mLDMCpredL, ymax = mLDMCpredH), alpha=0.3) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  #geom_hline(yintercept = 0, linetype = "dashed", colour = "grey60", size = 1) #+
+  facet_wrap(. ~ TTtreat, scales = "free_y")
