@@ -19,23 +19,6 @@ problems <- read.csv("~/OneDrive - University of Bergen/Research/FunCaB/Data/spe
 problems.cover <- filter(problems, !is.na(cover)) %>%
   select(turfID, year = Year, species = old, cover)
 
-
-my.GR.data.FERT <- tbl(con, "subTurfCommunity") %>% 
-  collect() %>% 
-  left_join(tbl(con, "taxon"), copy = TRUE) %>%
-  left_join(tbl(con, "turfs"), copy = TRUE) %>%
-  left_join(tbl(con, "plots"), by = c("destinationPlotID" = "plotID"), copy = TRUE) %>%
-  left_join(tbl(con, "blocks"), by = "blockID", copy = TRUE) %>%
-  left_join(tbl(con, "sites"), by = "siteID", copy = TRUE) %>%
-  left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>% 
-  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, seedlings, juvenile, adult, fertile, vegetative, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter, pleuro, acro, liver, lichen, soil, rock, totalLichen, comment, date) %>%
-  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>%
-  ungroup() %>% 
-  filter(Year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC")
-
-
-save(my.GR.data.FERT, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/gramRemFert_dataDoc_FJ_SLO.RData")
-
 my.GR.data <-tbl(con, "subTurfCommunity") %>%
   group_by(turfID, year, species) %>% 
   summarise(n_subturf = n()) %>% 
@@ -72,10 +55,12 @@ my.GR.data <- my.GR.data[!(my.GR.data$functionalGroup == "graminoid" & my.GR.dat
 my.GR.data$Year[my.GR.data$Year == 2010] <- 2011
 
 
-my.GR.data$turfID <- plyr::mapvalues(my.GR.data$turfID, from = "Ram4RTCx", to = "Ram4RTC")
-my.GR.data$turfID <- plyr::mapvalues(my.GR.data$turfID, from = "Ram5RTCx", to = "Ram5RTC")
+my.GR.data <- my.GR.data %>% 
+  mutate(turfID = recode(turfID, "Ram4RTCx" = "Ram4RTC"),
+         turfID = recode(turfID, "Ram5RTCx" = "Ram5RTC")) %>% 
+  mutate(ID = factor(paste(turfID, Year, sep = "_"))) %>% 
+  filter(!(blockID %in% c("Skj11", "Skj12", "Gud11", "Gud12", "Gud13")))
 
-my.GR.data$ID <- as.factor(paste(my.GR.data$turfID, my.GR.data$Year, sep = "_"))
 
 my.GR.data$recorder[is.na(my.GR.data$recorder)] <- "unknown botanist"
 my.GR.data$cover[my.GR.data$recorder == "PM"] <- my.GR.data$cover[my.GR.data$recorder=="PM"]*1.20
@@ -98,11 +83,6 @@ owen <- my.GR.data %>%
 owen.fix <- paste(as.character(my.GR.data$turfID), my.GR.data$Year) %in% paste(owen$turfID, owen$Year)
 my.GR.data$cover[owen.fix] <- my.GR.data$cover[owen.fix]/1.5
 
-
-my.GR.data <- my.GR.data %>% 
-  #filter(!(blockID == "Fau1" & Year == "2011")) %>% 
-  #filter(!(blockID == "Fau4" & Year == "2011")) %>% 
-  filter(!(blockID %in% c("Skj11", "Skj12", "Gud11", "Gud12", "Gud13")))
 
 # replace species names where mistakes have been found in database
 prob.sp <- problems %>%
@@ -301,3 +281,21 @@ colnames(timedeltacalc) <- paste0("delta", colnames(timedeltacalc))
 timedelta <- cbind((forbcom[forbcom$Year != 2011,]), timedeltacalc)
 timedelta <- filter(timedelta, deltasumcover > -80)
 
+
+### -----------------------------------------------------------------###
+#### -------------------------- not run --------------------------- ####
+my.GR.data.FERT <- tbl(con, "subTurfCommunity") %>% 
+  collect() %>% 
+  left_join(tbl(con, "taxon"), copy = TRUE) %>%
+  left_join(tbl(con, "turfs"), copy = TRUE) %>%
+  left_join(tbl(con, "plots"), by = c("destinationPlotID" = "plotID"), copy = TRUE) %>%
+  left_join(tbl(con, "blocks"), by = "blockID", copy = TRUE) %>%
+  left_join(tbl(con, "sites"), by = "siteID", copy = TRUE) %>%
+  left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>% 
+  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, seedlings, juvenile, adult, fertile, vegetative, Temperature_level, Precipitation_level, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter, pleuro, acro, liver, lichen, soil, rock, totalLichen, comment, date) %>%
+  mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>%
+  ungroup() %>% 
+  filter(Year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC")
+
+
+save(my.GR.data.FERT, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/gramRemFert_dataDoc_FJ_SLO.RData")
