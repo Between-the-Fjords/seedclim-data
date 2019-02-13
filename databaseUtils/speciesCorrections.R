@@ -1,8 +1,9 @@
 # making corrections
 # load file
-corrections <- read.csv("databaseUtils/speciesCorrections.csv", sep = ";", stringsAsFactors = FALSE)
+corrections <- read.csv("databaseUtils/speciesCorrections.csv", sep = ",", stringsAsFactors = FALSE, comment = "#")
 corrections <- corrections %>% 
   mutate(
+    turfID = trimws(turfID),
     old = trimws(old),
     new = trimws(new)
   )
@@ -26,6 +27,9 @@ subturfCom <- tbl(con, "subturfCommunity") %>% collect()
 # check turfID
 turfID_glitch <- corrections %>% filter(turfID != "") %>% anti_join(turfCom, by = "turfID")
 assertthat::assert_that(nrow(turfID_glitch) == 0)
+# check species
+species_glitch <- corrections %>% filter(turfID != "") %>% anti_join(turfCom, by = c("old" = "species"))
+assertthat::assert_that(nrow(species_glitch) == 0)
 
 
 ## global name changes (maybe merges) -should be in merge table
