@@ -10,7 +10,7 @@ library(stringr)
 
 # 1. RAGNHILD
 #### Load trait data ####
-traits <-read.csv("ragnhild_trait_data/leaftraits2016csv.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+traits <-read.csv("~/OneDrive - University of Bergen/Research/FunCaB/Data/leaftraits2016csv.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
 
 #head(traits)
 
@@ -28,7 +28,7 @@ traits <- traits %>%
 #############################
 ###### LEAF AREA START ######
 
-LA <- read.csv2("ragnhild_trait_data/Leaf area.csv", stringsAsFactors = FALSE)
+LA <- read.csv2("~/OneDrive - University of Bergen/Research/FunCaB/Data/Leaf area.csv", stringsAsFactors = FALSE)
 
 LA <- transform(LA, Leaf_area = as.numeric(Leaf_area)) %>%
   rename(ID = Image_file)
@@ -49,8 +49,8 @@ remspecies <- c("Eup_sp", "Tar_sp", "Alc_sp")
 ################################
 ######## CN RATIO START ########
 
-CN <-read.csv2("ragnhild_trait_data/CN_Ragnhild.csv", header=TRUE, sep=";", dec = ".", stringsAsFactors = FALSE)
-dict_CN <- read.csv2("Ragnhild_trait_data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
+CN <-read.csv2("~/OneDrive - University of Bergen/Research/FunCaB/Data/CN_Ragnhild.csv", header=TRUE, sep=";", dec = ".", stringsAsFactors = FALSE)
+dict_CN <- read.csv2("~/OneDrive - University of Bergen/Research/FunCaB/Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 CN$Info <- as.character(CN$Info)
 
 

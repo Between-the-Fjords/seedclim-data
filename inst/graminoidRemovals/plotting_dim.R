@@ -1,6 +1,7 @@
 #Package to make plots
 library(RColorBrewer)
 library(cowplot)
+library(wesanderson)
 
 #source("/Users/fja062/Documents/seedclimComm/seedclimComm/inst/graminoidRemovals/multiplot_function.R")
 
@@ -37,3 +38,6 @@ legend.title.temp <- "Treatment \n and temperature"
 legend.title.treat <- "Treatment"
 legend.title.weat <- " \n "
 legend.title.climate <- ""
+
+
+pal1 <- wes_palette(7, name = "Darjeeling2", type = "continuous")

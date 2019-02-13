@@ -1,32 +1,4 @@
-#Package to make plots
-library(ggplot2)
-library(RColorBrewer)
-library(cowplot)
-
-source("/Users/fja062/Documents/seedclimComm/seedclimComm/inst/graminoidRemovals/multiplot_function.R")
-
-
-#### palettes and labelling ####
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#1C9099", "#A6BDDB", "#ECE2F0", "orange3")
-
-plot(1:length(cbPalette), col = cbPalette, pch = 16, cex = 5) #check colour and order
-
-precip.lab <-   scale_x_discrete("Precipitation [mm y-1]",
-                                 labels = c("0.6"="600", "1.2"="1200","2"="2000","2.7"="2700"))
-temp.lab <- scale_x_discrete("Temperature [C]",
-                             labels = c("0.6"="600", "1.2"="1200","2"="2000","2.7"="2700"))
-
-axis.dim <- theme(axis.text=element_text(size=10),
-                  axis.title=element_text(size=15),
-                  axis.ticks = element_blank(),
-                  legend.text = element_text(size=11),
-                  legend.title = element_text(size=12),
-                  strip.text.x = element_text(size = 11),
-                  strip.text.y = element_text(size = 13),
-                  axis.text.x  = element_text(angle = 90))
-
-legend.title.prec <- "Treatment and \n precipitation"
-legend.title.temp <- "Treatment \n and temperature"
+source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/inst/graminoidRemovals/plotting_dim.R")
 
 ##### FUNCTIONS FOR PLOTTING #####
 # per response variable
@@ -125,225 +97,216 @@ density.plots <- function(dat, response, explan) {
 ##########################
 time.plots(timedelta, response = "deltatotalBryophytes", explan = "Temperature_level", save = FALSE)
 
+time.plots.temp(timedelta, response = "deltatotalBryophytes", save = FALSE, ylab = TRUE)
+time.plots.precip(timedelta, response = "deltatotalBryophytes", save = TRUE, ylab = TRUE)
+
 
 #### COVER ####
 # if we dig deeper, and look at the cover of the functional groups, things start to look interesting.
 
-time.plots.temp(timedelta, response = "deltasumcover", save = TRUE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltasumcover")
+supfig1 <- wholecom %>% 
+  filter(Year == 2011) %>% 
+  ggplot(aes(x = factor(tempLevel), y = sumcover, fill = functionalGroup)) +
+  geom_boxplot() +
+  scale_fill_manual("",values = c("grey60", "grey90")) +
+  facet_wrap(~precipLevel) +
+  axis.dimLarge +
+  labs(x = "Mean summer temperature (°C)", y = "Total vegetation cover")
+
+ggsave(supfig1, file = "~/OneDrive - University of Bergen/Research/FunCaB/figures/supfig1.jpg")
 
 
-#### RICHNESS ####
-#
-time.plots.precip(timedelta, response = "deltarichness", save = TRUE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltarichness")
+###################
 
-#### EVENNESS ####
-#
-time.plots.temp(timedelta, response = "deltaevenness", save = TRUE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltaevenness")
+deltaheight <- ggplot(timedelta, aes(x = Year, y = deltawmeanheight_local, colour = interaction(Precipitation_level, TTtreat), alpha = interaction(Precipitation_level, TTtreat), shape = interaction(Precipitation_level, TTtreat), linetype = interaction(Precipitation_level, TTtreat), group = interaction(Precipitation_level, TTtreat))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_alpha_manual(legend.title.prec, values = c(0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1)) +
+  scale_color_manual(legend.title.prec, values = cbPalette[c(1, 1, 1, 1, 7, 2, 4, 3)]) +
+  scale_linetype_manual(legend.title.prec, values = c("dashed", "dashed", "dashed", "dashed", "solid", "solid", "solid", "solid")) +
+  scale_shape_manual(legend.title.prec, values = c(0, 1, 2, 8, 15, 16, 17, 8)) +
+  theme_classic() +
+  axis.dim +
+  facet_wrap(~ Temperature_level) +
+  theme(legend.position = "none",
+        strip.background = element_blank())
 
+timedelta %>% 
+  mutate(temp = if_else(grepl("6.5", temp), "alpine", if_else(grepl("8.5", temp), "sub-alpine", "boreal"))) %>% 
+  mutate(temp = factor(temp, levels = c("alpine", "sub-alpine", "boreal"))) %>% 
+  ggplot(aes(x = Year, y = deltawmeanCN_local, shape = TTtreat, alpha = TTtreat, group = TTtreat)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.75, colour = "#02401B") +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75, colour = "#02401B") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  facet_wrap(~ temp) +
+  scale_alpha_manual(legend.title.climate, values = c(0.5,1), labels = c("Control", "Removal")) +
+  scale_shape_manual(legend.title.climate, values = c(1, 16), labels = c("Control", "Removal")) +
+  theme_classic() +
+  labs(y = paste("Δ forb community evenness")) +
+  theme(legend.direction = "horizontal",
+        legend.justification=c(-0.1, 1.5), 
+        legend.position=c(0, 1),
+        strip.background = element_blank(),
+        axis.text.x  = element_text(angle = 90)) +
+  axis.dimLarge
 
-#### HEIGHT ####
-# we'd expect the forb community at the warmest sites to increase in height after graminoid removal, but we do not see this.
+ggsave(filename = paste0("fig2A_coverSLA_v2.jpg"), width = 11, height = 4.5, dpi = 300, path = "/Users/fja062/Documents/seedclimComm/figures")
 
-time.plots.precip(timedelta, response = "deltawmeanheight_local", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_height_local")
-
-#### CN ####
-# 
-time.plots.precip(timedelta, response = "deltawmeanCN_local", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_CN_local")
-
-#### SLA ####
-# lower SLA in 
-time.plots.precip(timedelta, response = "deltawmeanSLA_local", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_SLA_local")
-
-#### SEEDMASS ####
-#
-time.plots.temp(timedelta, response = "deltawmean_seedMass", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_seedMass")
-
-#### LDMC ####
-#
-time.plots(timedelta, response = "deltawmeanLDMC_local", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_LDMC_local")
-
-#### LTH ####
-#
-time.plots.temp(timedelta, response = "deltawmeanLTH_local", save = FALSE, ylab = TRUE)
-time.plots.precip(timedelta, response = "deltawmeanLTH_local", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_LDMC_local")
-
-#### LA ####
-#
-time.plots(timedelta, response = "deltawmeanLA_local", save = FALSE, ylab = TRUE)
-time.plots.facet(timedelta, response = "deltawmean_LDMC_local")
-
-#######################################
-########## other plots ################
-# whole community: diversity
-
-div <- wholecom %>%
-  filter(funYear %in% c("forb_2011", "forb_2016", "graminoid_2011"))
-  #filter(!(functionalgroup == "woody" & Temperature_level == 10.5))
-
-
-ggplot(div, aes(x = diversity, fill = funYear)) +
-  theme_bw() +
-  geom_density(alpha = 0.5) +
-  scale_fill_manual(values = cbPalette) +
-  #geom_smooth(method = lm) +
-  #geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
-  facet_grid(as.formula(. ~ Temperature_level)) 
+cover_temp.orig <- timedelta %>% 
+  mutate(temp = if_else(grepl("6.5", tempLevel), "alpine", if_else(grepl("8.5", tempLevel), "sub-alpine", "boreal"))) %>% 
+  mutate(temp = factor(temp, levels = c("alpine", "sub-alpine", "boreal"))) %>% 
+  ggplot(aes(x = Year, y = deltasumcover, colour = TTtreat, shape = TTtreat, group = TTtreat)) +
+    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.75) +
+    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75) +
+  scale_colour_manual(legend.title.climate, values = c("Black", "grey80"), labels = c("Removal", "Untreated")) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+    facet_wrap(~ temp) +
+  scale_shape_manual(legend.title.climate, values = c(16, 1), labels = c( "Removal", "Untreated")) +
+  theme_classic() +
+    labs(y = paste("Δ forb cover (%)")) +
+  theme(legend.direction = "horizontal",
+        legend.justification=c(-0.1, 1.5), 
+        legend.position=c(0, 1),
+        strip.background = element_blank(),
+        axis.text.x  = element_text(angle = 90)) +
+  axis.dimLarge
 
 
-
-plots <- list()
-nm <- c("Alrust", "Arhelleren", "Fauske", "Gudmedalen", "Hogsete", "Lavisdalen", "Ovstedal", "Rambera", "Skjellingahaugen", "Ulvhaugen", "Veskre", "Vikesland" )
-
-# explanatory variables along gridded temperature gradients
-plots <- list()
-nm <- names(rtcforbs)[39:44]
-
-for(i in seq_along(nm)) {
-  p1 <- ggplot(rtcforbs, aes_string(x = "summer_temp", y = nm[i], colour = "Year")) +
-    geom_point() +
-    geom_smooth(method = "lm", se = FALSE) +
-    ggtitle(paste(nm[i], "along temp gradient")) +
-    geom_hline(yintercept = 0, linetype = "dashed") +
-    scale_color_manual(values = cbPalette) +
-    theme_bw() +
-    axis.dim
-  plots[[i]] <- p1 #add each plot to the empty list
-}
-
-varplots <- plot_grid(plotlist = plots, cols = 2)
-save_plot("plots1.jpg", varplots,
-          ncol = 2,
-          nrow = 3,
-          base_aspect_ratio = 1.3)
+sla_temp.orig <- timedelta %>% 
+  mutate(temp = if_else(grepl("6.5", tempLevel), "alpine", if_else(grepl("8.5", tempLevel), "sub-alpine", "boreal"))) %>% 
+  mutate(temp = factor(temp, levels = c("alpine", "sub-alpine", "boreal"))) %>% 
+  ggplot(aes(x = Year, y = deltawmeanSLA, shape = TTtreat, colour = TTtreat, group = TTtreat)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.75) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  facet_grid(. ~ temp) +
+  scale_colour_manual(legend.title.climate, values = c("Black", "grey80"), labels = c("Untreated", "Removal")) +
+  scale_shape_manual(legend.title.climate, values = c(16, 1), labels = c("Untreated", "Removal")) +
+  theme_classic() +
+  labs(y = paste("Δ SLA")) +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        axis.text.x  = element_text(angle = 90))  +
+  axis.dimLarge
 
 
-ggplot(wholecom, aes(x = Year, y = wmean_seedMass, colour = functionalgroup, linetype = TTtreat)) +
-  geom_point() +
-  geom_smooth(method = lm) +
-  scale_color_brewer(palette = "Dark2") +
-  theme_bw() +
-  #geom_point() +
-  #geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
-  facet_grid(as.formula(. ~ prec)) +
-  geom_density2d()
+delta <- plot_grid(cover_temp.orig, sla_temp.orig, labels = c('A', 'B'), ncol = 2, align = 'h')
+ggsave(delta, width = 11, height = 4.5, dpi = 300, filename = "~/OneDrive - University of Bergen/Research/FunCaB/paper 1/figures/fig2ab.jpg")
 
 
-
-###########################
-###### subplot maps #######
-plots <- list()
-
-subplot.maps <- function(data, site){
-  f.dat <- filter(data, siteID == site)
-  for(i in turfID) {
-  p1 <- ggplot(f.dat, aes(x = (subTurf - 1) %/% 5, y = (subTurf - 1) %% 5, fill = cover)) +
-      geom_tile(colour = "grey60") +
-      facet_grid(as.formula(paste0(Year ~ species))) +
-      scale_x_continuous(expand = c(0, 0)) +
-      scale_y_continuous(expand = c(0, 0)) +
-      ggtitle(paste("Plot", f.dat$turfID, "at", f.dat$siteID)) +
-      scale_fill_distiller(type = "seq", palette = "Greens", direction = 1) + 
-      theme_bw() +
-      theme(
-        axis.text = element_blank(), 
-        axis.title = element_blank(), 
-        axis.ticks = element_blank(),
-        strip.text.y = element_text(angle = 0)
-      )
-    
-  cat("\n")
-  plots[[1]] <- p1
-  }
-}
+abund <- my.GR.data %>% 
+  filter(functionalGroup == "forb", temp > 10, TTtreat == "RTC") %>% 
+  group_by(siteID, Year, species) %>% 
+  mutate(meanCov = mean(cover)) %>% 
+  ungroup() %>% 
+  group_by(precip, species) %>%
+  mutate(dominance = case_when(
+    precip == "2700" & mean(meanCov) > 16 ~ "dominant",
+    precip == "2000" & mean(meanCov) > 16 ~ "dominant",
+    precip == "1200" & mean(meanCov) > 16 ~ "dominant",
+    precip == "600" & mean(meanCov) > 16 ~ "dominant",
+    precip == "2700" & mean(meanCov) < 16 ~ "subordinate",
+    precip == "2000" & mean(meanCov) < 16 ~ "subordinate",
+    precip == "1200" & mean(meanCov) < 16 ~ "subordinate",
+    precip == "600" & mean(meanCov)  < 16 ~ "subordinate"
+  )) %>% 
+  #mutate(dominance = if_else(mean(meanCov, na.rm = TRUE) > 15, "dominant", "subordinate")) %>% 
+  mutate(label = if_else(Year == 2016 & dominance == "dominant", as.character(species), NA_character_))
 
 
+lm1 <- lm(meanCov ~ species + precip + 0, data = abund) %>% 
+  tidy() %>% 
+  mutate(term = gsub("species", "", term)) %>% 
+  filter(!term == "precip")
 
-results <- subturf %>%
-  filter(species != "graminoid") %>%
-  group_by(siteID, turfID) %>%
-  do(plot = ggplot(., aes(x = (subTurf - 1) %/% 5, y = (subTurf - 1) %% 5, fill = cover)) +
-       geom_tile(colour = "grey60") +
-       facet_grid(species ~ Year) +
-       scale_x_continuous(expand = c(0, 0)) +
-       scale_y_continuous(expand = c(0, 0)) +
-       ggtitle(paste("Plot", .$turfID, "at", .$siteID)) +
-       scale_fill_distiller(type = "seq", palette = "Greens", direction = 1) + 
-       theme_bw() +
-       theme(
-         axis.text = element_blank(), 
-         axis.title = element_blank(), 
-         axis.ticks = element_blank(),
-         strip.text.y = element_text(angle = 0)
-       )
-  )
+summary(lm1)
 
-pdf('all.pdf', height = 10, width = 7)
-invisible(lapply(results$plot, print))
-dev.off()
+abund %>%
+  left_join(lm1, by = c("species" = "term")) %>% 
+  ggplot(aes(x = Year, y = meanCov, colour = dominance, group = species)) +
+  #stat_summary(fun.data = "mean_cl_boot", geom = "line") +
+  geom_line() +
+  geom_label(aes(label = label),
+             nudge_x = -0.6,
+             nudge_y = -2.45,
+             na.rm = TRUE) +
+  scale_colour_manual(values = c("Black", "grey80")) +
+  facet_grid(. ~ precip) +
+  geom_point(size = 3) +
+  labs(y = "Mean cover (%)") +
+  axis.dimLarge +
+  theme(legend.position = "none",
+        axis.title.x = element_blank())
 
-
-multiplot(plotlist = plots, cols = 3)  
+ggsave(filename = paste0("fig4.jpg"), width = 11, height = 4.5, dpi = 300, path = "~/OneDrive - University of Bergen/Research/FunCaB/figures")
 
 
 my.GR.data %>%
-  filter(TTtreat == "TTC") %>% 
-  ggplot(aes(x = as.factor(Precipitation_level), y = mossHeight)) +
+  mutate(mossHeight = if_else(Year == 2016, mossHeight/10, mossHeight)) %>% 
+  ggplot(aes(x = Year, y = mossHeight, colour = TTtreat, shape = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot") +
   stat_summary(fun.data = "mean_cl_boot", geom = "line") +
+  scale_colour_manual(legend.title.weat, values = cbPalette, labels = c("Control", "Removal")) +
+  scale_shape_manual(legend.title.weat, values = c(1, 16), labels = c("Control", "Removal")) +
   theme_classic() +
-  axis.dim +
-  labs(x = "Annual rainfall (m)", y = "Moss depth (cm)") +
-  ggsave(filename = "moss_depth_precip.jpg", path = "/Users/fja062/Documents/seedclimComm/figures")
+  facet_grid(.~precip) +
+  axis.dimLarge +
+  labs(x = "", y = "Moss depth (cm)") +
+  theme(axis.text.x  = element_text(angle = 90)) +
+  ggsave(filename = "moss_depth_precip.jpg", path = "/Users/fja062/Documents/seedclimComm/figures", height = 4, width = 7.5)
 
 
-
-my.GR.data %>% filter(TTtreat == "RTC") %>% ggplot(aes(x = Year, y = totalBryophytes, colour = as.factor(Temperature_level), group = as.factor(Temperature_level))) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line") +
-  facet_grid(. ~ Precipitation_level) +
-  scale_colour_manual(values = cbPalette)
-
-######
-# so far I've managed to create a tally of subplot frequency for all species, which reinstates all those species that are dropped because their cover is NA. But I either need to update the inital MySQL code, or find some way of implementing the below code to include site/plot/block info etc...
-######
-
-subturf.GR <- dbGetQuery(con, paste("SELECT sites.siteID, blocks.blockID, plots.plotID, turfs.turfID, turfs.TTtreat, turfs.GRtreat, subTurfCommunity.subTurf, subTurfCommunity.Year, subTurfCommunity.species, sites.Temperature_level, sites.Precipitation_level
-                                    FROM taxon INNER JOIN ((sites INNER JOIN ((blocks INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON sites.siteID = blocks.siteID) INNER JOIN subTurfCommunity ON turfs.turfID = subTurfCommunity.turfID) ON taxon.species = subTurfCommunity.species
-                                    WHERE Not taxon.functionalGroup='graminoid'
-                                    GROUP BY sites.siteID, blocks.blockID, plots.plotID, turfs.turfID, turfs.TTtreat, turfs.GRtreat, subTurfCommunity.subTurf, subTurfCommunity.Year, subTurfCommunity.species, sites.Temperature_level, sites.Precipitation_level
-                                    HAVING subTurfCommunity.Year>2009 AND (turfs.TTtreat='ttc' OR (turfs.GRtreat)='rtc' OR (turfs.GRtreat)='ttc');"))
+my.GR.data %>% 
+  ggplot(aes(x = Year, y = totalBryophytes, colour = TTtreat, shape = TTtreat)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.5)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.5), geom = "line") +
+  facet_grid(. ~ precip) +
+  scale_colour_manual(legend.title.weat, values = cbPalette, labels = c("Control", "Removal")) +
+  scale_shape_manual(legend.title.weat, values = c(1, 16), labels = c("Control", "Removal")) +
+  axis.dimLarge +
+  theme_classic() +
+  theme(axis.text.x  = element_text(angle = 90)) +
+  ggsave(filename = "moss_coverPRECIP.jpg", width = 7.5, height = 4, path = "/Users/fja062/Documents/seedclimComm/figures")
 
 
-subturf.GR$TTtreat[subturf.GR$TTtreat == ""| is.na(subturf.GR$TTtreat)] <- subturf.GR$GRtreat[subturf.GR$TTtreat == ""| is.na(subturf.GR$TTtreat)] # merge the GRtreat and TTtreat into one column
-subturf.GR$GRtreat <- NULL
-subturf.GR$TTtreat <- factor(subturf.GR$TTtreat)
-subturf.GR$Year <- factor(subturf.GR$Year)
-subturf.GR <- subturf.GR[!(subturf.GR$blockID == "Gud5" & subturf.GR$Year == 2010), ]
-subturf.GR$Year[subturf.GR$Year == 2010] <- 2011
-subturf.GR$Year <- droplevels(subturf.GR$Year)
-subturf.GR$turfID <- plyr::mapvalues(subturf.GR$turfID, from = "Ram4RTCx", to = "Ram4RTC")
-subturf.GR$turfID <- plyr::mapvalues(subturf.GR$turfID, from = "Ram5RTCx", to = "Ram5RTC")
+wholecom %>%
+  filter(Year == 2011) %>% 
+  ggplot(aes(x = wmeanSLA_local, colour = as.factor(temp), fill = as.factor(temp), shape = as.factor(temp))) +
+geom_density(alpha = 0.3)  +
+  scale_colour_manual("Mean summer\ntemperature (°C)", values = cbPalette) +
+  scale_fill_manual("Mean summer\ntemperature (°C)", values = cbPalette) +
+  facet_grid(.~functionalGroup) +
+  theme_classic() +
+  axis.dimLarge +
+  labs(x = expression("Community weighted mean SLA "(cm^2/g)), y = "Frequency density")
 
-subturf.GR$ID <- as.factor(paste(subturf.GR$turfID, subturf.GR$Year, sep = "_"))
-subturf.GR <- subturf.GR[!subturf.GR$blockID %in% remsites,] 
+ggsave(filename = paste0("figsupp1.jpg"), width = 11, height = 4.5, dpi = 300, path = "~/OneDrive - University of Bergen/Research/FunCaB/figures")
 
-subturf.GR <- subturf.GR %>% count(species, ID)
+rtcLDMC <- forbcom %>%
+  mutate(nYear = as.numeric(as.character(Year))) %>% 
+  filter(!is.na(wmeanLDMC_local))
 
-my.GR.data <- as.data.frame(my.GR.data)
-subturf <- full_join(subturf.GR, my.GR.data, by = c("species", "ID"))
+modLDMC <- rtcLDMC %>% 
+  lmer(wmeanLDMC_local ~ TTtreat*scale(summer_temp)*scale(annPrecip)*scale(nYear) - TTtreat*scale(summer_temp)*scale(annPrecip)*scale(nYear) + (1|siteID), REML = FALSE, data = .)
 
-subturf$problems[is.na(subturf$cover)] <- "no cover"
-subturf$problems[is.na(subturf$subTurf)] <- "no subturf"
-subturf$problems[is.na(subturf$problems)] <- "ok"
-subturf$problems <- as.factor(subturf$problems)
+LDMCpred <- predict(modLDMC, newdata = LDMCnewDat)
 
-###########################
+rtcLDMC <- rtcLDMC %>% 
+  mutate(LDMCpredL = (LDMCpred - sqrt(wmeanLDMC_local)*1.96),
+         LDMCpredH = (LDMCpred + sqrt(wmeanLDMC_local)*1.96)) %>% 
+  group_by(Year, siteID, TTtreat) %>% 
+  mutate(mLDMCpredL = mean(LDMCpredL),
+         mLDMCpredH = mean(LDMCpredH))
+  
+rtcLDMC %>% 
+  #gather(deltawmeanCN_local,deltawmeanheight_local,deltawmeanLA_local,deltawmeanLDMC_local,deltawmeanLTH_local,deltawmeanSLA_local, key = "trait", value = "value") %>% 
+ggplot(aes(nYear, LDMCpred, colour = factor(temp), fill = factor(temp), group = factor(temp))) +
+  geom_point(aes(nYear, wmeanLDMC_local)) +
+  geom_line() +
+  #stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.5), geom = "line") +
+  geom_ribbon(aes(ymin = mLDMCpredL, ymax = mLDMCpredH), alpha=0.3) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  #geom_hline(yintercept = 0, linetype = "dashed", colour = "grey60", size = 1) #+
+  facet_wrap(. ~ TTtreat, scales = "free_y")

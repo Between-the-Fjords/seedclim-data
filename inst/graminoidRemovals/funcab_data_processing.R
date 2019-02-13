@@ -285,6 +285,7 @@ comp2 <- within(comp2, mossHeight[turfID == 'Alr1F' & Year == "2017"] <- 0,
                       totalGraminoids[turfID == 'Vik2C' & Year == 2015] <- 30,
                       totalForbs[turfID == 'Vik2C' & Year == 2015] <- 60)
 
+
 comp2 <- comp2 %>% 
   filter(!grepl("RTC", turfID)) %>% 
   group_by(turfID, Year) %>% 
@@ -308,22 +309,46 @@ comp2 <- comp2 %>%
 comp2$functionalGroup <- plyr::mapvalues(comp2$functionalGroup, from = "pteridophyte", to = "forb")
 comp2$functionalGroup <- plyr::mapvalues(comp2$functionalGroup, from = "woody", to = "forb")
 
+comp2 <- comp2 %>% 
+  filter(!is.na(Treatment))
+
+save(comp2, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/funcabCompdatKonsta.RData")
+
 # source Ragnhild's trait data
-source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/seedclimComm/ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
+source("~/OneDrive - University of Bergen/Research/FunCaB/seedclimComm/ragnhild_trait_data/load_traits.R") # warning here is fine, it just means those spp didn't have CN data collected
 
 traitdata <- traitdata %>% 
-  select(siteID, species, Height_mean, LA_mean)
+  select(siteID, species, Height_mean, LA_mean, SLA_mean, LDMC_mean, CN_mean, Lth_mean)
+
+
+traits <- tbl(con, "taxon") %>% 
+  collect() %>% 
+  left_join(tbl(con, "moreTraits"), copy = TRUE, by = "species") %>% 
+  select(species, seedMass)
 
 # adding traits to my.GR.data
 composition <- comp2 %>%
   left_join(traitdata, by = c("species", "siteID")) %>%
+  left_join(traits, by = "species") %>% 
   mutate(functionalGroup = if_else(is.na(functionalGroup), "forb", functionalGroup))
 
+library(vegan)
+
 composition <- composition %>%
-  #filter(!is.na(cover)) %>%
-  group_by(turfID, siteID, functionalGroup, Year) %>% 
-  mutate(wmH= weighted.mean(Height_mean, cover, na.rm=TRUE)) %>% #, wmLA= weighted.mean(LA_mean, cover, na.rm=TRUE)
-  select(-Height_mean, -LA_mean, -TTtreat, -species, -cover) %>% 
+  group_by(turfID, Year) %>%
+  mutate(richness = sum(n_distinct(species))) %>% 
+  mutate(diversity = diversity(cover, index = "shannon")) %>% 
+  mutate(evenness = (diversity/log(richness))) %>% 
+  filter(!is.na(cover)) %>%
+  group_by(turfID, siteID, Year) %>% 
+  mutate(wmH = weighted.mean(Height_mean, cover, na.rm=TRUE),
+         wmSM = weighted.mean(seedMass, cover, na.rm=TRUE),
+         wmSLA = weighted.mean(SLA_mean, cover, na.rm=TRUE),
+         wmLA = weighted.mean(LA_mean, cover, na.rm=TRUE),
+         wmLDMC = weighted.mean(LDMC_mean, cover, na.rm=TRUE),
+         wmLTH = weighted.mean(Lth_mean, cover, na.rm=TRUE),
+         wmCN = weighted.mean(CN_mean, cover, na.rm=TRUE)) %>% #, 
+  select(-Height_mean, -LA_mean, -SLA_mean, -seedMass, -Lth_mean, -LDMC_mean, -CN_mean, -TTtreat, -species, -cover) %>% 
   distinct(turfID, Year, functionalGroup, .keep_all = TRUE) %>% 
   group_by(turfID, siteID, Year) %>% 
   spread(key =functionalGroup, value = wmH) %>% 
@@ -332,18 +357,4 @@ composition <- composition %>%
          graminoid = if_else(grepl("G", Treatment), 0, graminoid)) %>% 
   ungroup()
 
-
 #save(composition, file = "/Volumes/Macintosh HD/Users/fja062/Desktop/funcabComp.RData")
-
-source("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/ibutton_dataCompilation.R")
-
-
-
-#Species richness
-library(vegan)
-
-composition <- composition %>%
-  group_by(turfID, Year, functionalGroup) %>%
-  mutate(richness = sum(n_distinct(species))) %>% 
-  mutate(diversity = diversity(cover, index = "shannon")) %>% 
-  mutate(evenness = (diversity/log(richness)))
