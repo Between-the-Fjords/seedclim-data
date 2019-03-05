@@ -38,6 +38,11 @@ vignettes/*.pdf
 *.txt
 *.sqlite
 !seedclimstructure.txt
+<<<<<<< HEAD
+=======
+!speciesCorrections.csv
+
+>>>>>>> a4e3c3092d2ad6616282e1ea5ebde534bcac751a
 #tmpfiles
 *~
 # compressed files
