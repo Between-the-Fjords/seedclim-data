@@ -15,12 +15,11 @@ forbcom <- forbcom %>%
 
 
 # gather traits for analyses
-forbcomAnalysis <- forbcom %>% 
+forbcomAnalysis <- forbcom %>%
+  mutate(wmeanLDMC = as.numeric(scale(wmeanLDMC)), wmeanseedMass = as.numeric(scale(wmeanseedMass)), wmeanCN = as.numeric(scale(wmeanCN)), wmeanheight = as.numeric(scale(wmeanheight)), wmeanSLA = as.numeric(scale(wmeanSLA)), wmeanLA = as.numeric(scale(wmeanLA)), wmeanLTH = as.numeric(scale(wmeanLTH)), sumcover = as.numeric(scale(sumcover)), evenness = as.numeric(scale(evenness)), richness = as.numeric(scale(richness)), cwvLDMC = as.numeric(scale(cwvLDMC)), cwvseedMass = as.numeric(scale(cwvseedMass)), cwvCN = as.numeric(scale(cwvCN)), cwvheight = as.numeric(scale(cwvheight)), cwvSLA = as.numeric(scale(cwvSLA)), cwvLA = as.numeric(scale(cwvLA)), cwvLTH = as.numeric(scale(cwvLTH))
+  ) %>% 
   gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvseedMass)) %>% 
   filter(!is.na(measurement))
-
-#wmeanLDMC = as.numeric(scale(wmeanLDMC)), wmeanseedMass = as.numeric(scale(wmeanseedMass)), wmeanCN = as.numeric(scale(wmeanCN)), wmeanheight = as.numeric(scale(wmeanheight)), wmeanSLA = as.numeric(scale(wmeanSLA)), wmeanLA = as.numeric(scale(wmeanLA)), wmeanLTH = as.numeric(scale(wmeanLTH)), sumcover = as.numeric(scale(sumcover)), evenness = as.numeric(scale(evenness)), richness = as.numeric(scale(richness)), cwvLDMC = as.numeric(scale(cwvLDMC)), cwvseedMass = as.numeric(scale(cwvseedMass)), cwvCN = as.numeric(scale(cwvCN)), cwvheight = as.numeric(scale(cwvheight)), cwvSLA = as.numeric(scale(cwvSLA)), cwvLA = as.numeric(scale(cwvLA)), cwvLTH = as.numeric(scale(cwvLTH))
-
   
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mod1temp <- forbcomAnalysis %>% 
@@ -80,7 +79,7 @@ coefEst <- mod1temp %>%
   facet_wrap(~test, strip.position = "top", scales = "free_x") +
   labs(y = "Standardised coefficients", x = "Leaf economic traits                 Structural traits               Community structure") +
   theme_cowplot(font_family = "Helvetica") +
-  ylim(c(-0.4, 0.6)) +
+  #ylim(c(-0.4, 0.6)) +
   theme(strip.background = element_rect(fill="white"),
         legend.position = "bottom",
         legend.justification = "centre",

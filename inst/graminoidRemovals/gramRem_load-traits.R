@@ -6,7 +6,7 @@ traits <-read_delim("~/OneDrive - University of Bergen/Research/FunCaB/Data/Seed
 # create local weighted means
 traitdata <- traits %>%
   rename(LA = "Leaf_area", CN = "CN_ratio", siteID = "site") %>%
-  mutate(siteID, Ulvhaugen = "Ulvehaugen") %>% 
+  mutate(siteID = recode(siteID, "Ulvehaugen" = "Ulvhaugen")) %>% 
   group_by(species) %>%
   mutate(CN_mean_global = mean(CN, na.rm = TRUE)) %>%
   group_by(siteID, species) %>%
