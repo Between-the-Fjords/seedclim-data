@@ -176,7 +176,7 @@ cover_temp.orig <- timedelta %>%
 sla_temp.orig <- timedelta %>% 
   mutate(temp = if_else(grepl("6.5", tempLevel), "alpine", if_else(grepl("8.5", tempLevel), "sub-alpine", "boreal"))) %>% 
   mutate(temp = factor(temp, levels = c("alpine", "sub-alpine", "boreal"))) %>% 
-  ggplot(aes(x = Year, y = deltawmeanSLA, shape = TTtreat, colour = TTtreat, group = TTtreat)) +
+  ggplot(aes(x = Year, y = deltadiversity, shape = TTtreat, colour = TTtreat, group = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), size = 0.75) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75) +
   geom_hline(yintercept = 0, linetype = "dashed") +
@@ -184,7 +184,7 @@ sla_temp.orig <- timedelta %>%
   scale_colour_manual(legend.title.climate, values = c("Black", "grey80"), labels = c("Untreated", "Removal")) +
   scale_shape_manual(legend.title.climate, values = c(16, 1), labels = c("Untreated", "Removal")) +
   theme_classic() +
-  labs(y = paste("Δ SLA")) +
+  labs(y = paste("Δ diversity (Shannon)")) +
   theme(legend.position = "none",
         strip.background = element_blank(),
         axis.text.x  = element_text(angle = 90))  +
