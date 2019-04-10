@@ -9,15 +9,24 @@ import_data <- function(file, con, merge_dictionary){
   #browser()
   print(file)
   chkft <- c("pleuro","acro", "liver", "lichen", "litter" ,"soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight")
-  loc <- locale(decimal_mark = ",", encoding = "Windows-1252")
-  dat <- read.delim(file, sep = ";", dec = ",", stringsAsFactors = FALSE)#sep = ";", dec = ","
+  
+  f <- readLines(file, warn = FALSE)  %>% 
+    if_else(condition = substring(., 1, 1) == "\"", true = {
+    gsub(pattern = "^\"", replacement = "", x = .) %>% #replace starting quote
+      gsub(pattern = "\"\"", replacement = "\"", x = .) %>% #replace double quotes
+      gsub(pattern = "\"\"$", replacement = "\"", x = .) %>% #replace double quotes that was part of a triple at end
+      #gsub(pattern = "(?<!\\)),\"$", replacement = ",", x = ., perl = TRUE) #-ve look behind fixes Veskre comment problem
+      gsub(pattern = ",\"$", replacement = ",", x = .) #-ve remove end quote
+  }, false = .) %>% 
+    paste(collapse = "\n")
+    
+
+  dat <- read.delim(text = f, sep = ";", dec = ",", stringsAsFactors = FALSE)#sep = ";", dec = ","
   if(ncol(dat) > 10){
     if(any(sapply(dat[, chkft], class) == "character")) 
-      loc <- locale(decimal_mark = ".", encoding = "Windows-1252")
-      dat <- read.delim(file, sep = ";", dec = ".", stringsAsFactors = FALSE)#sep = ";", dec = "."  
+      dat <- read.delim(text = f, sep = ";", dec = ".", stringsAsFactors = FALSE)#sep = ";", dec = "."  
   }else{
-    loc <- locale(decimal_mark = ".", encoding = "Windows-1252")
-    dat <- read.delim(file, sep = ",", dec = ".", stringsAsFactors = FALSE)
+    dat <- read.delim(text = f, sep = ",", dec = ".", stringsAsFactors = FALSE)
    }
        
  
