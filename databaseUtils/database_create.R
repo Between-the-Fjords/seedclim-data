@@ -178,14 +178,16 @@ Gen.sp.,Gen.sp
 Car.Cap,Car.cap
 Galeopsis.sp,Gale.sp
 Seedlings,NID.seedling,
-Sax.aiz.,Sax.aiz"))
+Sax.aiz.,Sax.aiz
+Dry.sp,Gym.dry
+Tof.cal,Tof.pus"))
 
 
 ## load main data ####
-source("seedclimComm/inst/uploadDataSource/importcommunityNY_test_16.des.2013.r")
+source("inst/uploadDataSource/importcommunityNY_test_16.des.2013.r")
 
 ## get list of data files
-datafiles <- dir(path = "seedclimComm/rawdata/", pattern = "csv$", full.names = TRUE, recursive = TRUE)
+datafiles <- dir(path = "rawdata/", pattern = "csv$", full.names = TRUE, recursive = TRUE)
 
 #check taxonomy
 extra <- c("DestinationSite", "DestinationBlock", "originPlotID", "TTtreat", "destinationPlotID", "turfID", "RTtreat", "GRtreat",   "subPlot", "year",  "date",  "Measure", "recorder", "pleuro", "acro",  "liver", "lichen", "litter", "soil", "rock", "totalVascular", "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight", "comment",  "X",  "X.1", "X.2", "missing") 
