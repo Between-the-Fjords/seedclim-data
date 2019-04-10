@@ -41,3 +41,4 @@ legend.title.climate <- ""
 
 
 pal1 <- wes_palette(7, name = "Darjeeling2", type = "continuous")
+pal2 <- wes_palette(7, name = "Cavalcanti1", type = "continuous")

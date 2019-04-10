@@ -123,7 +123,7 @@ my.GR.data <- my.GR.data %>%
 #### code to get rid of turfs that have been attacked by ants or cows ####
 lowcover <- my.GR.data %>% group_by(turfID, Year, functionalGroup) %>% mutate(sumcover = sum(cover)) %>% filter(sumcover < 25) %>% distinct(siteID, turfID,Year,sumcover)
 
-my.GR.data %>% filter(turfID %in% c("Ovs2RTC", "Ovs3RTC", "126 TTC")) %>% group_by(turfID, Year) %>% mutate(sumcover = sum(cover)) %>% distinct(siteID, turfID,Year, sumcover)
+my.GR.data %>% filter(turfID %in% c("Ovs2RTC", "Ovs3RTC", "126 TTC", functionalGroup == "forb")) %>% group_by(turfID, Year) %>% mutate(sumcover = sum(cover)) %>% distinct(siteID, turfID,Year, sumcover)
 
 #my.GR.data <- filter(my.GR.data, !siteID %in% c("Ovs2RTC", "Ovs3RTC"))
 ## ---- my.GR.data.end ----
@@ -217,9 +217,16 @@ wholecom <- my.GR.data %>%
          cwvLA = wt.var(LA_mean, wt = cover),
          cwvheight = wt.var(Height_mean, wt = cover),
          cwvCN = wt.var(CN_mean, wt = cover),
-         cwvseedMass = wt.var(seedMass, wt = cover)) %>% 
+         cwvseedMass = wt.var(seedMass, wt = cover),
+         cwsdLDMC = wt.sd(LDMC_mean, wt = cover),
+         cwsdSLA = wt.sd(SLA_mean, wt = cover),
+         cwsdLTH = wt.sd(Lth_mean, wt = cover),
+         cwsdLA = wt.sd(LA_mean, wt = cover),
+         cwsdheight = wt.sd(Height_mean, wt = cover),
+         cwsdCN = wt.sd(CN_mean, wt = cover),
+         cwsdseedMass = wt.sd(seedMass, wt = cover)) %>% 
   ungroup() %>%
-  select((siteID:Year), functionalGroup, (precip0916:specialism), (richness:cwvseedMass)) %>%
+  select((siteID:Year), functionalGroup, (precip0916:specialism), (richness:cwsdseedMass)) %>%
   distinct(Year, turfID, functionalGroup, .keep_all = TRUE) %>% 
   mutate(funYear = as.factor(paste(functionalGroup, Year, sep = "_")))
 
