@@ -26,10 +26,14 @@ subturfCom <- tbl(con, "subturfCommunity") %>% collect()
 
 # check turfID
 turfID_glitch <- corrections %>% filter(turfID != "") %>% anti_join(turfCom, by = "turfID")
-assertthat::assert_that(nrow(turfID_glitch) == 0)
+try(assertthat::assert_that(nrow(turfID_glitch) == 0))
 # check species
 species_glitch <- corrections %>% filter(turfID != "") %>% anti_join(turfCom, by = c("old" = "species"))
-assertthat::assert_that(nrow(species_glitch) == 0)
+try(assertthat::assert_that(nrow(species_glitch) == 0))
+#check species/turfs
+speciesturfs_glitch <- corrections %>% filter(turfID != "", old != new) %>% anti_join(turfCom, by = c("old" = "species", "Year" = "year", "turfID" = "turfID"))
+try(assertthat::assert_that(nrow(species_glitch) == 0))
+
 
 
 ## global name changes (maybe merges) -should be in merge table
@@ -76,7 +80,7 @@ subturfCom2 <- subturfCom2 %>%
   mutate(
     species = coalesce(new, species)
   ) %>% 
-  select(-new, -cover_new)
+  select(-new, -cover)
 
 ## abundance changes
 local_abun <- corrections %>% 
@@ -102,7 +106,73 @@ turfCom2 <- bind_rows(
     rename(year = Year, species = old)
 )
 
-# merge any duplicates up
+####missing cover fixes####
+##rare taxa
+# singlesubplot occurrences always get 1%
+
+turfCom2 <- subturfCom2 %>% 
+  group_by(year, turfID, species) %>% 
+  filter(n() == 1) %>% 
+  anti_join(turfCom2, by = c("turfID", "year", "species")) %>% #taxa/year/turf not in turfCom2
+  select(turfID, year, species, cf, flag) %>% 
+   mutate(cover = 1, flag = "imputed from single subturf") %>% 
+   bind_rows(turfCom2)
+
+# NID seedling is always 1%
+turfCom2 <- subturfCom2 %>% 
+  filter(species == "NID.seedling") %>% 
+  distinct(turfID, year, species, cf, flag) %>% 
+  anti_join(turfCom2, by = c("turfID", "year", "species")) %>% #taxa/year/turf not in turfCom2
+  select(turfID, year, species, cf, flag) %>% 
+  mutate(cover = 1, flag = "imputed from NID.seedling presence") %>% 
+  bind_rows(turfCom2)
+
+# New rule Sag.sp  and Eup.sp if 1-3subplots ==2%, if more 4%, more than half 6% 
+turfCom2 <- subturfCom2 %>% 
+  filter(species %in% c("Sag.sp", "Eup.sp")) %>% 
+  group_by(turfID, year, species, cf, flag) %>% 
+  summarise(n = n()) %>% 
+  anti_join(turfCom2, by = c("turfID", "year", "species")) %>% #taxa/year/turf not in turfCom2
+  mutate(
+    cover = case_when(
+      between(n, 1, 3) ~ 2,
+      between(n, 4, 12) ~4,
+      n > 12 ~ 6
+    ),
+    flag = "imputed from Sag.sp/Eup.sp n presence") %>%
+  select(turfID, year, species, cover, cf, flag) %>% 
+  bind_rows(turfCom2)
+
+#mean of previous and next year
+sampling_year <- turfCom %>% 
+  group_by(turfID) %>% 
+  distinct(turfID, year) %>% 
+  arrange(turfID, year) %>% 
+  mutate(sampling = 1:n())
+
+
+turfCom2 <- subturfCom2 %>% 
+  group_by(turfID, year, species, cf, flag) %>% 
+  summarise(n = n()) %>% 
+  anti_join(turfCom2, by = c("turfID", "year", "species")) %>%  #taxa/year/turf not in turfCom2
+  left_join(sampling_year) %>% 
+  left_join(
+    left_join(turfCom2, sampling_year),
+    by = c("turfID", "species"), 
+    suffix = c("", "_cover")) %>% #join to other years
+  filter(abs(sampling - sampling_cover) == 1) %>% #next/previous year
+  group_by(turfID, species, year, cf) %>% 
+  filter(n() == 2) %>% #need before and after year
+  summarise(cover = mean(cover), flag = "Subturf w/o cover. Imputed as mean of adjacent years") %>% 
+  bind_rows(turfCom2)
+
+#other subturf w/o cover
+subturfCom2 %>% 
+  group_by(turfID, year, species, cf, flag) %>% 
+  summarise(n = n()) %>% 
+  anti_join(turfCom2, by = c("turfID", "year", "species"))
+
+#### merge any duplicates up####
 turfCom2 <- turfCom2 %>% 
   group_by(turfID, year, species, cf, flag) %>%
   summarise(cover = sum(cover))
@@ -123,8 +193,8 @@ subturfCom2 <- subturfCom2 %>%
 subturfCom2 %>% ungroup() %>% filter(grepl("&", presence)) 
 
 # delete contents of tables
-dbExecute(conn = con, "DELETE * FROM turfCommunity")
-dbExecute(conn = con, "DELETE * FROM subturfCommunity")
+dbExecute(conn = con, "DELETE FROM turfCommunity")
+dbExecute(conn = con, "DELETE FROM subturfCommunity")
 
 
 # add revised contents
