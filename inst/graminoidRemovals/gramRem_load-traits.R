@@ -1,7 +1,7 @@
 #gramRem_load-traits
 
 # load data
-traits <-read_delim("~/OneDrive - University of Bergen/Research/FunCaB/Data/SeedClim_Traits_2016.csv", delim = ";")
+traits <-read_delim("~/OneDrive - University of Bergen/Research/FunCaB/Data/veg_traits/SeedClim_Traits_2016.csv", delim = ";")
 
 # create local weighted means
 traitdata <- traits %>%

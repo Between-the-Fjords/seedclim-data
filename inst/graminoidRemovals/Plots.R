@@ -92,13 +92,6 @@ density.plots <- function(dat, response, explan) {
   return(p)
 }
 
-  
-
-##########################
-time.plots(timedelta, response = "deltatotalBryophytes", explan = "Temperature_level", save = FALSE)
-
-time.plots.temp(timedelta, response = "deltatotalBryophytes", save = FALSE, ylab = TRUE)
-time.plots.precip(timedelta, response = "deltatotalBryophytes", save = TRUE, ylab = TRUE)
 
 
 #### COVER ####
