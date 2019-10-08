@@ -127,7 +127,7 @@ for(i in 1:length(genera_to_add)){
 
 
 #Label family nodes
-
+if(length(families_to_add)>0){
 for(i in 1:length(families_to_add)){
   
   fam_i<-families_to_add[i]  
@@ -136,8 +136,6 @@ for(i in 1:length(families_to_add)){
   
   mrca_i<-getMRCA(phy = phylogeny,
                   tip = which(phylogeny$tip.label %in% gsub(pattern = " ",replacement = "_", x = spp_in_family   ) )) 
-  
-  
   
   #if the node isnt labelled yet, label it.
   if(phylogeny$node.label[mrca_i-length(phylogeny$tip.label)]==""){
@@ -161,7 +159,9 @@ for(i in 1:length(families_to_add)){
   rm(fam_i,mrca_i,spp_in_family)
   
 }
-rm(i,genera_to_add,families_to_add)
+  rm(i,genera_to_add,families_to_add)
+  
+}#if any families to add
 
 
 
