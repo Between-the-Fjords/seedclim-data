@@ -15,37 +15,55 @@ knitr::opts_knit$set(root.dir = "../")
 ```{r importChunk}
 #load packages
 library("tidyverse")
+library("furrr")#for parallel processing
 library("DBI")# also needs RMySQL installed
+plan(multiprocess, workers = 3)
 ```
 
 
-```{r importData, results='hide', fig.keep='none'}
+```{r importData, results='hide', fig.keep='none', warning=FALSE}
 source("start_here.R")
 ```
 
 
-```{r}
+```{r, warning=FALSE}
 #merge cover and subturf
-subturf_cover_thin <- full_join(cover.thin, subturf.thin)
+subturf_cover_thin <- full_join(cover.thin, subturf.thin) %>% 
+    mutate(problems = case_when(
+      is.na(cover) ~ "no cover",
+      is.na(subTurf) ~ "no subturf",
+      TRUE ~ "OK"
+    ))
 
-# subturf_cover_thin$problems[is.na(subturf_cover_thin$cover)] <- "no cover"
-# subturf_cover_thin$problems[is.na(subturf_cover_thin$subTurf)] <- "no subturf"
-# subturf_cover_thin$problems[is.na(subturf_cover_thin$problems)] <- "ok"
-# subturf_cover_thin$problems <- as.factor(subturf_cover_thin$problems)
-
+subturf_cover_thin %>% count(problems)
 ```
+
+```{r}
+tibble(subTurf = 1:25) %>% 
+ggplot(aes(x = (subTurf - 1) %% 5, y = 5 - ((subTurf - 1) %/% 5), label = subTurf)) +
+    geom_tile(colour = "grey60", fill = "grey90", show.legend = FALSE, alpha = .8) +
+  geom_text() +
+  scale_x_continuous(expand = c(0, 0)) +  
+  scale_y_continuous(expand = c(0, 0)) +
+  coord_equal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+```
+
 
 #Subturf maps
 
-```{r, fig.height=11, fig.width = 7}
+```{r, fig.height=11, fig.width = 7, warning=FALSE}
 x <- subturf_cover_thin %>% 
+  arrange(destSiteID, TTtreat, turfID) %>% 
   group_by(turfID) %>% 
-  do(x = {
-  print(
-  ggplot(., aes(x = (subTurf - 1) %/% 5, y = (subTurf - 1) %% 5, fill = cover)) +
+  nest(.key = "data") %>% 
+  {future_pmap(
+    .l = list(d = .$data, turfID = .$turfID),
+    .f = function(d, turfID){
+  g <- ggplot(d, aes(x = (subTurf - 1) %% 5, y = 5 - ((subTurf - 1) %/% 5), fill = cover)) +
     geom_tile(colour = "grey60") +
     facet_grid(species ~ year) +
-    ggtitle(paste("Plot", .$turfID, "at", .$siteID)) +
+    ggtitle(paste0("Plot ", turfID, "; destination ", d$destSiteID)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
     scale_fill_distiller(type = "seq", palette = "Greens", direction = 1) + 
@@ -56,9 +74,8 @@ x <- subturf_cover_thin %>%
       axis.ticks = element_blank(),
       strip.text.y = element_text(angle = 0)
       )
-  
-  )
-    cat("\n")
-})
+    })} %>% 
+  walk(print)
+
 ```
 

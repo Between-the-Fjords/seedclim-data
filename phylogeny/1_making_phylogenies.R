@@ -32,9 +32,8 @@ source("phylogeny/sunplin-functions.r")
 source("phylogeny/r_functions/sunplin_fxs.R")
 dyn.load("C:/Users/Brian/Desktop/current_projects/misc_R_code/sunplin/sunplin/sunplin.spn")
 
-#load in Smith phylogeny
+#load in Smith phylogeny: only species in genbank
 gbotb<-read.tree("phylogeny/Smith_2017_gbotb.tre")
-
 
 #########################################################################
 
@@ -47,8 +46,8 @@ taxa<-taxa[which(!is.na(taxa$speciesName)),]
 taxa$speciesName<-gsub(pattern = "not media",replacement = "sp1",x = taxa$speciesName,fixed = T)
 taxa<-taxa[grep(pattern = "sp\\b",x = taxa$speciesName,invert = T),]
 taxa$family[grep(pattern = "Dianthus",taxa$speciesName)]<-"Caryophyllaceae"
+taxa$speciesName[which(taxa$speciesName=="Loiseleuria procumbens")]<-"Kalmia procumbens"
 write.csv(x = taxa,file = "phylogeny/tree_names_to_code_lookup.csv",row.names = F)
-
 
 #Make sunplin files
 sp_fam<-taxa[c("speciesName","family")]
@@ -56,6 +55,7 @@ puts_info_seedclim<-get_put_info(sp_fam = sp_fam,phylogeny = gbotb)
 make_puts_input(puts_info = puts_info_seedclim,phylogeny = gbotb,phylogeny_filename = "phylogeny/gbotb_annotated.tre",
                         puts_filename = "phylogeny/seedclim.puts")
 
+set.seed(2005)
 sunplin_phylo_replicates(put_file = "seedclim.puts",phylogeny_file = "gbotb_annotated.tre",
                          output_directory = "C:/Users/Brian/Desktop/current_projects/seedclimComm/phylogeny/phylogenies/",
                          output_base_filename = "gbotb_base_rep_",nrep = 1000,method = 2,
@@ -65,8 +65,8 @@ sunplin_phylo_replicates(put_file = "seedclim.puts",phylogeny_file = "gbotb_anno
 #########################################################################
 #Just basic code to inspect a few phylos, make sure they aren't noticably broken
 
-t1<-read.tree("phylogenies/gbotb_base_rep_1.tre")
-t2<-read.tree("phylogenies/gbotb_base_rep_2.tre")
+t1<-read.tree("phylogeny/phylogenies/gbotb_base_rep_1.tre")
+t2<-read.tree("phylogeny/phylogenies/gbotb_base_rep_2.tre")
 plot(t1,show.tip.label = F)
 plot(t2,show.tip.label = F)
 
