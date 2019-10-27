@@ -2,6 +2,7 @@
 source("Traits/Bootstraping.R")
 source("Traits/Cleaning.R")
 library(lme4)
+library(lmerTest)
 
 set.seed(47)
 
@@ -13,8 +14,23 @@ Bootstrap_Traits1 <- Bootstrap_Traits %>%
   mutate(Precip= recode(Site, Ulv=596, Lav=1321, Gud=1925, Skj=2725, Alr=789, Hog=1356, Ram=1848, Ves=3029, Fau=600, Vik=1161, Arh=2044, Ovs=2923))%>%
   mutate(P_level = recode(Site, Ulv = 600, Alr = 600, Fau = 600, Lav = 1200, Hog = 1200, Vik = 1200, Gud = 2000, Ram = 2000, Arh = 2000, Skj = 2700, Ves = 2700, Ovs = 2700)) %>% 
   mutate(P_cat = recode(Site, Ulv = "Dry", Alr = "Dry", Fau = "Dry", Lav = "Dry_Intermediate", Hog = "Dry_Intermediate", Vik = "Dry_Intermediate", Gud = "Wet_Intermediate", Ram = "Wet_Intermediate", Arh = "Wet_Intermediate", Skj = "Wet", Ves = "Wet", Ovs = "Wet")) %>% 
-  mutate(T_cat = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Boreal", Hog = "Boreal", Ram = "Boreal", Ves = "Boreal", Fau = "Lowland", Vik = "Lowland", Arh = "Lowland", Ovs = "Lowland"))
+  mutate(T_cat = recode(Site, Ulv = "Alpine", Lav = "Alpine",  Gud = "Alpine", Skj = "Alpine", Alr = "Boreal", Hog = "Boreal", Ram = "Boreal", Ves = "Boreal", Fau = "Lowland", Vik = "Lowland", Arh = "Lowland", Ovs = "Lowland")) %>% 
+  filter(!is.na(Trait))
 #gather(key = "Moment", value = "Value", Mean, Variance, Kurtosis, Skewness)
+
+## Ploting raw data ##
+
+traitdata_1 %>% 
+  filter(Trait %in% c("CN_ratio", "LDMC",  "Plant_Height_mm", "SLA_cm2_g")) %>% 
+  ggplot(aes(Value, fill = as.factor(T_level))) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~Trait, scales = "free") +
+  labs(fill = "Summer temperature (C)", title = "Distribution of raw data") +
+  theme_bw() +
+  scale_fill_manual(values = c("#99CCFF", "#9999FF", "#FF9999"))
+
+
+ggsave("Raw_data_distributions.jpg", width = 20 , height = 15, units = "cm")
 
 
 ## Mean of SLA ##
@@ -28,7 +44,7 @@ Bootstrap_Traits1 %>%
   theme_bw()+
   scale_fill_manual(values = c("#99CCFF", "#9999FF", "#FF9999"))
 
-ggsave("Bootstrap_SLA_mean.jpg", width = 20 , height = 15, units = "cm")
+#ggsave("Bootstrap_SLA_mean.jpg", width = 20 , height = 15, units = "cm")
 
 ## Variance, Kurtosis, Skewness ##
 
@@ -41,8 +57,8 @@ Bootstrap_Traits1 %>%
   theme_bw()
 
 Bootstrap_Traits1 %>% 
-  filter(Trait == "SLA_cm2_g") %>% 
-  ggplot(aes(Skewness, fill = P_cat))+
+  filter(Trait == "Plant_Height_mm") %>% 
+  ggplot(aes(Skewness, fill = T_cat))+
   geom_density(alpha = 0.5)+
   #facet_wrap(~P_cat, nrow = 1) +
   labs(x = "Community weighted skewness - SLA (cm2/g)", fill = "Temperature category")+
@@ -71,19 +87,93 @@ Bootstrap_Traits1 %>%
   scale_fill_manual(values = c("#99CCFF", "#9999FF", "#FF9999"))
 
 
-ggsave("Bootstrap_all_traits_mean.jpg", width = 20 , height = 15, units = "cm")
+#ggsave("Bootstrap_all_traits_mean.jpg", width = 20 , height = 15, units = "cm")
 
 
 ### Kurtosis vs. skewness ##
 
 Bootstrap_Traits1 %>% 
   filter(Trait == "SLA_cm2_g") %>% 
-  ggplot(aes(x = Skewness^2, y = Kurtosis, col = T_cat))+
+  ggplot(aes(x = Skewness, y = Kurtosis, col = T_cat))+
   geom_point()
 
 
-### Testing ###
-Bootstrap_Traits1 %>% 
-  filter(Trait == "SLA_cm2_g") %>% 
-  lmer(Mean ~ Temp + (Temp|)
+#### Testing ####
+
+### Write a code/function to run tests on all traits and all moments ###
+
+#### SLA ####
+
+Boot_SLA <- Bootstrap_Traits1 %>% 
+  filter(Trait == "SLA_cm2_g")
+
+# Mean
+
+result <- Bootstrap_Traits1 %>% 
+  ungroup() %>% 
+  gather(Moment, Value, Mean, Variance, Skewness, Kurtosis) %>% 
+  # pivot_longer(cols %in% ("Mean", "Variance", "Skewness", "Kurtosis"),
+  #              names_to = "Moments",
+  #              values_to = "Value")
+group_by(Trait, Moment) %>% 
+do(fit = lmer(Value ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), .))
+
+
+broom.mixed::tidy(result, fit, "random") #Doesn't work now, needs to be fixed to work for mixed effect models, works for a simple lm.
+
+library(broom)
+library("broom.mixed")
+
+Boot_SLA_testM <- lmer(Mean ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_SLA)
        
+summary(Boot_SLA_testM)
+anova(Boot_SLA_testM)
+
+# Variance
+
+Boot_SLA_testV <- lmer(Variance ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_SLA)
+
+summary(Boot_SLA_testV)
+
+# Kurtosis
+
+Boot_SLA_testK <- lmer(Kurtosis ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_SLA)
+
+summary(Boot_SLA_testK)
+
+# Kurtosis
+
+Boot_SLA_testS <- lmer(Skewness ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_SLA)
+
+summary(Boot_SLA_testS)
+
+
+#### Height ####
+
+
+Boot_Height <- Bootstrap_Traits1 %>% 
+  filter(Trait == "Plant_Height_mm")
+
+# Mean
+
+Boot_Height_testM <- lmer(Mean ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_Height)
+
+summary(Boot_Height_testM)
+
+# Variance
+
+Boot_Height_testV <- lmer(Variance ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_Height)
+
+summary(Boot_Height_testV)
+
+# Kurtosis
+
+Boot_Height_testK <- lmer(Kurtosis ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_Height)
+
+summary(Boot_Height_testK)
+
+# Kurtosis
+
+Boot_Height_testS <- lmer(Skewness ~ Temp + scale(Precip) + Temp:scale(Precip) + (1 | Site), Boot_Height)
+
+summary(Boot_Height_testS)
