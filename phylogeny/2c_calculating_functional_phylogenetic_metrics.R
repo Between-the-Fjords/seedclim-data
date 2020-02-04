@@ -94,7 +94,7 @@ cover.meta<-read_rds(path = "phylogeny/cover_phylo_trait.rds")
 
 #Using trait-scaled branches
 #richness
-trait_pd_abd <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+trait_pd_abd_std <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
 cover.meta$trait_pd_abd_std<-rowMeans(trait_pd_abd_std)
 
 #divergence
@@ -115,7 +115,7 @@ cover.meta$trait_vntd_abd_std<-rowMeans(trait_vntd_abd_std)
 #Using trait-rate-scaled branches
 
 #richness
-trait_rate_pd_abd <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_rate_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+trait_rate_pd_abd_std <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_rate_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
 cover.meta$trait_rate_pd_abd_std<-rowMeans(trait_rate_pd_abd_std)
 
 #divergence
@@ -138,4 +138,4 @@ cover.meta$trait_rate_vntd_abd_std<-rowMeans(trait_rate_vntd_abd_std)
 
 #Write needed outputs
 
-saveRDS(object = cover.meta,file = "phylogeny/cover_phylo.rds")
+saveRDS(object = cover.meta,file = "phylogeny/cover_phylo_trait_trait_scaled.rds")

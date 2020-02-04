@@ -31,8 +31,8 @@ cover<-cover[which(!is.na(cover_names$speciesName))]
 rm(cover_names)
 colnames(cover)<-gsub(pattern = " ",replacement = "_",x = colnames(cover))
 tree_1<-read.tree("phylogeny/phylogenies/gbotb_base_rep_1.tre")
-colnames(cover)[which(!colnames(cover)%in%tree_1$tip.label)]#need to drop a few species from the cover set
-cover<-cover[which(colnames(cover)%in%tree_1$tip.label)]
+colnames(cover)[which(!colnames(cover)%in%tree_1$tip.label)]#need to drop a few species from the cover set (the 5 non seed-plants)
+cover<-cover[,which(colnames(cover)%in%tree_1$tip.label)]
 cover_binary<-cover
 class(cover_binary)
 cover_binary<-as.matrix(cover_binary)
@@ -46,24 +46,21 @@ cover_binary[which(cover_binary>0)]<-1
 #richness metrics
 pd_out<-replicated_pd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$pd<-rowMeans(pd_out)
+
 pd_out_std<-replicated_pd_std(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$pd_std<-rowMeans(pd_out_std)
 
 #divergence metrics
-cover.meta$mntd<-mntd.query(tree = tree_1,matrix = cover_binary)
-cover.meta$mntd_std<-mntd.query(tree = tree_1,matrix = cover_binary,standardize = T)
-
-
 mpd_out<-replicated_mpd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$mpd<-rowMeans(mpd_out)
 
-mpd_out_std<-replicated_mpd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+mpd_out_std<-replicated_mpd_std(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$mpd_std<-rowMeans(mpd_out)
 
 mntd_out<-replicated_mntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$mntd<-rowMeans(mntd_out)
 
-mntd_out_std<-replicated_mntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+mntd_out_std<-replicated_mntd_std(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$mntd_std<-rowMeans(mntd_out)
 
 #regularity metrics
