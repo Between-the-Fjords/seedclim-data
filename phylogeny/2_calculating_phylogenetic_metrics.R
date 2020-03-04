@@ -12,7 +12,7 @@ library(picante)
 source("phylogeny/r_functions/comm_phy_fxs.R")
 #library(devtools)
 #install_github("NGSwenson/lefse_0.5")
-
+library(lefse)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Prepare community data as needed for phylo stuff
@@ -69,12 +69,17 @@ cover.meta$mntd_std<-rowMeans(mntd_out)
 vpd_out<-replicated_vpd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$vpd<-rowMeans(vpd_out)
 
+vpd_out_std <-replicated_vpd_std(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$vpd_std<-rowMeans(vpd_out_std)
+
 
 #vntd
 vntd_out<-replicated_vntd(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
 cover.meta$vntd<-rowMeans(vntd_out)
 
-  
+vntd_out_std<-replicated_vntd_std(comm_matrix = cover_binary,phylogeny_directory = "phylogeny/phylogenies/",n_reps = 1000)
+cover.meta$vntd_std<-rowMeans(vntd_out_std)
+
 #calculating phylo metrics: abundance weighted~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #richness

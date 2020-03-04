@@ -120,6 +120,22 @@ unique(model_outputs$weighting)
 ggplot(data=subset(model_outputs, Effect == "Model" & !is.na(moment)), aes(x=metric, y=Rsq,fill=weighting)) +
   geom_bar(stat="identity", position=position_dodge())+facet_wrap(facets = "moment")+ coord_flip()
 
+ggplot(data=subset(model_outputs, Effect == "year:TTtreatTT1" & !is.na(moment)), aes(x=metric, y=Rsq,fill=weighting)) +
+  geom_bar(stat="identity", position=position_dodge())+facet_wrap(facets = "moment")+ coord_flip()
+
+ggplot(data=subset(model_outputs, Effect == "year:TTtreatTT2" & !is.na(moment)), aes(x=metric, y=Rsq,fill=weighting)) +
+  geom_bar(stat="identity", position=position_dodge())+facet_wrap(facets = "moment")+ coord_flip()
+
+ggplot(data=subset(model_outputs, Effect == "year:TTtreatTT3" & !is.na(moment)), aes(x=metric, y=Rsq,fill=weighting)) +
+  geom_bar(stat="identity", position=position_dodge())+facet_wrap(facets = "moment")+ coord_flip()
+
+ggplot(data=subset(model_outputs, Effect == "year:TTtreatTT4" & !is.na(moment)), aes(x=metric, y=Rsq,fill=weighting)) +
+  geom_bar(stat="identity", position=position_dodge())+facet_wrap(facets = "moment")+ coord_flip()
+
+
+unique(model_outputs$Effect)
+
+
 model_outputs[which(model_outputs$Effect == "Model"),]
 unique(model_outputs$Effect)
 
