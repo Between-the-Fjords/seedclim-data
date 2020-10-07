@@ -6,7 +6,6 @@ library("RSQLite")
 library("readxl")
 library("tidyverse")
 library("assertr")
-library("readr")
 
 #function to add data to database - padding for missing columns ####
 db_pad_write_table <- function(conn, table, value, row.names = FALSE,
@@ -75,6 +74,10 @@ Sch.gig,Schedonorus giganteus,Poaceae,graminoid,perennial
 Ste.bor,Stellaria borealis,Caryophyllaceae,forb,perennial
 Pop.tre,Populus tremula,Salicaceae,woody,perennial
 Ped.pal,Pedicularis palustris,Orobanchaceae,forb,perennial
+Are.ser,Arenaria serpyllifolia,Carophyllaceae,forb,annual
+Sch.pra,Schedonorus pratensis,Poaceae,graminoid,perennial
+Luz.syl,Luzula sylvatica,Juncaceae,graminoid,perennial
+Sal.lan,Salix lanata,Salicaceae,woody,perennial
 "))
   
 
@@ -193,6 +196,7 @@ Dry.sp,Gym.dry
 Tof.cal,Tof.pus"))
 
 
+
 ## load main data ####
 source("inst/uploadDataSource/importcommunityNY_test_16.des.2013.r")
 
@@ -200,13 +204,20 @@ source("inst/uploadDataSource/importcommunityNY_test_16.des.2013.r")
 datafiles <- dir(path = "rawdata/", pattern = "csv$",
                  full.names = TRUE, recursive = TRUE)
 
+#exclude 2019 raw files (keep processed)
+datafiles <- str_subset(datafiles, pattern = "2019_data", negate = TRUE)
+
 #check taxonomy
-extra <- c("DestinationSite", "DestinationBlock", "originPlotID", "TTtreat",
+meta_cols <- c("DestinationSite", "DestinationBlock", "originPlotID", "TTtreat",
            "destinationPlotID", "turfID", "RTtreat", "GRtreat", "subPlot",
            "year",  "date",  "Measure", "recorder", "pleuro", "acro",  "liver",
            "lichen", "litter", "soil", "rock", "totalVascular",
            "totalBryophytes", "totalLichen", "vegetationHeight", "mossHeight",
            "comment",  "X",  "X.1", "X.2", "missing")
+
+## process 2019 data
+source("databaseUtils/2019_temp.R")
+
 
 datafiles %>% #grep("2017", ., value = TRUE) %>%
   set_names %>%
@@ -216,9 +227,14 @@ datafiles %>% #grep("2017", ., value = TRUE) %>%
   if (ncol(f) == 1) {
     f <- read.table(x, header = TRUE, sep = ";", nrows = 2, comment = "")
   }
-  setdiff(names(f), c(extra, merge_dictionary$oldID, taxa$species))
+  setdiff(names(f), c(meta_cols, merge_dictionary$oldID, taxa$species))
   })
 
 
 datafiles %>% #grep("2017", ., value = TRUE) %>%
   map(import_data, con = con, merge_dictionary = merge_dictionary)
+
+
+## do corrections
+
+source("databaseUtils/speciesCorrections.R")
