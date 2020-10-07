@@ -1,12 +1,27 @@
 # making corrections
 # load file
-corrections <- read.csv("databaseUtils/speciesCorrections.csv", sep = ",", stringsAsFactors = FALSE, comment = "#")
+corrections <- read_csv("databaseUtils/speciesCorrections.csv", 
+                        comment = "#")
+
 corrections <- corrections %>% 
+  filter(!str_detect(turfID, "#")) %>% 
   mutate(
     turfID = trimws(turfID),
     old = trimws(old),
     new = trimws(new)
-  )
+  ) %>% 
+  #correct bad turfID
+  mutate(turfID = if_else(turfID == "504 TT4 227", true = "504 TT4 277", false = turfID)) %>% 
+  #correct bad spp id
+  mutate(old = case_when(
+    old == "Sel.sel." ~ "Sel.sel",
+    old == "Car.pall" ~ "Car.pal",
+    old == "X…." ~ "X...",
+    TRUE ~ old
+  )) %>% 
+  #force year to numeric
+  mutate(Year = as.numeric(Year))
+  
 
 #check for taxon name anomalies
 taxon <- tbl(con, "taxon") %>% 
@@ -25,15 +40,26 @@ turfCom <- tbl(con, "turfCommunity") %>% collect()
 subturfCom <- tbl(con, "subturfCommunity") %>% collect()
 
 # check turfID
-turfID_glitch <- corrections %>% filter(turfID != "") %>% anti_join(turfCom, by = "turfID")
+turfID_glitch <- corrections %>% 
+  filter(turfID != "") %>% 
+  anti_join(turfCom, by = "turfID")
 try(assertthat::assert_that(nrow(turfID_glitch) == 0))
 # check species
-species_glitch <- corrections %>% filter(turfID != "") %>% anti_join(turfCom, by = c("old" = "species"))
+species_glitch <- corrections %>% 
+  filter(turfID != "") %>% 
+  anti_join(turfCom, by = c("old" = "species"))
 try(assertthat::assert_that(nrow(species_glitch) == 0))
 #check species/turfs
-speciesturfs_glitch <- corrections %>% filter(turfID != "", old != new) %>% anti_join(turfCom, by = c("old" = "species", "Year" = "year", "turfID" = "turfID"))
+speciesturfs_glitch <- corrections %>% 
+  filter(turfID != "", old != new) %>% 
+  anti_join(turfCom, by = c("old" = "species", "Year" = "year", "turfID" = "turfID"))
 try(assertthat::assert_that(nrow(species_glitch) == 0))
 
+#Delete 521 TT1 523 from 2012 - comment "ødelagt av ku! Kopi fra 2011!" - subturfs idential to previous year
+turfCom <- turfCom %>% 
+  filter(!(turfID == "521 TT1 523" & year == 2012))
+subturfCom <- subturfCom %>% 
+  filter(!(turfID == "521 TT1 523" & year == 2012))
 
 
 ## global name changes (maybe merges) -should be in merge table
