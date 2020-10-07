@@ -72,7 +72,8 @@ x <- subturf_cover_thin %>%
       axis.text = element_blank(), 
       axis.title = element_blank(), 
       axis.ticks = element_blank(),
-      strip.text.y = element_text(angle = 0)
+      strip.text.y = element_text(angle = 0), 
+      panel.spacing = unit(2, units = "pt")
       )
     })} %>% 
   walk(print)
