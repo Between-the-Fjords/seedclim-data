@@ -64,12 +64,14 @@ import_data <- function(file, con, merge_dictionary){
   names(turf)
   
   alreadyIn <- dbGetQuery(con,"select turfID from turfs")
-  newTurfs <- turf %>% anti_join(alreadyIn) #find which turfs IDs are not already in database
+  newTurfs <- turf %>% 
+    anti_join(alreadyIn) %>%  #find which turfs IDs are not already in database
+    select(where(~!(all(is.na(.x))))) #remove empty columns to avoid type conflicts
   
   if(nrow(newTurfs) > 0) {
     message("adding ", paste(newTurfs$turfID, collapse = " "), " new turfs" )
     
-    dbPadWriteTable(con, "turfs", newTurfs, row.names = FALSE, append = TRUE)
+    db_pad_write_table(con, "turfs", newTurfs, row.names = FALSE, append = TRUE)
     }
 
   message("done turfs")                                  
@@ -89,7 +91,7 @@ import_data <- function(file, con, merge_dictionary){
     subturfEnv <-  subturfEnv %>% mutate(bad = "")  
   }
   subturfEnv 
-  dbPadWriteTable(con, "subTurfEnvironment", subturfEnv, row.names = FALSE, append = TRUE)
+  db_pad_write_table(con, "subTurfEnvironment", subturfEnv, row.names = FALSE, append = TRUE)
   nrow(subturfEnv)
     
     #TurfEnv ####
@@ -107,7 +109,7 @@ import_data <- function(file, con, merge_dictionary){
     if(any(nchar(as.character(turfEnv$comment)) > 255, na.rm = TRUE)) {
       stop ("more than 255 characters in a comment field in turfEnv")
     }
-    dbPadWriteTable(con, "turfEnvironment", turfEnv, row.names = FALSE, append = TRUE)
+    db_pad_write_table(con, "turfEnvironment", turfEnv, row.names = FALSE, append = TRUE)
   nrow(turfEnv)   
   
   #TurfCommunity ####  
@@ -142,7 +144,7 @@ import_data <- function(file, con, merge_dictionary){
   
   #inject
   initNrowTurfCommunity <- dbGetQuery(con, "select count(*) as n from turfCommunity")
-  dbPadWriteTable(con, "turfCommunity", spp)
+  db_pad_write_table(con, "turfCommunity", spp)
   finalNrowTurfCommunity <- dbGetQuery(con, "select count(*) as n from turfCommunity")
 
   stopifnot(nrow(spp) == finalNrowTurfCommunity - initNrowTurfCommunity)
@@ -235,7 +237,7 @@ import_data <- function(file, con, merge_dictionary){
 
     #inject
     initNrowSubTurfCommunity <- dbGetQuery(con, "select count(*) as n from subturfCommunity")
-    dbPadWriteTable(con, "subturfCommunity", subspp)
+    db_pad_write_table(con, "subturfCommunity", subspp)
     finalNrowSubTurfCommunity <- dbGetQuery(con, "select count(*) as n from subturfCommunity")
     
     stopifnot(nrow(subspp) == finalNrowSubTurfCommunity - initNrowSubTurfCommunity)
