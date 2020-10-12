@@ -136,6 +136,7 @@ replicated_mntraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, 
     dist_i<-dist_i[spp_to_keep,spp_to_keep]
     comm_matrix<-comm_matrix[,spp_to_keep]
     #
+    comm_perm <- permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
     
     #calc null expectations
     expected_mntds<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_null)
@@ -181,6 +182,7 @@ replicated_vtraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, n
     spp_to_keep<-intersect(colnames(comm_matrix),colnames(trait_matrix))
     dist_i<-dist_i[spp_to_keep,spp_to_keep]
     comm_matrix<-comm_matrix[,spp_to_keep]
+    comm_perm<-permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
     #
     
     #calc null expectations
@@ -227,6 +229,7 @@ replicated_vntraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, 
     spp_to_keep<-intersect(colnames(comm_matrix),colnames(trait_matrix))
     dist_i<-dist_i[spp_to_keep,spp_to_keep]
     comm_matrix<-comm_matrix[,spp_to_keep]
+    comm_perm<-permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
     #
     
     #calc null expectations

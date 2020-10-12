@@ -29,7 +29,7 @@ cover.meta<-merge(x = cover.meta,y = cflux,by.x = c("turfID2","year"),by.y = c("
 #Reco15 as response 
 
     #pd	mpd	mntd	vpd	vntd	
-    reco_v_pd<-lm(Reco15 ~pd_abd_std + annualPrecipitation +summerTemperature,data = cover.meta)
+    reco_v_pd <- lm(Reco15 ~pd_abd_std + annualPrecipitation +summerTemperature,data = cover.meta)
     
     reco_v_mpd<-lm(Reco15 ~mpd_abd_std + annualPrecipitation +summerTemperature,data = cover.meta)
     reco_v_mntd<-lm(Reco15 ~mntd_abd_std + annualPrecipitation +summerTemperature,data = cover.meta)
