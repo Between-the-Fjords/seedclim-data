@@ -78,7 +78,7 @@ siri <- tbl(con, "sites") %>%
   inner_join(tbl(con, "turfEnvironment"), by = "turfID") %>% 
   inner_join(tbl(con, "TurfCommunity"), by = c("turfID", "year")) %>% 
   filter(recorder == "Siri") %>% 
-  group_by(turfID, year, date, totalVascular, TTtreat, Temperature_level) %>% 
+  group_by(turfID, year, date, totalVascular, TTtreat, temperature_level) %>% 
   summarise(SumOfCover = sum(cover)) %>% 
   collect()  
   
@@ -149,3 +149,4 @@ turfs$newTT <- turfs$TTtreat  #alternative TTtreat with combined controls
 levels(turfs$newTT)[1:2] <- "control"
 
 save(cover, cover.thin, cover.meta, turfs, file = "cover.Rdata")
+
