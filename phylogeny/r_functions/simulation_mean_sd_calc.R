@@ -13,7 +13,7 @@ expected_values <- function(tree,traits,n_reps){
   
   
   purrr::map_df(100:5,
-                function(x){get_exp_means_sds(n_tips = x,n_reps = nreps,
+                function(x){get_exp_means_sds(n_tips = x,n_reps = n_reps,
                                               trait_dist = trait_dist,
                                               tree_dist = tree_dist)})
   

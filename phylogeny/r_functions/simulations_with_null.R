@@ -1,22 +1,39 @@
 #Simulation with null expectations
 
 source("phylogeny/r_functions/simulation_mean_sd_calc.R")
+library(ape)
+library(phytools)
+library(foreach)
+library(doParallel)
 ###################################
-out_limiting <- NULL
-out_limiting_ses <- NULL
 nreps<-1000
-for(i in 1:nreps){
+
+cl <- makeCluster(detectCores()-1)
+registerDoParallel(cl)
+
+#for(i in 1:nreps){
+out_limiting_combined <- foreach(i = 1:nreps,
+                .combine = rbind,
+                .packages = c("ape","phytools"))%dopar%{
   print(i)
   tree <- pbtree(n = 100)
+  out_limiting <- NULL
+  out_limiting_ses <- NULL
   
   #colless <- colless.like.index(tree,norm = T) #slows down code, so commenting out
   colless <- NA 
-  
+  ?rTraitCont
   traits <- rTraitCont(phy = tree,model = "BM")
   trait_dist <- as.matrix(dist(traits,diag = T,upper = T))
   tree_dist <- as.matrix(cophenetic.phylo(tree))
   exp_i <- expected_values(tree = tree,traits = traits,n_reps = 100)
   rm(tree)
+  
+  #cor(as.numeric(tree_dist),as.numeric(trait_dist)) r=.2
+  
+  
+  colnames(trait_dist)
+  colnames(tree_dist)
   
   #cor(exp_i[which(exp_i$trait=="trait_mean"),2:3])
   #cor(exp_i[which(exp_i$trait=="phy_mean_min"),2:3])
@@ -192,6 +209,13 @@ for(i in 1:nreps){
                               "Variance in Functional Distance","Variance in Minimum Functional Distance",
                               "Mean Functional Distance","Mean Minimum Functional Distance")
   
+  out_limiting <- as.data.frame(out_limiting)
+  out_limiting_ses <- as.data.frame(out_limiting_ses)
+  out_limiting$std <- "no"
+  out_limiting_ses$std <- "yes"
+  
+  out_combined <- rbind(out_limiting,out_limiting_ses)
+  return(out_combined)
   
 }
 
@@ -200,15 +224,27 @@ rm(colless,trait_dist,tree_dist,i,traits,exp_i,out_i,out_i_ses,out_t,out_t_ses,i
    phy_mean,phy_mean_min,phy_mean_min_ses,phy_mean_ses,phy_var,phy_var_min,phy_var_min_ses,phy_var_ses,
    tip_to_drop,trait_mean,trait_mean_min,trait_mean_min_ses,trait_mean_ses,trait_var,trait_var_min,trait_var_min_ses,trait_var_ses,t)
 
-out_limiting <- as.data.frame(out_limiting)
+stop("make sure to write the file out_limiting_combined.csv using the line below")
+#Split code into separate dataframe
+
+#write.csv(x = out_limiting_combined,file = "phylogeny/simulations_limiting.csv",row.names = F)
+#out_limiting_combined <- read.csv("phylogeny/simulations_limiting.csv",stringsAsFactors = F)
+#out_limiting_combined <- out_limiting_combined[which(colnames(out_limiting_combined)!="X")]
+#colnames(out_limiting_combined) <- gsub(pattern = ".",replacement = " ", x = colnames(out_limiting_combined),fixed = T)
+
+out_limiting_ses <- out_limiting_combined[which(out_limiting_combined$std=="yes"),]
+out_limiting <- out_limiting_combined[which(out_limiting_combined$std=="no"),]
+
+out_limiting<- out_limiting[which(colnames(out_limiting)!="std")]
+out_limiting_ses<- out_limiting_ses[which(colnames(out_limiting_ses)!="std")]
+
 out_limiting$species_removed <- 100 - out_limiting$tips
-
-out_limiting_ses <- as.data.frame(out_limiting_ses)
 out_limiting_ses$species_removed <- 100 - out_limiting_ses$tips
-
 
 colnames(out_limiting_ses)[which(colnames(out_limiting_ses)=="species_removed")] <- "Species removed"
 colnames(out_limiting)[which(colnames(out_limiting)=="species_removed")] <- "Species removed"
+
+
 
 ##############################################################################
 
@@ -216,10 +252,16 @@ colnames(out_limiting)[which(colnames(out_limiting)=="species_removed")] <- "Spe
 #Filtering
 out_filtering <- NULL
 out_filtering_ses <- NULL
-for(i in 1:nreps){
+
+#for(i in 1:nreps){
+out_filtering_combined <- foreach(i = 1:nreps,
+                                 .combine = rbind,
+                                 .packages = c("ape","phytools"))%dopar%{
   print(i)
   tree <- pbtree(n = 100)
-  
+  out_filtering <- NULL
+  out_filtering_ses <- NULL
+                                   
   #colless <- colless.like.index(tree,norm = T) #slows down code, so commenting out
   colless <- NA 
   
@@ -400,23 +442,40 @@ for(i in 1:nreps){
                                   "Mean Phylogenetic Distance","Mean Minimum Phylogenetic Distance",
                                   "Variance in Functional Distance","Variance in Minimum Functional Distance",
                                   "Mean Functional Distance","Mean Minimum Functional Distance")
+ 
+  out_filtering <- as.data.frame(out_filtering)
+  out_filtering_ses <- as.data.frame(out_filtering_ses)
+  out_filtering$std <- "no"
+  out_filtering_ses$std <- "yes"
+  
+  out_combined <- rbind(out_filtering,out_filtering_ses)
+  return(out_combined)
   
   
 }
 
 
 #cleanup
-rm(colless,trait_dist,tree_dist,i,traits,exp_i,out_i,out_i_ses,out_t,out_t_ses,index,
+rm(tree,colless,trait_dist,tree_dist,i,traits,exp_i,out_i,out_i_ses,out_t,out_t_ses,index,
    phy_mean,phy_mean_min,phy_mean_min_ses,phy_mean_ses,phy_var,phy_var_min,phy_var_min_ses,phy_var_ses,
    tip_to_drop,trait_mean,trait_mean_min,trait_mean_min_ses,trait_mean_ses,trait_var,trait_var_min,trait_var_min_ses,trait_var_ses,t)
 
-#Convert to data frame and add a column for the number of tips in the community
-out_filtering <- as.data.frame(out_filtering)
+#Split code into separate dataframe
+
+#write.csv(x = out_filtering_combined,file = "phylogeny/simulations_filtering.csv", row.names = F)
+#out_filtering_combined <- read.csv(file = "phylogeny/simulations_filtering.csv",stringsAsFactors = F)
+#out_filtering_combined <- out_filtering_combined[which(colnames(out_filtering_combined)!="X")]
+#colnames(out_filtering_combined) <- gsub(pattern = ".",replacement = " ", x = colnames(out_filtering_combined),fixed = T)
+
+
+out_filtering_ses <- out_filtering_combined[which(out_filtering_combined$std=="yes"),]
+out_filtering <- out_filtering_combined[which(out_filtering_combined$std=="no"),]
+
+out_filtering <- out_filtering[which(colnames(out_filtering)!="std")]
+out_filtering_ses<- out_filtering_ses[which(colnames(out_filtering_ses)!="std")]
+
 out_filtering$species_removed <- 100 - out_filtering$tips
-
-out_filtering_ses <- as.data.frame(out_filtering_ses)
 out_filtering_ses$species_removed <- 100 - out_filtering_ses$tips
-
 
 colnames(out_filtering_ses)[which(colnames(out_filtering_ses)=="species_removed")] <- "Species removed"
 colnames(out_filtering)[which(colnames(out_filtering)=="species_removed")] <- "Species removed"
@@ -502,6 +561,9 @@ limiting_ses_out_mat_p<-array(dim = c(9,9,nreps))
 for(i in 1:nreps){
   
   data_i <- out_limiting_ses[which(out_limiting_ses$i==i),]
+  data_i$Colless<-0
+  
+  data_i <- na.omit(data_i)
   corr_i <- Hmisc::rcorr(as.matrix(data_i[,4:12]))
   limiting_ses_out_mat_r[,,i]<-corr_i$r
   limiting_ses_out_mat_p[,,i]<-corr_i$P
@@ -650,6 +712,7 @@ for(i in 1:nreps){
   data_i <- na.omit(data_i)
   
   corr_i <- Hmisc::rcorr(as.matrix(data_i[,4:12]))
+  
   filtering_ses_out_mat_r[,,i]<-corr_i$r
   filtering_ses_out_mat_p[,,i]<-corr_i$P
   
@@ -714,9 +777,6 @@ names(filtering_ses_summary)[7] <- "CI_r_includes_zero"
 #Plotting correlations
 library(corrplot)
 
-filtering_ses_summary$mean_r
-
-
 corrplot(filtering_summary$mean_r, method = "ellipse",
          type="full", title = "Filtering",
          p.mat = filtering_summary$CI_r_includes_zero,
@@ -727,14 +787,15 @@ corrplot(limiting_summary$mean_r, method = "ellipse",
          p.mat = limiting_summary$CI_r_includes_zero,
          diag = F,tl.col = "black")
 
+corrplot(filtering_ses_summary$mean_r, method = "ellipse",
+         type="full",title = "Filtering SES",
+         p.mat = filtering_ses_summary$CI_r_includes_zero,
+         diag = F,tl.col = "black")
+
 corrplot(limiting_ses_summary$mean_r, method = "ellipse",
          type="full",title = "Limiting Similarity SES",
          p.mat = limiting_ses_summary$CI_r_includes_zero,
          diag = F,tl.col = "black")
 
 
-corrplot(filtering_ses_summary$mean_r, method = "ellipse",
-         type="full",title = "Filtering SES",
-         p.mat = filtering_ses_summary$CI_r_includes_zero,
-         diag = F,tl.col = "black")
 
