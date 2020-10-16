@@ -197,24 +197,24 @@ trait_distance <- funrar::compute_dist_matrix(traits_table = unitraits,metric = 
     cover.meta$func_mean_all_abd_std <- rowMeans(mfd_out_abd_std)
   
   #mnfd
-  mnfd_out_abd_std <- replicated_mntraitd_abd_std(comm_matrix = cover, trait_matrix = trait_distance,nreps_traits = 1,nreps_null = 100)
-  cover.meta$func_mean_near_abd_std <- rowMeans(mnfd_out_abd_std)
+    mnfd_out_abd_std <- replicated_mntraitd_abd_std(comm_matrix = cover, trait_matrix = trait_distance,nreps_traits = 1,nreps_null = 100)
+    cover.meta$func_mean_near_abd_std <- rowMeans(mnfd_out_abd_std)
   
   #regularity metrics
   
   #vfd
-  vfd_out_abd_std <- replicated_vtraitd_abd_std(comm_matrix = cover, trait_matrix = trait_distance, nreps_traits = 1,nreps_null = 100)
-  cover.meta$func_var_all_abd_std <- rowMeans(vfd_out_abd_std)
+    vfd_out_abd_std <- replicated_vtraitd_abd_std(comm_matrix = cover, trait_matrix = trait_distance, nreps_traits = 1,nreps_null = 100)
+    cover.meta$func_var_all_abd_std <- rowMeans(vfd_out_abd_std)
   
   
   #vnfd
-  vnfd_out_abd_std <- replicated_vntraitd_abd_std(comm_matrix = cover,trait_matrix = trait_distance,nreps_traits = 1,nreps_null = 100)
-  cover.meta$func_var_near_abd_std <- rowMeans(vnfd_out_abd_std)
+    vnfd_out_abd_std <- replicated_vntraitd_abd_std(comm_matrix = cover,trait_matrix = trait_distance,nreps_traits = 1,nreps_null = 100)
+    cover.meta$func_var_near_abd_std <- rowMeans(vnfd_out_abd_std)
   
 
   
   
-  saveRDS(object = cover.meta,file = "phylogeny/cover_phylo_trait.rds")
+saveRDS(object = cover.meta,file = "phylogeny/cover_phylo_trait.rds")
   
 
 
