@@ -2,7 +2,7 @@
 
 
 
-vpd<-function (samp, dis, abundance.weighted = FALSE) 
+vpd <- function (samp, dis, abundance.weighted = FALSE) 
 {
   N <- dim(samp)[1]
   vpd <- numeric(N)
@@ -14,7 +14,10 @@ vpd<-function (samp, dis, abundance.weighted = FALSE)
         sample.weights <- t(as.matrix(samp[i, sppInSample, 
                                            drop = FALSE])) %*% as.matrix(samp[i, sppInSample, 
                                                                               drop = FALSE])
-        vpd[i] <- weighted.var(sample.dis, sample.weights)
+        #vpd[i] <- weighted.var(sample.dis, sample.weights) #we only want to use the lower triangle to avoid including pairs twice
+        vpd[i] <- weighted.var(sample.dis[lower.tri(sample.dis)], sample.weights[lower.tri(sample.weights)])
+        
+        
       }
       else {
         vpd[i] <- var(sample.dis[lower.tri(sample.dis)])
@@ -31,7 +34,7 @@ vpd<-function (samp, dis, abundance.weighted = FALSE)
 
 
 
-vntd<-function (samp, dis, abundance.weighted = FALSE) 
+vntd <- function (samp, dis, abundance.weighted = FALSE) 
 {
   N <- dim(samp)[1]
   vntd <- numeric(N)
@@ -46,7 +49,7 @@ vntd<-function (samp, dis, abundance.weighted = FALSE)
         vntd[i] <- weighted.var(vntds, sample.weights)
       }
       else {
-        vntd[i] <- mean(apply(sample.dis, 2, min, na.rm = TRUE))
+        vntd[i] <- var(apply(sample.dis, 2, min, na.rm = TRUE))
       }
     }
     else {
@@ -55,6 +58,7 @@ vntd<-function (samp, dis, abundance.weighted = FALSE)
   }
   vntd
 }
+
 #######################################
 
 weighted.var <- function(x, w, na.rm = FALSE) {
@@ -114,6 +118,61 @@ replicated_mtraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, n
   return(mpd_out)
   
 }
+
+############################################################
+
+replicated_mtraitd_abd <- function(comm_matrix, trait_matrix, nreps_traits=1){
+  
+  #if(nreps_traits>length(phylogenies)){stop("More replications specified than phylogenies available")}  
+  
+  mpd_out <- matrix(data = NA,nrow = nrow(comm_matrix), ncol = nreps_traits)
+  
+  
+  for(i in 1:nreps_traits){
+    
+    
+    dist_i <- trait_matrix
+    comm_matrix <- as.matrix(comm_matrix)
+    comm_matrix[which(is.na(comm_matrix))] <- 0
+    comm_matrix <- apply(X = comm_matrix,MARGIN = 2,FUN = as.integer)
+    spp_to_keep <- intersect(colnames(comm_matrix),colnames(trait_matrix))
+    dist_i <- dist_i[spp_to_keep,spp_to_keep]
+    comm_matrix <- comm_matrix[,spp_to_keep]
+    
+    #comm_perm<-permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
+    #
+    
+    #calc null expectations
+    #expected_mpds<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_null)
+    #for(j in 1:ncol(expected_mpds)){
+    #  expected_mpds[,j]<-mpd(samp = comm_perm$perm[[j]],dis = dist_i,abundance.weighted = T)  
+    #}#j loop
+    
+    #calc SES (obs-randmean)/randsd
+    
+    obs_mpd_i <- mpd(samp = comm_matrix,dis = dist_i,abundance.weighted = T)
+    
+    #all_mpds<-cbind(obs_mpd_i,expected_mpds)
+    
+    
+    #mpd_out[,i]<-apply(X = all_mpds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    
+    mpd_out[,i] <- obs_mpd_i
+    
+    print(paste(i/nreps_traits*100," percent done",sep = ""))  
+    
+    
+  }#i loop  
+  return(mpd_out)
+  
+}
+
+
+
+
+
+
+
 #############################################################
 
 replicated_mntraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, nreps_null=100){
@@ -160,6 +219,56 @@ replicated_mntraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, 
   return(mntd_out)
   
 }
+##################################################
+
+replicated_mntraitd_abd <- function(comm_matrix, trait_matrix,nreps_traits=1){
+  
+  #phylogenies<-list.files(path = phylogeny_directory,pattern = ".tre",full.names = T)  
+  #if(is.null(n_reps_phylo)){n_reps_phylo<-length(phylogenies)}  
+  #if(n_reps_phylo>length(phylogenies)){stop("More replications specified than phylogenies available")}  
+  
+  mntd_out<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_traits)
+  
+  
+  for(i in 1:nreps_traits){
+    
+    
+    dist_i<-trait_matrix
+    comm_matrix<-as.matrix(comm_matrix)
+    comm_matrix[which(is.na(comm_matrix))]<-0
+    comm_matrix<-apply(X = comm_matrix,MARGIN = 2,FUN = as.integer)
+    spp_to_keep<-intersect(colnames(comm_matrix),colnames(trait_matrix))
+    dist_i<-dist_i[spp_to_keep,spp_to_keep]
+    comm_matrix<-comm_matrix[,spp_to_keep]
+    #
+    #comm_perm <- permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
+    
+    #calc null expectations
+    #expected_mntds<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_null)
+    #for(j in 1:ncol(expected_mntds)){
+    #  expected_mntds[,j]<-mntd(samp = comm_perm$perm[[j]],dis = dist_i,abundance.weighted = T)  
+    #}#j loop
+    
+    #calc SES (obs-randmean)/randsd
+    
+    obs_mntd_i<-mntd(samp = comm_matrix,dis = dist_i,abundance.weighted = T)
+    
+    #all_mntds<-cbind(obs_mntd_i,expected_mntds)
+    
+    
+    #mntd_out[,i]<-apply(X = all_mntds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    mntd_out[,i] <- obs_mntd_i
+    
+    
+    print(paste(i/nreps_traits*100," percent done",sep = ""))  
+    
+    
+  }#i loop  
+  return(mntd_out)
+  
+}
+
+
 
 ##################################################
 
@@ -210,6 +319,56 @@ replicated_vtraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, n
 
 ###########################################
 
+
+replicated_vtraitd_abd <- function(comm_matrix, trait_matrix,nreps_traits=1){
+  
+  #phylogenies<-list.files(path = phylogeny_directory,pattern = ".tre",full.names = T)  
+  #if(is.null(n_reps_phylo)){n_reps_phylo<-length(phylogenies)}  
+  #if(n_reps_phylo>length(phylogenies)){stop("More replications specified than phylogenies available")}  
+  
+  vpd_out <- matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_traits)
+  
+  
+  for(i in 1:nreps_traits){
+    
+    
+    dist_i <- trait_matrix
+    comm_matrix <- as.matrix(comm_matrix)
+    comm_matrix[which(is.na(comm_matrix))] <- 0
+    comm_matrix <- apply(X = comm_matrix,MARGIN = 2,FUN = as.integer)
+    spp_to_keep <- intersect(colnames(comm_matrix),colnames(trait_matrix))
+    dist_i <- dist_i[spp_to_keep,spp_to_keep]
+    comm_matrix <- comm_matrix[,spp_to_keep]
+    #comm_perm <- permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
+    #
+    
+    #calc null expectations
+    #expected_vpds<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_null)
+    #for(j in 1:ncol(expected_vpds)){
+    #  expected_vpds[,j]<-vpd(samp = comm_perm$perm[[j]],dis = dist_i,abundance.weighted = T)  
+    #}#j loop
+    
+    #calc SES (obs-randmean)/randsd
+    
+    obs_vpd_i <- vpd(samp = comm_matrix,dis = dist_i,abundance.weighted = T)
+    
+    #all_vpds<-cbind(obs_vpd_i,expected_vpds)
+    
+    
+    #vpd_out[,i]<-apply(X = all_vpds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    vpd_out[,i] <- obs_vpd_i
+    
+    print(paste(i/nreps_traits*100," percent done",sep = ""))  
+    
+    
+  }#i loop  
+  return(vpd_out)
+  
+}
+
+
+
+############################################
 replicated_vntraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, nreps_null=100){
   
   #phylogenies<-list.files(path = phylogeny_directory,pattern = ".tre",full.names = T)  
@@ -256,8 +415,56 @@ replicated_vntraitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, 
 }
 
 ############################################
+replicated_vntraitd_abd <- function(comm_matrix, trait_matrix,nreps_traits=1){
+  
+  #phylogenies<-list.files(path = phylogeny_directory,pattern = ".tre",full.names = T)  
+  #if(is.null(n_reps_phylo)){n_reps_phylo<-length(phylogenies)}  
+  #if(n_reps_phylo>length(phylogenies)){stop("More replications specified than phylogenies available")}  
+  
+  vntd_out<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_traits)
+  
+  
+  for(i in 1:nreps_traits){
+    
+    
+    dist_i<-trait_matrix
+    comm_matrix<-as.matrix(comm_matrix)
+    comm_matrix[which(is.na(comm_matrix))]<-0
+    comm_matrix<-apply(X = comm_matrix,MARGIN = 2,FUN = as.integer)
+    spp_to_keep<-intersect(colnames(comm_matrix),colnames(trait_matrix))
+    dist_i<-dist_i[spp_to_keep,spp_to_keep]
+    comm_matrix<-comm_matrix[,spp_to_keep]
+    #comm_perm<-permatfull(m = comm_matrix,fixedmar = "both",shuffle = "ind",mtype = "count",times = nreps_null)
+    #
+    
+    #calc null expectations
+    #expected_vntds<-matrix(data = NA,nrow = nrow(comm_matrix),ncol = nreps_null)
+    #for(j in 1:ncol(expected_vntds)){
+    #  expected_vntds[,j]<-vntd(samp = comm_perm$perm[[j]],dis = dist_i,abundance.weighted = T)  
+    #}#j loop
+    
+    #calc SES (obs-randmean)/randsd
+    
+    obs_vntd_i <- vntd(samp = comm_matrix,dis = dist_i,abundance.weighted = T)
+    
+    #all_vntds<-cbind(obs_vntd_i,expected_vntds)
+    
+    
+    #vntd_out[,i]<-apply(X = all_vntds,MARGIN = 1,FUN = function(x){(x[1]-mean(x[2:length(x)]))/sd(x[2:length(x)])})
+    vntd_out[,i] <- obs_vntd_i
+    
+    
+    print(paste(i/nreps_traits*100," percent done",sep = ""))  
+    
+    
+  }#i loop  
+  return(vntd_out)
+  
+}
 
 
+
+############################################
 #This function needs work before being useful.
 .replicated_traitd_abd_std<-function(comm_matrix, trait_matrix,nreps_traits=1, nreps_null=100){
   
