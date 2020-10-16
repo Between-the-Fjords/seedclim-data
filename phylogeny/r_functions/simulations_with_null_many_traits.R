@@ -227,7 +227,7 @@ rm(colless,trait_dist,tree_dist,i,traits,exp_i,out_i,out_i_ses,out_t,out_t_ses,i
 stop("make sure to write the file out_limiting_combined.csv using the line below")
 #Split code into separate dataframe
 
-#write.csv(x = out_limiting_combined,file = "phylogeny/simulations_limiting.csv",row.names = F)
+#write.csv(x = out_limiting_combined,file = "phylogeny/simulations_limiting_20_traits.csv",row.names = F)
 #out_limiting_combined <- read.csv("phylogeny/simulations_limiting.csv",stringsAsFactors = F)
 #out_limiting_combined <- out_limiting_combined[which(colnames(out_limiting_combined)!="X")]
 #colnames(out_limiting_combined) <- gsub(pattern = ".",replacement = " ", x = colnames(out_limiting_combined),fixed = T)
@@ -265,7 +265,8 @@ out_filtering_combined <- foreach(i = 1:nreps,
                                     #colless <- colless.like.index(tree,norm = T) #slows down code, so commenting out
                                     colless <- NA 
                                     
-                                    traits <- rTraitCont(phy = tree,model = "BM")
+                                    #traits <- rTraitCont(phy = tree,model = "BM")
+                                    traits <- replicate(n = 20,expr = rTraitCont(phy = tree,model = "BM"))
                                     trait_dist <- as.matrix(dist(traits,diag = T,upper = T))
                                     tree_dist <- as.matrix(cophenetic.phylo(tree))
                                     
