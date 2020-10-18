@@ -228,7 +228,7 @@ stop("make sure to write the file out_limiting_combined.csv using the line below
 #Split code into separate dataframe
 
 #write.csv(x = out_limiting_combined,file = "phylogeny/simulations_limiting_20_traits.csv",row.names = F)
-#out_limiting_combined <- read.csv("phylogeny/simulations_limiting.csv",stringsAsFactors = F)
+#out_limiting_combined <- read.csv("phylogeny/simulations_limiting_20_traits.csv",stringsAsFactors = F)
 #out_limiting_combined <- out_limiting_combined[which(colnames(out_limiting_combined)!="X")]
 #colnames(out_limiting_combined) <- gsub(pattern = ".",replacement = " ", x = colnames(out_limiting_combined),fixed = T)
 
@@ -257,6 +257,7 @@ out_filtering_ses <- NULL
 out_filtering_combined <- foreach(i = 1:nreps,
                                   .combine = rbind,
                                   .packages = c("ape","phytools"))%dopar%{
+                                    
                                     print(i)
                                     tree <- pbtree(n = 100)
                                     out_filtering <- NULL
@@ -326,7 +327,14 @@ out_filtering_combined <- foreach(i = 1:nreps,
                                     
                                     
                                     
-                                    trait_centroid <- mean(traits)
+                                    trait_centroid <- colMeans(traits)
+                                    traits_and_centroid <- rbind(traits,trait_centroid)
+                                    dist_from_cent <- dist(traits_and_centroid,upper = T,diag = T)
+                                    dist_from_cent <- as.matrix(dist_from_cent)
+                                    dist_from_cent <- as.data.frame(dist_from_cent)
+                                    dist_from_cent <- dist_from_cent['trait_centroid']
+                                    dist_from_cent <- dist_from_cent[-which(rownames(dist_from_cent)=='trait_centroid'),,drop=FALSE] 
+                                    
                                     
                                     #plot(traits)
                                     #abline(h=trait_centroid,col="red")
@@ -336,20 +344,22 @@ out_filtering_combined <- foreach(i = 1:nreps,
                                       #remove a tip  
                                       #which species is the furthest from the mean
                                       
-                                      tip_to_drop <- names(traits)[which.max(abs(traits-trait_centroid ))]
+                                      tip_to_drop <- row.names(dist_from_cent)[which.max(abs(dist_from_cent$trait_centroid))]
+                                      dist_from_cent <- dist_from_cent[-which(rownames(dist_from_cent)==tip_to_drop),,drop=FALSE]
+                                      
                                       
                                       #abline(h = traits[which(names(traits)==tip_to_drop)])
                                       #Sys.sleep(1)
                                       
                                       
-                                      traits <- traits[-which(names(traits)==tip_to_drop)]
+                                      #traits <- traits[-which(names(traits)==tip_to_drop)]
                                       
                                       #tree <- drop.tip(phy = tree,
                                       #                tip = tip_to_drop)
                                       #colless <- colless.like.index(tree,norm = T)
                                       colless <- NA
                                       
-                                      index <- which(colnames(trait_dist)==tip_to_drop)
+                                      index <- which(rownames(trait_dist)==tip_to_drop)
                                       
                                       tree_dist <- tree_dist[,-index]
                                       tree_dist <- tree_dist[-index,]
@@ -463,8 +473,8 @@ rm(tree,colless,trait_dist,tree_dist,i,traits,exp_i,out_i,out_i_ses,out_t,out_t_
 
 #Split code into separate dataframe
 
-#write.csv(x = out_filtering_combined,file = "phylogeny/simulations_filtering.csv", row.names = F)
-#out_filtering_combined <- read.csv(file = "phylogeny/simulations_filtering.csv",stringsAsFactors = F)
+#write.csv(x = out_filtering_combined,file = "phylogeny/simulations_filtering_20_traits.csv", row.names = F)
+#out_filtering_combined <- read.csv(file = "phylogeny/simulations_filtering_20_traits.csv",stringsAsFactors = F)
 #out_filtering_combined <- out_filtering_combined[which(colnames(out_filtering_combined)!="X")]
 #colnames(out_filtering_combined) <- gsub(pattern = ".",replacement = " ", x = colnames(out_filtering_combined),fixed = T)
 
