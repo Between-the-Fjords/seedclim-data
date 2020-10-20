@@ -17,7 +17,7 @@ knitr::opts_knit$set(root.dir = "../")
 library("tidyverse")
 library("furrr")#for parallel processing
 library("DBI")# also needs RMySQL installed
-plan(multiprocess, workers = 3)
+plan(multiprocess, workers = 2)
 ```
 
 
