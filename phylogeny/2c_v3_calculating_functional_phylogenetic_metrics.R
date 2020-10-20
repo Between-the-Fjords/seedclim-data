@@ -144,28 +144,28 @@ mean(phy_signal$PIC.variance.P[which(phy_signal$`colnames(traits_i[j])`=="LDMC")
 
 #Using trait-scaled branches
 #richness
-  trait_pd_abd_std <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
-  cover.meta$trait_pd_abd_std<-rowMeans(trait_pd_abd_std)
+  #trait_pd_abd_std <- replicated_pd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+  #cover.meta$trait_pd_abd_std<-rowMeans(trait_pd_abd_std)
 
 save.image("C:/Users/Brian/Desktop/current_projects/seedclimComm/temp.RData")
 
 
 #divergence
-trait_mpd_abd_std<-replicated_mpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
-cover.meta$trait_mpd_abd_std<-rowMeans(trait_mpd_abd_std)
+  trait_mpd_abd_std <- replicated_mpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+  cover.meta$trait_mpd_abd_std <- rowMeans(trait_mpd_abd_std)
 
-trait_mntd_abd_std<-replicated_mntd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
-cover.meta$trait_mntd_abd_std<-rowMeans(trait_mntd_abd_std)
+  trait_mntd_abd_std <- replicated_mntd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+  cover.meta$trait_mntd_abd_std <- rowMeans(trait_mntd_abd_std)
 
 save.image("C:/Users/Brian/Desktop/current_projects/seedclimComm/temp.RData")
 
 
 #variance
-trait_vpd_abd_std<-replicated_vpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
-cover.meta$trait_vpd_abd_std<-rowMeans(trait_vpd_abd_std)
+  trait_vpd_abd_std <- replicated_vpd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+  cover.meta$trait_vpd_abd_std <- rowMeans(trait_vpd_abd_std)
 
-trait_vntd_abd_std<-replicated_vntd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
-cover.meta$trait_vntd_abd_std<-rowMeans(trait_vntd_abd_std)
+  trait_vntd_abd_std <- replicated_vntd_abd_std(comm_matrix = cover,phylogeny_directory = "phylogeny/trait_scaled_phylogenies/",n_reps_phylo = 100,nreps_null = 100)
+  cover.meta$trait_vntd_abd_std <- rowMeans(trait_vntd_abd_std)
 
 save.image("C:/Users/Brian/Desktop/current_projects/seedclimComm/temp.RData")
 
