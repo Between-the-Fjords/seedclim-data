@@ -204,7 +204,7 @@ turfCom2 <- turfCom2 %>%
   summarise(cover = sum(cover))
   
 subturfCom2 <- subturfCom2 %>% 
-  group_by(turfID, subTurf, year, species, cf, flag) %>% 
+  group_by(turfID, subTurf, year, species, flag) %>% 
   summarise(
     presence = paste(presence, collapse = " & "),
     seedlings = sum(seedlings),
@@ -212,7 +212,8 @@ subturfCom2 <- subturfCom2 %>%
     adult = as.integer(any(adult == 1)),
     fertile = as.integer(any(fertile == 1)),
     vegetative = as.integer(any(vegetative == 1)),
-    dominant = as.integer(any(dominant == 1))
+    dominant = as.integer(any(dominant == 1)),
+    cf = as.integer(any(cf == 1))
   )
 
 # what got merged
@@ -224,6 +225,6 @@ dbExecute(conn = con, "DELETE FROM subturfCommunity")
 
 
 # add revised contents
-dbPadWriteTable(conn = con, table = "turfCommunity", value = turfCom2)
+db_pad_write_table(conn = con, table = "turfCommunity", value = turfCom2)
 
-dbPadWriteTable(conn = con, table = "subturfCommunity", value = subturfCom2)
+db_pad_write_table(conn = con, table = "subturfCommunity", value = subturfCom2)
