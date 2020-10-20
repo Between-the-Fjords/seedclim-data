@@ -6,6 +6,8 @@ library("RSQLite")
 library("readxl")
 library("tidyverse")
 library("assertr")
+library("conflicted")
+conflict_prefer("filter", "dplyr")
 
 #function to add data to database - padding for missing columns ####
 db_pad_write_table <- function(conn, table, value, row.names = FALSE,
@@ -78,6 +80,7 @@ Are.ser,Arenaria serpyllifolia,Carophyllaceae,forb,annual
 Sch.pra,Schedonorus pratensis,Poaceae,graminoid,perennial
 Luz.syl,Luzula sylvatica,Juncaceae,graminoid,perennial
 Sal.lan,Salix lanata,Salicaceae,woody,perennial
+Ver.ver,Veronica verna,Plantaginaceae,forb,annual 
 "))
   
 
@@ -183,17 +186,27 @@ if (extract_from_mysql) {
 merge_dictionary <- read_csv("databaseUtils/mergedictionary.csv") %>%
   mutate(newID = recode(newID, "Vis alp" = "Vis.alp")) %>%
   bind_rows(
-    read_csv(
+    read_csv(comment = "#",
 "oldID,newID
 Salix.graa,Sal.sp
 Vis.alp,Vis.alp
 Gen.sp.,Gen.sp
 Car.Cap,Car.cap
 Galeopsis.sp,Gale.sp
-Seedlings,NID.seedling,
+Seedlings,NID.seedling
 Sax.aiz.,Sax.aiz
 Dry.sp,Gym.dry
-Tof.cal,Tof.pus"))
+Tof.cal,Tof.pus
+#2019 additions
+Cir.vul,Cir.pal
+Cirsium.sp,Cir.pal
+Solidago,Sol.vir
+Pin.sax,Pim.sax
+Pinguicula.sp.,Pin.vul
+Car.var,Car.vag
+Dac.alp,Dac.glo
+Gal.sp,Gal.uli
+"))
 
 
 
