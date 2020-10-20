@@ -51,25 +51,11 @@ corrections_2019 <- tribble(~current, ~correct,
                             "Thlaspi arv", "Thl.arv", 
                             "Tarax", "Tar.sp", 
                             "Salix sp" , "Sal.sp",
-                            "Emp", "Emp.her",
-                            "Emp nig", "Emp.her",
-                            "Euph fri", "Eup.sp",
-                            "Euph str", "Eup.sp",
-                            "Aco lyc", "Aco.sep", 
-                            "Car var", "Car.vag",
-                            "Cir vul", "Cir.pal", 
-                            "Cirsium sp", "Cir.pal", 
-                            "Dac alp", "Dac.glo", 
-                            "Gal sp", "Gal.uli",
+                            "Aco lyc", "Aco.sep",
                             "Hyp per", "Hype.mac",
                             "Jun alp art", "Jun.alp",
                             "Myosotis cf", "Myo.dec",
-                            "Pin sax", "Pim.sax",
-                            "Pinguicula sp.", "Pin.vul",
                             "Rum ac-la", "Rum.acl",
-                            "Sag pro", "Sag.sp",
-                            "Sag sag", "Sag.sp",
-                            "Solidago", "Sol.vir", 
                             "Valeriana", "Val.sam", 
                             "Fes pra", "Sch.pra",
                             "NID graminoid", "NID.gram",
@@ -167,6 +153,13 @@ data2019 <- data2019_1 %>%
   left_join(correct_turfID, by = "turfID") %>% 
   mutate(turfID = coalesce(corrected, turfID)) %>%
   select(-corrected) %>% 
+  mutate(turfID = case_when(
+    DestinationSite == "Hogsete" & DestinationBlock == 1 & is.na(turfID) & TTtreat == "TTC" ~ "101 TTC",
+    DestinationSite == "Hogsete" & DestinationBlock == 3 & is.na(turfID) & TTtreat == "TT2" ~ "88 TT2 114",
+    DestinationSite == "Vikesland" & DestinationBlock == 1 & is.na(turfID) & TTtreat == "TTC" ~ "126 TTC",
+    DestinationSite == "Skjellingahaugen" & DestinationBlock == 1 & turfID == "newRTC" ~ "Skj1RTCnew",
+    DestinationSite == "Skjellingahaugen" & DestinationBlock == 2 & turfID == "newRTC" ~ "Skj2RTCnew",
+    TRUE ~ turfID)) %>% 
   mutate(
     fixed = iconv(turfID, "UTF-8", "UTF-8", sub = "A"), #fix bad Å
     fixed = str_remove(fixed, "[cdD]$"), #remove trailing c/d/D
@@ -179,7 +172,12 @@ data2019 <- data2019_1 %>%
       str_detect(fixed, "^\\d+TT.\\d*") ~ str_replace(fixed, "(\\d+)(TT[1-4C])(\\d*)", "\\1 \\2 \\3" ), #add spaces
       TRUE ~ fixed # anything else
     ),
-    fixed = str_trim(fixed)) 
+    fixed = str_trim(fixed)) %>% 
+  #attempted fix Lav3RTC duplicate problem
+    mutate(DestinationBlock = if_else(fixed == "Lav3RTC-1", "1", DestinationBlock),
+           fixed = if_else(fixed == "Lav3RTC-1", "Lav1RTC", fixed),
+           fixed = str_remove(fixed, "-\\d$"))
+
 
 #load turfs
 turfs <- read_csv("databaseUtils/turfs_table.csv") 
@@ -228,7 +226,9 @@ data2019 <- data2019 %>%
     comment = paste(comment, comment_1, X259, sep = " "), 
     comment = str_trim(comment)
   ) %>% 
-  select(-comment_1, -X259) 
+  select(-comment_1, -X259) %>% 
+   #enter missing years
+   mutate(year = if_else(is.na(year), "2019", year))
 
 #### save data for ingestion ####
 data2019 %>% 
