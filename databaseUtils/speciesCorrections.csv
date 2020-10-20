@@ -1,160 +1,331 @@
-turfID,siteID,Year,old,new,cover,functionalGroup
-101 TTC,Hogsete,2016,Vio.can,Vio.riv,,
-116 TTC,Hogsete,2016,Gal.uli,Gal.sax,,
-167 TTC,Gudmedalen,2016,Ran.aur,Ran.acr,,
-271 TTC,Veskre,2015,Ran.acr,Ran.aur,,
-110 TTC,Hogsete,2016,Gal.uli,Gal.sax,,
-115 TTC,Hogsete,2016,Vio.can,Vio.riv,,
-141 TTC,Vikesland,2016,Vio.can,Vio.riv,,
-198 TTC,Rambera,2016,Hypo.rad,Leo.aut,,
-203 TTC,Rambera,2016,Vio.pal,Vio.bif,,
-211 TTC,Arhelleren,2016,Ran.acr,Ran.aur,,
-216 TTC,Arhelleren,2016,Mel.syl,Mel.pra,,
-203 TTC,Rambera,2016,Hypo.rad,Leo.aut,,
-222 TTC,Arhelleren,2016,Mel.syl,Mel.pra,,
-270 TTC,Veskre,2016,Ran.aur,Ran.acr,,
-280 TTC,Veskre,2016,Ran.acr,Ran.aur,,
-29 TTC,Alrust,2015,Vio.can,Vio.riv,,
-29 TTC,Alrust,2016,Vio.can,Vio.riv,,
-31 TTC,Alrust,2016,Vio.can,Vio.riv,,
-31 TTC,Alrust,2016,Tri.rep,Tri.pra,,
-Alr3RTC,Alrust,2011,Rum.acl,Rum.ace,,
-226 TTC,Arhelleren,2016,Bis.viv,Bis.viv,2,
-226 TTC,Arhelleren,2016,Cam.rot,Cam.rot,1,
-234 TTC,Arhelleren,2016,Ger.syl,Ger.syl,2,
-Arh1RTC,Arhelleren,2016,Mel.syl,Mel.pra,,
-57 TTC,Fauske,2015,Pla.lan,Pla.med,,
-61 TTC,Fauske,2013,Alc.sp,Alc.sp,WHAT HAPPENED,
-68 TTC,Fauske,2016,Lot.cor,Lot.cor,1,
-73 TTC,Fauske,2016,Mel.syl,Mel.pra,,
-73 TTC,Fauske,2012,Hypo.rad,Hypo.mac,,
-Fau1RTC,Fauske,2015,Tri.pra,Tri.pra,2,
-Fau2RTC,Fauske,2013,Alc.sp,Alc.sp,WHAT HAPPENED,
-Fau5RTC,Fauske,2013,Alc.sp,Alc.sp,WHAT HAPPENED,
-154 TTC,Gudmedalen,2012,Com.ten,Com.ten,cover?,
-506 TTC,Gudmedalen,2015,Ver.off,Ver.alp,,
-Gud1RTC,Gudmedalen,2016,Alc.sp,Alc.sp,3,
-Gud1RTC,Gudmedalen,2015,Vio.pal,Vio.bif,,
-Gud3RTC,Gudmedalen,2016,Pot.cra,Pot.ere,,
-Gud4RTCnew,Gudmedalen,2016,Vac.uli,Vac.uli,2,
-110 TTC,Hogsete,2016,Alc.alp,Alc.alp,1,
-Hog4RTC,Hogsete,2016,Alc.alp,Alc.alp,1,
-Hog4RTC,Hogsete,2016,Tri.pra,Tri.pra,1,
-87 TTC,Lavisdalen,2016,Rum.ace,Rum.ace,3,
-87 TTC,Lavisdalen,2016,Sel.sel.,Sel.sel,1,
-99 TTC,Lavisdalen,2013,Oxa.ace,Oxy.dig,,
-99 TTC,Lavisdalen,2016,Tha.alp,Tha.alp,1,
-301 TTC,Ovstedal,2016,Rum.ace,Rum.ace,1,
-301 TTC,Ovstedal,2016,Suc.pra,Suc.pra,1,
-301 TTC,Ovstedal,2016,Tri.rep,Tri.rep,1,
-Ovs2RTC,Ovstedal,2016,Pot.ere,Pot.ere,4,
-Ovs3RTC,Ovstedal,2016,Vio.pal,Vio.pal,1,
-194 TTC,Rambera,2016,Leo.aut,Leo.aut,2,
-194 TTC,Rambera,2016,Vac.myr,Vac.myr,4,
-194 TTC,Rambera,2016,Vac.vit,Vac.vit,5,
-198 TTC,Rambera,2016,Rum.ace,Rum.ace,1,
-525 TTC,Rambera,2016,Cam.rot,Cam.rot,1,
-525 TTC,Rambera,2016,Pru.vul,Pru.vul,4,
-525 TTC,Rambera,2016,Sel.sel.,Sel.sel,1,
-525 TTC,Rambera,2016,Sib.pro,Sib.pro,1,
-528 TTC,Rambera,2016,Pot.ere,Pot.ere,1,
-Ram4RTC,Rambera,2016,Vac.myr,Vac.myr,1,
-Ram5RTC,Rambera,2016,Bis.viv,Bis.viv,1,
-Ram5RTC,Rambera,2016,Oxa.ace,Oxa.ace,2,
-Ram6RTCnew,Rambera,2016,Sel.sel.,Sel.sel,1,
-Ram7RTCnew,Rambera,2013,Bis.viv,Bis.viv,1,
-Ram7RTCnew,Rambera,2016,Ver.alp,Ver.alp,6,
-Ram9RTCnew,Rambera,2016,Vio.bif,Vio.bif,1,
-Ram9RTCnew,Rambera,2016,Bet.pub,Bet.pub,1,
-Skj3RTC,Skjellingahaugen,2015,Cam.rot,Cam.rot,1,
-Skj3RTC,Skjellingahaugen,2016,Cam.rot,Cam.rot,2,
-11 TTC,Ulvhaugen,2016,Alc.sp,Alc.sp,1,
-11 TTC,Ulvhaugen,2016,Cer.alp,Cer.alp,1,
-11 TTC,Ulvhaugen,2016,Pot.cra,Pot.cra,6,
-6 TTC,Ulvhaugen,2016,Sel.sel.,Sel.sel,3,
-6 TTC,Ulvhaugen,2016,Ver.fru,Ver.fru,1,
-6 TTC,Ulvhaugen,2016,Vio.pal,Vio.pal,1,
-Ulv4RTC,Ulvhaugen,2016,Cam.rot,Cam.rot,1,
-Ulv4RTC,Ulvhaugen,2016,Alc.sp,Alc.sp,1,
-Ulv5RTC,Ulvhaugen,2016,Oma.syl,Oma.nor,,
-Ulv5RTC,Ulvhaugen,2013,Oma.syl,Oma.nor,,
-263 TTC,Veskre,2016,Pru.vul,Pru.vul,9,
-263 TTC,Veskre,2016,Ran.acr,Ran.acr,1,
-271 TTC,Veskre,2016,Cam.rot,Cam.rot,1,
-126 TTC,Vikesland,2016,Kna.arv,Kna.arv,5,
-146 TTC,Vikesland,2016,Gal.ver,Gal.ver,1,
-Vik1RTCnew,VIkesland,2015,Rum.ace,Rum.ace,3,
-Vik1RTCnew,Vikesland,2016,Ver.cha,Ver.off,,
-Vik2RTC,VIkesland,2016,Ver.cha,Ver.off,,
-Vik4RTC,Vikesland,2016,Rum.ace,Rum.ace,1,
-78 TTC,Lavisdalen,2016,Ste.bor,Ste.gra,,
-94 TTC,Lavisdalen,2016,Ste.bor,Ste.gra,,
-99 TTC,Lavisdalen,2016,Ste.bor,Ste.gra,,
-Ovs3RTC,Ovstedal,2011,Hie.vul,Hie.pil,,
-,,,Gen.sp.,Gen.sp,,
-,,,Agr.can,Agr.cap,,
-,,,Pyr.min,Pyr.sp,,
-,,,Pyr.rot,Pyr.sp,,
-,,,Epi.ana,Epi.sp,,
-,,,Phl.sp,Phl.pra,,
-,,,Luz.tri,Luz.spi,,
-,,,Pedicularis,Ped.pal,,forb
-,,,Sch.gig,Sch.gig,,graminoid
-,,,Cre.pal,Cre.pal,,forb
-,,,Pop.tre,Pop.tre,,forb
-,,,Arenaria,Arenaria,,forb
-,,,Ste.als  ,Ste.als  ,,forb
-,,,Pilosella,Pilosella,,
-,,,Ste.sp,Ste.sp,,forb
-,,,Porub,Porub,,forb
-,,,Eri.bor,Eri.bor,,forb
-,,,Gen.sp,Gen.sp,,forb
-,,,Sax.aiz.,Sax.aiz,,
-,,,Tri.arv,Tri.arv,,forb
-,,,,,,
-#Checking plot maps July 26th 2018 Vigdis and Kari, UNIS,,,,,
-#* = we don’t do anything,,,,,,
-,,,,,,
-#*106 TT4 220, Høgsete,2015, Carex vaginata misidentified as Carex pallescens. ,,,
-106 TT4 220, Høgsete,2017, Ver.arv, Ver.cha,,
-###All plots at Høgsete, 2015-2017, Gal.uli, Gal.sax,,,
-121 TT3 192, Høgsete,2015, Luz.sp, Luz.mul,,
-123 TT2 150, Høgsete,2017, Luz.sp, Luz.mul,,
-123 TT2 150, Høgsete,2015, Poa.alp, Poa.pra,,
-125 TT4 233, Høgsete,2017, Luz.sp, Luz.mul,,
-145 TT3 231, Vikesland,2017, Luz.sp, Luz.mul,,
-145 TT3 231, Vikesland,2017, Ran..., Ran.acr,,
-146 TTC, Vikesland,2011, Ave.fle, Fes.rub,,
-162 TT2 200, Gudmedalen,2017, Pyr.sp, Pyr.min,,
-168 TT4 284, Gudmedalen,2015, Car.sp, Car.nor,,
-16 TT2 42, Ulvhaugen,2015, Phl.sp, Phl.alp,,
-17 TTC, Ulvhaugen,2013, Cer.alp, Cer.fon,,
-#194 TTC, Rambæra, Dryas octopetala? Should not be there,,,,
-195 TT3 276, Rambæra,2013, Ver.off, Vio.pal# Writing error or bad handwriting?,,
-#198 TTC, Rambæra,2015, Hypo rad shall be? Check in data,,,
-#203 TTC, Rambæra,2015, Hypo rad shall be? Check in data,,,
-19 TT3 83, Ulv,2015, Epi.sp, Epi.ana,,
-19 TT3 83, Ulv,2017, Pyr.sp, Pyr.rot,,
-1 TT2 28, Ulv,2015, Luz.sp, Luz.mul,,
-1 TT2 28, Ulv,2016, Luz.sp, Luz.mul,,
-1 TT2 28, Ulv,2017, Luz.sp, Luz.mul,,
-203 TTC, Rambæra,2015, Vio.pal, Vio.bif,,
-260 TTC, Skjell,2017, Epi.sp, Epi.ana,,
-263 TTC, Veskre,2012, Ran.acr, Ran.aur,,
-271 TTC, Veskre,2017, Car.fla, Car.vag,,
-273 TT2 295, Veskre,2015, Car.sp, Car.lep,,
-27 TT3 104, Ålrust,2015, Car.pul, Car.pal,,
-27 TT3 104, Ålrust,2015, Vio.can, Vio.riv,,
-281 TTC, Veskre,2017, Car.sp, Car.cap,,
-281 TTC, Veskre,2017, Car.sp1, Car.pul,,
-#281 TTC, Veskre,2015, 50% of Ant odo shall be Agr capillaris,,,
-29 TTC, Ålrust,2015, Vio.can, Vio.riv ,,
-29 TTC, Ålrust,2016, Vio.can, Vio.riv  ,,
-30 TT4 132, Ålrust,2015, Vio.can, Vio.riv,,
-31 TTC, Ålrust,2013, Car.sp, Caru.car,,
-31 TTC, Ålrust,2009, Fes.ovi, Fes.rub,,
-31 TTC, Ålrust,2015, Vio.can, Vio.riv,,
-35 TT4 130, Ålrust,2013, Ran.rep, Ran.acr,,
-37 TTC, Ålrust,2015,Vio.can, Vio.riv,,
-37 TTC, Ålrust,2016,Vio.can, Vio.riv,,
-40 TT2 62, Ålrust,2015,Vio.can, Vio.riv #Should we merge these species in the whole dataset?,,
+turfID,siteID,Year,old,new,cover,functionalGroup,todo
+101 TTC,Hogsete,2016,Vio.can,Vio.riv,,,
+116 TTC,Hogsete,2016,Gal.uli,Gal.sax,,,
+167 TTC,Gudmedalen,2016,Ran.aur,Ran.acr,,,
+271 TTC,Veskre,2015,Ran.acr,Ran.aur,,,
+110 TTC,Hogsete,2016,Gal.uli,Gal.sax,,,
+115 TTC,Hogsete,2016,Vio.can,Vio.riv,,,
+141 TTC,Vikesland,2016,Vio.can,Vio.riv,,,
+198 TTC,Rambera,2016,Hypo.rad,Leo.aut,,,
+203 TTC,Rambera,2016,Vio.pal,Vio.bif,,,
+211 TTC,Arhelleren,2016,Ran.acr,Ran.aur,,,
+216 TTC,Arhelleren,2016,Mel.syl,Mel.pra,,,
+203 TTC,Rambera,2016,Hypo.rad,Leo.aut,,,
+222 TTC,Arhelleren,2016,Mel.syl,Mel.pra,,,
+270 TTC,Veskre,2016,Ran.aur,Ran.acr,,,
+280 TTC,Veskre,2016,Ran.acr,Ran.aur,,,
+29 TTC,Alrust,2015,Vio.can,Vio.riv,,,
+29 TTC,Alrust,2016,Vio.can,Vio.riv,,,
+31 TTC,Alrust,2016,Vio.can,Vio.riv,,,
+31 TTC,Alrust,2016,Tri.rep,Tri.pra,,,
+Alr3RTC,Alrust,2011,Rum.acl,Rum.ace,,,
+226 TTC,Arhelleren,2016,Bis.viv,Bis.viv,2,,
+226 TTC,Arhelleren,2016,Cam.rot,Cam.rot,1,,
+234 TTC,Arhelleren,2016,Ger.syl,Ger.syl,2,,
+Arh1RTC,Arhelleren,2016,Mel.syl,Mel.pra,,,
+57 TTC,Fauske,2015,Pla.lan,Pla.med,,,
+61 TTC,Fauske,2013,Alc.sp,Alc.sp,WHAT HAPPENED,,set cover 2013 == cover 2012
+68 TTC,Fauske,2016,Lot.cor,Lot.cor,1,,
+73 TTC,Fauske,2016,Mel.syl,Mel.pra,,,
+73 TTC,Fauske,2012,Hypo.rad,Hypo.mac,,,
+Fau1RTC,Fauske,2015,Tri.pra,Tri.pra,2,,
+Fau2RTC,Fauske,2013,Alc.sp,Alc.sp,WHAT HAPPENED,,
+Fau5RTC,Fauske,2013,Alc.sp,Alc.sp,WHAT HAPPENED,,
+154 TTC,Gudmedalen,2012,Com.ten,Com.ten,cover?,,plot notin map
+506 TTC,Gudmedalen,2015,Ver.off,Ver.alp,,,
+Gud1RTC,Gudmedalen,2016,Alc.sp,Alc.sp,3,,
+Gud1RTC,Gudmedalen,2015,Vio.pal,Vio.bif,,,
+Gud3RTC,Gudmedalen,2016,Pot.cra,Pot.ere,,,
+Gud4RTCnew,Gudmedalen,2016,Vac.uli,Vac.uli,2,,
+110 TTC,Hogsete,2016,Alc.alp,Alc.alp,1,,
+Hog4RTC,Hogsete,2016,Alc.alp,Alc.alp,1,,
+Hog4RTC,Hogsete,2016,Tri.pra,Tri.pra,1,,
+87 TTC,Lavisdalen,2016,Rum.ace,Rum.ace,3,,
+87 TTC,Lavisdalen,2016,Sel.sel.,Sel.sel,1,,
+99 TTC,Lavisdalen,2013,Oxa.ace,Oxy.dig,,,
+99 TTC,Lavisdalen,2016,Tha.alp,Tha.alp,1,,
+301 TTC,Ovstedal,2016,Rum.ace,Rum.ace,1,,
+301 TTC,Ovstedal,2016,Suc.pra,Suc.pra,1,,
+301 TTC,Ovstedal,2016,Tri.rep,Tri.rep,1,,
+Ovs2RTC,Ovstedal,2016,Pot.ere,Pot.ere,4,,
+Ovs3RTC,Ovstedal,2016,Vio.pal,Vio.pal,1,,
+194 TTC,Rambera,2016,Leo.aut,Leo.aut,2,,
+194 TTC,Rambera,2016,Vac.myr,Vac.myr,4,,
+194 TTC,Rambera,2016,Vac.vit,Vac.vit,5,,
+198 TTC,Rambera,2016,Rum.ace,Rum.ace,1,,
+525 TTC,Rambera,2016,Cam.rot,Cam.rot,1,,
+525 TTC,Rambera,2016,Pru.vul,Pru.vul,4,,
+525 TTC,Rambera,2016,Sel.sel.,Sel.sel,1,,
+525 TTC,Rambera,2016,Sib.pro,Sib.pro,1,,
+528 TTC,Rambera,2016,Pot.ere,Pot.ere,1,,
+Ram4RTC,Rambera,2016,Vac.myr,Vac.myr,1,,
+Ram5RTC,Rambera,2016,Bis.viv,Bis.viv,1,,
+Ram5RTC,Rambera,2016,Oxa.ace,Oxa.ace,2,,
+Ram6RTCnew,Rambera,2016,Sel.sel.,Sel.sel,1,,
+Ram7RTCnew,Rambera,2013,Bis.viv,Bis.viv,1,,
+Ram7RTCnew,Rambera,2016,Ver.alp,Ver.alp,6,,
+Ram9RTCnew,Rambera,2016,Vio.bif,Vio.bif,1,,
+Ram9RTCnew,Rambera,2016,Bet.pub,Bet.pub,1,,
+Skj3RTC,Skjellingahaugen,2015,Cam.rot,Cam.rot,1,,
+Skj3RTC,Skjellingahaugen,2016,Cam.rot,Cam.rot,2,,
+11 TTC,Ulvhaugen,2016,Alc.sp,Alc.sp,1,,
+11 TTC,Ulvhaugen,2016,Cer.alp,Cer.alp,1,,
+11 TTC,Ulvhaugen,2016,Pot.cra,Pot.cra,6,,
+6 TTC,Ulvhaugen,2016,Sel.sel.,Sel.sel,3,,
+6 TTC,Ulvhaugen,2016,Ver.fru,Ver.fru,1,,
+6 TTC,Ulvhaugen,2016,Vio.pal,Vio.pal,1,,
+Ulv4RTC,Ulvhaugen,2016,Cam.rot,Cam.rot,1,,
+Ulv4RTC,Ulvhaugen,2016,Alc.sp,Alc.sp,1,,
+Ulv5RTC,Ulvhaugen,2016,Oma.syl,Oma.nor,,,
+Ulv5RTC,Ulvhaugen,2013,Oma.syl,Oma.nor,,,
+263 TTC,Veskre,2016,Pru.vul,Pru.vul,9,,
+263 TTC,Veskre,2016,Ran.acr,Ran.acr,1,,
+271 TTC,Veskre,2016,Cam.rot,Cam.rot,1,,
+126 TTC,Vikesland,2016,Kna.arv,Kna.arv,5,,
+146 TTC,Vikesland,2016,Gal.ver,Gal.ver,1,,
+Vik1RTCnew,VIkesland,2015,Rum.ace,Rum.ace,3,,
+Vik1RTCnew,Vikesland,2016,Ver.cha,Ver.off,,,
+Vik2RTC,VIkesland,2016,Ver.cha,Ver.off,,,
+Vik4RTC,Vikesland,2016,Rum.ace,Rum.ace,1,,
+78 TTC,Lavisdalen,2016,Ste.bor,Ste.gra,,,
+94 TTC,Lavisdalen,2016,Ste.bor,Ste.gra,,,
+99 TTC,Lavisdalen,2016,Ste.bor,Ste.gra,,,
+Ovs3RTC,Ovstedal,2011,Hie.vul,Hie.pil,,,
+,,,Gen.sp.,Gen.sp,,,
+,,,Agr.can,Agr.cap,,,
+,,,Pyr.min,Pyr.sp,,,
+,,,Pyr.rot,Pyr.sp,,,
+,,,Epi.ana,Epi.sp,,,
+,,,Phl.sp,Phl.pra,,,
+,,,Luz.tri,Luz.spi,,,
+,,,Pedicularis,Ped.pal,,forb,
+,,,Sch.gig,Sch.gig,,graminoid,
+,,,Cre.pal,Cre.pal,,forb,
+,,,Pop.tre,Pop.tre,,forb,
+,,,Arenaria,Arenaria,,forb,
+,,,Ste.als  ,Ste.als  ,,forb,
+,,,Pilosella,Pilosella,,,
+,,,Ste.sp,Ste.sp,,forb,
+,,,Porub,Porub,,forb,
+,,,Eri.bor,Eri.bor,,forb,
+,,,Gen.sp,Gen.sp,,forb,
+,,,Sax.aiz.,Sax.aiz,,,
+,,,Tri.arv,Tri.arv,,forb,
+,,,,,,,
+#Checking plot maps July 26th 2018 Vigdis and Kari, UNIS,,,,,,
+#* = we don’t do anything,,,,,,,
+,,,,,,,
+#*106 TT4 220, Høgsete,2015, Carex vaginata misidentified as Carex pallescens. ,,,,"subplots 21 onwards move to vginata, 50% ov cover ditto"
+106 TT4 220, Høgsete,2017, Ver.arv, Ver.cha,,,
+###All plots at Høgsete, 2015-2017, Gal.uli, Gal.sax,,,,"we've been mixing them, but both are there. Let's leave them be"
+121 TT3 192, Høgsete,2015, Luz.sp, Luz.mul,,,
+123 TT2 150, Høgsete,2017, Luz.sp, Luz.mul,,,
+123 TT2 150, Høgsete,2015, Poa.alp, Poa.pra,,,
+125 TT4 233, Høgsete,2017, Luz.sp, Luz.mul,,,
+145 TT3 231, Vikesland,2017, Luz.sp, Luz.mul,,,
+145 TT3 231, Vikesland,2017, Ran..., Ran.acr,,,
+146 TTC, Vikesland,2011, Ave.fle, Fes.rub,,,
+#162 TT2 200, Gudmedalen,2017, Pyr.sp, Pyr.min,,,
+168 TT4 284, Gudmedalen,2015, Car.sp, Car.nor,,,
+16 TT2 42, Ulvhaugen,2015, Phl.sp, Phl.alp,,,
+17 TTC, Ulvhaugen,2013, Cer.alp, Cer.fon,,,
+#194 TTC,Rambæra,,Dryas octopetala? Should not be there,,,,double ntry with Gymniocarpium dryopteris. Delete. 
+195 TT3 276, Rambæra,2013, Ver.off, Vio.pal# Writing error or bad handwriting?,,,
+#198 TTC, Rambæra,2015, Hypo rad shall be? Check in data,,,,no hypo rad. Ignore
+#203 TTC, Rambæra,2015, Hypo rad shall be? Check in data,,,,no hypo rad. Ignore
+19 TT3 83, Ulv,2015, Epi.sp, Epi.ana,,,
+#19 TT3 83, Ulv,2017, Pyr.sp, Pyr.rot,,,
+1 TT2 28, Ulv,2015, Luz.sp, Luz.mul,,,
+1 TT2 28, Ulv,2016, Luz.sp, Luz.mul,,,
+1 TT2 28, Ulv,2017, Luz.sp, Luz.mul,,,
+203 TTC, Rambæra,2015, Vio.pal, Vio.bif,,,
+260 TTC, Skjell,2017, Epi.sp, Epi.ana,,,
+263 TTC, Veskre,2012, Ran.acr, Ran.aur,,,
+271 TTC, Veskre,2017, Car.fla, Car.vag,,,
+273 TT2 295, Veskre,2015, Car.sp, Car.lep,,,
+27 TT3 104, Ålrust,2015, Car.pul, Car.pal,,,
+27 TT3 104, Ålrust,2015, Vio.can, Vio.riv,,,
+281 TTC, Veskre,2017, Car.sp, Car.cap,,,
+281 TTC, Veskre,2017, Car.sp1, Car.pul,,,
+#281 TTC, Veskre,2015, 50% of Ant odo shall be Agr capillaris,,,,move all even number subplots and 50% of the cover to  Agr cap
+29 TTC, Ålrust,2015, Vio.can, Vio.riv ,,,
+29 TTC, Ålrust,2016, Vio.can, Vio.riv  ,,,
+30 TT4 132, Ålrust,2015, Vio.can, Vio.riv,,,
+31 TTC, Ålrust,2013, Car.sp, Caru.car,,,
+31 TTC, Ålrust,2009, Fes.ovi, Fes.rub,,,
+31 TTC, Ålrust,2015, Vio.can, Vio.riv,,,
+35 TT4 130, Ålrust,2013, Ran.rep, Ran.acr,,,
+37 TTC, Ålrust,2015,Vio.can, Vio.riv,,,
+37 TTC, Ålrust,2016,Vio.can, Vio.riv,,,
+40 TT2 62, Ålrust,2015,Vio.can, Vio.riv #Should we merge these species in the whole dataset?,,,
+,,,,,,,
+,,,,,,,
+#Checking plot maps July 26th 2018 Vigdis and Kari,UIB feb 2019,,,,,,
+,,,,,,,
+,,,,,,,
+# 194 TTC, RambÃ¦ra,2011,Dry.sp,Gym.dry,,,Gymniocarpium dryopteris
+# 34 TT1 32,Alrust,2009,Sag.sp,,,,1% cover
+# 14 TT2 39,Alrust,2013,Alc. Sp. ,,,,cover == 2015
+# 14 TT2 39,Alrust,2009,Sag. Sp,,,,cover == cover 2011
+# 14 TT2 39,Alrust,2012,Ver.alp,,,,cover ==2011
+# 14 TT2 39,Alrust,2015,Vio.can,Vio.riv,,,? Vio can should be vio riv already??
+# 16 TT2 42,Alrust,2017,Cam.rot,,,,Cover==2015
+# 16 TT2 42,Alrust,2017,Fes.ovi,,,,cover=1%
+16 TT2 42,Alrust,2013,Car.sp,Car.nor,,,
+16 TT2 42,Alrust,2015,Phl.pra,Phl.alp,,,
+# 1 TT2 28,Alrust,2017,Cam.rot,,,,cover == 2015
+1 TT2 28,Alrust,2017,Car.sp,Car.vag,,,
+# 1 TT2 28,Alrust,2017,,Car.atr,,,"subplots 4, 5, 9, cover 4%"
+# 1 TT2 28,Alrust,2009,Sag.sp,,,,cover== 3%
+,,,,,,,
+# 24 TT2 49,Alrust,2017,Leo.aut,,,,cover==1%
+# 24 TT2 49,Alrust,2009,Sag.sp,,,,cover==1%
+# 24 TT2 49,Alrust,2012,Ver.alp,,,,cover==mean of 2011 and 2013
+7 TT2 33,Alrust,2017,Luz.sp,Luz.mul,,,
+# 7 TT2 33,Alrust,2009,Sag.sp,,,,cover==4%
+# 7 TT2 33,Alrust,2012,Ver.alp,,,,cover==2013
+# 29 TTC,Alrust,2009,Sag.sp,,,,cover==2%
+# 31 TTC,Alrust,2006,Eup.sp,,,,cover==1%
+# 31 TTC,Alrust,2017,Kna.arv,,,,cover==3%
+# 37 TTC,Alrust,2016,Ach.mill,,,,cover==mean of 2015 and 2017
+# 37 TTC,Alrust,2016,Alc.alp,,,,cover== 2015
+37 TTC,Alrust,2016,Fes.rub,Nar.str,,,
+# 37 TTC,Alrust,2012,Ver.alp,,,,cover==1%
+# 45 TTC,Alrust,2017,Ave.fle,,,,cover==2%
+# 45 TTC,Alrust,2016,NID.seedling,,,,cover==1%
+# 46 TTC,Alrust,2016,Ach.mill,,,,cover==2017
+# 46 TTC,Alrust,2017,Ver.ser,,,,cover==2016
+# 220 TT1 218,Arhelleren,2011,Eup.sp,,,,cover==2
+# 197 TT2 215,Arhelleren,2009,Sag.sp,,,,cover==4%
+# 197 TT2 215,Arhelleren,2009,Ver.alp,,,,cover==3%
+# 197 TT2 215,Arhelleren,2009,Vio.pal,,,,even subplots + half cover to biflora
+# 208 TT2 541,Arhelleren,2011,Eup.sp,,,,Cover==2012
+# 208 TT2 541,Arhelleren,2011,Eup.sp,,,,cover==3%
+# 133 Tt3 219,Arhelleren,2009,Ant.odo,,,,cover==2011
+# 136 TT3 221,Arhelleren,2009,Ant.odo,,,,cover==2011
+# 136 TT3 221,Arhelleren,2013,Eup.sp,,,,cover==2%
+# 138 TT3 214,Arhelleren,2009,Ant.odo,,,,cover==2011
+# 144 TT3 229,Arhelleren,2009,Ant.odo,,,,cover== 2012
+# 144 TT3 229,Arhelleren,2015,Ste.gra,,,,cover==2017
+# 145 TT3 231,Arhelleren,2009,Ant.odo,,,,cover== 2013
+# 145 TT3 231,Arhelleren,2017,Pot.ere,,,,cover==2015
+# 145 TT3 231,Arhelleren,2017,Rum.ace,,,,cover==2015/2
+# 145 TT3 231,Arhelleren,2017,Ste.gra,,,,cover==2%
+# 105 TT4 540,Arhelleren,2009,Alc.alp,,,,cover==1%
+# 105 TT4 540,Arhelleren,2017,Des.ces,,,,cover==2015
+# 105 TT4 540,Arhelleren,2017,Fes.ovi,,,,cover==4%
+# 106 TT4 220,Arhelleren,2015,Car.pall,Car.vag,,,subplot 20 onwards + half of cover moves
+# 106 TT4 220,Arhelleren,2013,Eup.sp,,,,cover==2017
+# 106 TT4 220,Arhelleren,2017,Fes.ovi,,,,cover==2%
+# 114 TT4 224,Arhelleren,2009,Alc.alp,,,,cover==2011
+# 114 TT4 224,Arhelleren,2009,Ave.fle,,,,cover==4%
+# 114 TT4 224,Arhelleren,2017,Mel.syl,,,,cover==6%
+# 118 TT4 230,Arhelleren,2017,Ach.mill,,,,cover==2%
+# 118 TT4 230,Arhelleren,2017,Ver.off,,,,cover==4%
+# 211 TTC,Arhelleren,2015,Ane.nem,,,,cover==1%
+# 211 TTC,Arhelleren,2015,Ger.syl,,,,cover==2%
+# 211 TTC,Arhelleren,2015,Hie.pil,,,,cover==2%
+# 211 TTC,Arhelleren,2015,Hie.vul,,,,cover==6%
+# 211 TTC,Arhelleren,2013,NID.seedling,,,,cover==3%
+# 211 TTC,Arhelleren,2017,X…,Hie.vul,,,cover==5%
+# 216 TTC,Arhelleren,2016,Cam.rot,,,,cover==2017
+# 216 TTC,Arhelleren,2011,Eup.sp,,,,cover==1%
+# 216 TTC,Arhelleren,2013,Eup.sp,,,,cover==1%
+# 216 TTC,Arhelleren,2016,Fes.rub,,,,cover==1%
+# 216 TTC,Arhelleren,2013,NID.seedling,,,,cover==4%
+# 216 TTC,Arhelleren,2016,Poa.pra,,,,Cover==1%
+# 222 TTC,Arhelleren,2011,Eup.sp,,,,cover==1%
+222 TTC,Arhelleren,2017,Car.nor,Car.pal,,,
+# 222 TTC,Arhelleren,2013,NID.seedling,,,,cover == 3%
+# 226 TTC,Arhelleren,2013,NID.seedling,,,,cover==2%
+# 226 TTC,Arhelleren,2016,NID.seedling,,,,cover== 2%
+# 234 TTC,Arhelleren,2013,NID.seedling,,,,cover==2%
+# 226 TTC,Arhelleren,2013,NID.seedling,,,,cover==2%
+# 226 TTC,Arhelleren,2016,Poa.pra,,,,cover== 2%
+# 53 TT1 52,Fauske,2013,Alc.sp,,,,cover==mean 2012 2017
+# 53 TT1 52,Fauske,2011,Dia.del,,,,cover== mean 2009 2012
+ 53 TT1 52,Fauske,2013,Lin.vul,Dia.del,,,
+# 53 TT1 52,Fauske,2012,Pim.sax,,,,cover==2011
+# 58 TT1 56,Fauske,2013,Alc.sp,,,,cover==2012
+# 58 TT1 56,Fauske,2011,Leu.vul,,,,cover==2009
+# 58 TT1 56,Fauske,2012,NID.seedling,,,,cover==1%
+# 58 TT1 56,Fauske,2012,Pim.sax,,,,cover==2011
+# 62 TT1 63,Fauske,2011,Dia.del,,,,cover==2012/2
+# 62 TT1 63,Fauske,2011,Leu.vul,,,,cover==2*2012
+# 62 TT1 63,Fauske,2009,Noc.cae,,,,cover==2013/2
+# 62 TT1 63,Fauske,2012,Pim.sax,,,,cover==2011
+# 66 TT1 67,Fauske,2011,Dia.del,,,,cover==mean 2009 2012
+# 66 TT1 67,Fauske,2013,Alc.sp,,,,cover==2012
+# 66 TT1 67,Fauske,2011,Leu.vul,,,,cover==2012
+# 66 TT1 67,Fauske,2012,NID.seedling,,,,cover==1%
+# 66 TT1 67,Fauske,2012,Pim.sax,,,,cover==average 2011 2013
+"# ""FROM NOW ON", unless we say anyting else, cover is mean of year before and year after. First/ last year == year after or before," respecitvely""",,,,
+# NID deedling is always 1%,,,,,,,
+# singlesubplot occurrences always get 1%,,,,,,,
+26 TT2 53,Fauske,2013,Lin.vul,Dia.del,,,
+# 33 TT2 58,Fauske,3011,Dia.del,,,,cover==3%
+# 50 TT2 71 ,Fauske,2011,Dia.del,,,,cover==1%
+# 57 TTC ,Fauske,2016,Fes.ovi,,,,cover==1%
+# 57 TTC ,Fauske,2011,Leu.vul,,,,cover==1%
+# 57 TTC ,Fauske,2016,Frag.vir,Fra.ves,,,cover==1%
+ 73 TTC,Fauske,2013,Lin.vul,Dia.del,,,
+ 73 TTC,Fauske,2016,Lin.vul,Dia.del,,,
+80 TT3 169,Gudmedalen ,2015,Oxy.lap,Ast.alp,,,
+81 TT3 168,Gudmedalen ,2015,Oxy.lap,Ast.alp,,,
+# 93 TT3 512,Gudmedalen ,2013,Com.ten,,,,Cover==1%
+ 97 TT3 517,Gudmedalen ,2017,X….,Sag.sp,,,
+# 97 TT3 517,Gudmedalen ,2015,Luz.sp,Luz.spi,,,
+# 97 TT3 517,Gudmedalen ,2015,X1,delete,,,
+# 167 TTC,Gudmedalen ,2013,com.ten,,,,cover==1%
+ 505 TTC,Gudmedalen ,2015,Oxy.lap,Ast.alp,,,
+511 TTC,Gudmedalen ,2015,Tof.cal,Tof.pus,,,
+511 TTC,Gudmedalen ,2017,Tof.cal,Tof.pus,,,
+516 TTC,Gudmedalen ,2015,Luz.sp,Luz.mul,,,
+# 84 TT2 198,Gudmedalen ,2009,Sag.sp,,,,Cover== 4%
+# 88 tt2 114,Gudmedalen ,2012,,,,,plot missing
+# 95 TT2 117,Gudmedalen ,2009,Par.pal,,,,cover==2%
+# 95 TT2 117,Gudmedalen ,2009,Sag.sp,,,,cover==4%
+# 95 TT2 117,Gudmedalen ,2011,Sag.sp,,,,cover==2%
+# 96 TT2 122,Gudmedalen ,2009,Sag.sp,,,,cover==2%
+"# ""New rule Sag.sp  and Eup.sp if 1-3subplots ==2%", if more 4%," more than half 6%""",,,,,
+21 TT4 123,Høgsete,2017,Alc.sp,Alc.alp,,,
+21 TT4 123,Høgsete,2017,Cer,Cer.sp,,,
+116 TTC ,Høgsete,2017,Gal.uli,Gal.sax,,,
+# 98 TT1 97,Låvisdalen,2011,Ant.dio,,,,cover== 5%
+# 8 TT3 77,Låvisdalen,2013,Sal.sp,Sal.her,,,merge
+# 78 TTC,Låvisdalen,2016,oma.sup,Ant.dio,,,"mixed. Leave 2 subplots as oma sup (6, 21) "
+# 162 TT2 200,Rambæra,2017,,,,,somehow a Pyr.min remains? Should have bene merged into .sp
+# 170 TT2 195,Rambæra,2009,Ant.dio,,,,cover== 7%
+502 TT2 527,Rambæra,2015,Vio.sp,Vio.riv,,,
+513 TT2 521,Rambæra,2017,Tof.cal,Tof.pus,,,general rule always merge these
+# 513 TT2 521,Rambæra,2015,Tric.ces,,,,fill in == 2013 (forgottene)
+# 117 TT3 530 ,Rambæra,2015,,,,,missing?
+# 117 TT3 530 ,Rambæra,2017,Gal.uli,Gal.sax,,,missing?
+86 TT4 193,Rambæra,2015,Dry.oct,Gym.dry,,,reading errorr :-)
+91 TT4 529,Rambæra,2013,Luz.sp,Luz.mul,,,
+# 194 TTC,Rambæra,2015,Dry.oct,,,,delete - duplicated data with gym dry
+194 TTC,Rambæra,2011,Dry.sp,Gym.dry,,,
+# New rule Dry.sp is always Gym.dry,,,,,,,
+194 TTC,Rambæra,2015,Luz.sp,Luz.mul,,,
+203 TTC,Rambæra,2016,Leo.aut,Tar.sp,,,
+# New rule Tof.cal is always Tof.pus,,,,,,,
+243 TTC,Skjellingahaugen,2016,Car.atr,Car.big,,,
+257 TT2 283,Veskre,2015,Car.pan,Car.nig,,,
+# 523 TT3 266,Veskre,2015,Car.sp,delete,,,
+# 523 TT3 266,Veskre,2015,NA,Gal.uli,,,"enter subplots 2,4,6,7,8,10,12,14,16,17 (f),20,21,22,23,24,25, 5% cover"
+504 TT4 227,Veskre,2013,Ant.odo,Ant.dio,,,typing error
+509 TT4 261,Veskre,2015,NID.gram,Car.pil,,,
+ 263 TTC,Veskre,2017,Car.sp,Car.vag,,,
+263 TTC,Veskre,2016,Car.pall,Car.pil,,,nwege wirth exiting
+270 TTC,Veskre,2016,Car.pall,Car.pil,,,nwege wirth exiting
+# 281 TTC,Veskre,2016,Car.cap,"Car.cap, Car.pul",,,split 50/50 subplots and cover
+119 TT2 143,Vikelsand,2015,Gal.uli,Gal.sax,,,
+119 TT2 143,Vikelsand,2017,Gal.uli,Gal.sax,,,
+111 TT2 137,Vikelsand,2015,Gal.uli,Gal.sax,,,
+111 TT2 137,Vikelsand,2017,Gal.uli,Gal.sax,,,
+ 107 TT2 133,Vikelsand,2015,Gal.uli,Gal.sax,,,
+107 TT2 133,Vikelsand,2017,Gal.uli,Gal.sax,,,
+103 TT2 128,Vikelsand,2015,Gal.uli,Gal.sax,,,
+103 TT2 128,Vikelsand,2017,Gal.uli,Gal.sax,,,
+# 35 TT4 130,Vikelsand,2017,Ant.odo,,,,cover ==4%
+ 47 TT4 148,Vikelsand,2017,Fes.rub,Poa.pra,,,
