@@ -149,3 +149,4 @@ turfs$newTT <- turfs$TTtreat  #alternative TTtreat with combined controls
 levels(turfs$newTT)[1:2] <- "control"
 
 save(cover, cover.thin, cover.meta, turfs, file = "cover.Rdata")
+

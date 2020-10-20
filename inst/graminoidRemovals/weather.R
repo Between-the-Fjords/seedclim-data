@@ -1,6 +1,6 @@
 #gridded temp and precip data
 #load data monthlyClimate
-load("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/GriddedMonth_AnnualClimate2009-2016.Rdata")
+load("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/data/GriddedMonth_AnnualClimate2009-2016.Rdata")
 head(monthlyClimate)
 
 library(lubridate)
@@ -20,7 +20,7 @@ temperature <- monthlyClimate %>%
 
 temperature
 
-load("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/GriddedDailyClimateData2009-2016.Rdata")
+load("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/data/GriddedDailyClimateData2009-2016.Rdata")
 head(climate)
 
 #### precipitation ####  

@@ -1,37 +1,96 @@
 #load packages
 library(lme4)
 library(MuMIn)
-library(GGally)
-library(tibble)
 library(broom)
+
+# prepare data
+forbcomAnalysis <- forbcom %>% 
+  gather(c(richness:cwvCN), key = "trait", value = "value") %>% 
+  select(-c(cwsdLDMC:cwsdCN))
 
 # Scaling explanatory variables
 # relevel treatment so that TTC is the intercept
-forbcom <- forbcom %>% 
+forbcomAnalysis <- forbcomAnalysis %>% 
   mutate(Sprecip0916 = as.numeric(scale(precip0916)),
          Stemp0916 = as.numeric(scale(temp0916)),
          SYear = as.numeric(scale(Year))) %>% 
-  mutate(TTtreat = factor(TTtreat, levels = c("TTC", "RTC")))
+  mutate(TTtreat = factor(TTtreat, levels = c("TTC", "RTC"))) %>%
+  group_by(trait) %>% 
+  #mutate(value = if_else(trait == "richness", value, scale(value))) %>%
+  filter(is.finite(value))
 
 
-# gather traits for analyses
-forbcomAnalysis <- forbcom %>%
-  mutate(wmeanLDMC = as.numeric(scale(wmeanLDMC)), wmeanseedMass = as.numeric(scale(wmeanseedMass)), wmeanCN = as.numeric(scale(wmeanCN)), wmeanheight = as.numeric(scale(wmeanheight)), wmeanSLA = as.numeric(scale(wmeanSLA)), wmeanLA = as.numeric(scale(wmeanLA)), wmeanLTH = as.numeric(scale(wmeanLTH)), sumcover = as.numeric(scale(sumcover)), evenness = as.numeric(scale(evenness)), richness = as.numeric(scale(richness)), cwvLDMC = as.numeric(scale(cwvLDMC)), cwvseedMass = as.numeric(scale(cwvseedMass)), cwvCN = as.numeric(scale(cwvCN)), cwvheight = as.numeric(scale(cwvheight)), cwvSLA = as.numeric(scale(cwvSLA)), cwvLA = as.numeric(scale(cwvLA)), cwvLTH = as.numeric(scale(cwvLTH))
-  ) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvseedMass)) %>% 
-  filter(!is.na(measurement))
-  
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# polynomial term for precipitation
+# poisson distribution for richness -> copy code from funcab analyses
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mod1temp <- forbcomAnalysis %>% 
+  mutate(traitII = trait) %>% 
   group_by(trait) %>%
-  do({
-    mod <- lmer(measurement ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), REML = FALSE, data = .)
+  do({if(.$traitII[1] == "richness"){
+    # richness
+    mod <- glmer(value ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), family = "poisson", data = .)
+  } else if (.$traitII[1] %in% c("wmeanLTH", "wmeanLA", "wmeanheight", "cwvSLA", "cwvLTH", "cwvLDMC", "cwvCN", "cwvheight", "cwvLA")){
+    # leaf thickness, leaf area, height, cwv
+    mod <- lmer(log(value) ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), REML = FALSE, data = .)
+  } else if (.$traitII[1] %in% c("evenness", "diversity")){
+    mod <- lmer(value^2 ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), REML = FALSE, data = .)
+  } else {
+    lmer(value ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), REML = FALSE, data = .) 
+  }
     tidy(mod)}) %>% 
-  #filter(term %in% c("TTtreatRTC","TTtreatRTC:Stemp0916:SYear", "TTtreatRTC:Sprecip0916:SYear", "TTtreatRTC:SYear")) %>% 
   arrange(desc(trait)) %>% 
   mutate(lower = (estimate - std.error*1.96),
          upper = (estimate + std.error*1.96)) %>% 
   ungroup()
+
+mod <- forbcomAnalysis %>% filter(trait == "richness") %>% glmer(value ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), family = "poisson", data = .)
+
+wmeanLTH log
+wmeanSLA
+wmeanLDMC
+wmeanCN
+wmeanLA log
+wmeanheight log
+sumcover
+eveness ^2
+diversity ^2
+cwvSLA log
+cwvLTH log
+cwvLDMC log
+cwvCN log
+cwvheight log
+cwvLA log
+
+
+try <- forbcomAnalysis %>% filter(trait == "cwvLA") %>% lmer(log(value) ~ TTtreat*Stemp0916*Sprecip0916*SYear - TTtreat:Stemp0916:Sprecip0916:SYear + (1|siteID/blockID), REML = FALSE, data = .)
+
+qqmath(try)
+
+ggplot(try, aes(.fitted,.resid)) + 
+  geom_point(colour=pal1[2]) +
+  facet_grid(.~TTtreat) + 
+  geom_hline(yintercept=0)
+## note: Subjects are ordered by mean distance
+ggplot(try, aes(siteID,.resid)) + 
+  geom_boxplot() + 
+  coord_flip()
+
+ggplot(try, aes(.fitted, log(value))) + 
+  geom_point(colour=pal1[2]) +
+  facet_wrap(~siteID) + 
+  geom_abline(intercept = 0, slope = 1)
+
+ggplot(try, aes(tempLevel,.resid)) + 
+  geom_point(colour=pal1[2]) + 
+  facet_grid(.~TTtreat) +
+  geom_hline(yintercept=0) + 
+  geom_line(aes(group = siteID), alpha = 0.4) + 
+  geom_smooth(method="loess")
+
+
+
 
 mod1temp <- mod1temp %>% 
   mutate(test = case_when(
@@ -56,7 +115,7 @@ mod1temp <- mod1temp %>%
       term == "TTtreatRTC" ~ "removal")) %>% 
   mutate(trait = if_else(grepl("wmean", trait), substr(trait, 6, n()),
                          if_else(grepl("cwv", trait), substr(trait, 4, n()), trait))) %>% 
-  mutate(sign = recode(trait, sumcover = 1, evenness = 1, richness = 1, seedMass = 1, height = 0, LA = 0, LTH = 0, LDMC = 0, CN = 1, SLA = 1))
+  mutate(sign = recode(trait, sumcover = 1, evenness = 1, richness = 1, diversity = 1, height = 0, LA = 0, LTH = 0, LDMC = 0, CN = 1, SLA = 1))
 
 #write.csv(mod1temp, file = "~/OneDrive - University of Bergen/Research/mod1tempOUT.csv")
 
@@ -75,7 +134,7 @@ coefEst <- mod1temp %>%
   scale_colour_manual(legend.title.climate, values = c("black", "black", "black", "black")) +
   scale_shape_manual(legend.title.climate, values = c(25, 24, 23, 21)) +
   #scale_linetype_manual(legend.title.climate, values = c(1,1,3, 21,21,23, 25)) +
-  scale_x_discrete(limits = c("SLA", "CN", "LDMC", "LTH", "LA", "height", "seedMass", "richness", "evenness", "sumcover"), labels = c("SLA", "C:N ratio", "Leaf dry \n matter content", "Leaf thickness", "Leaf area", "Height", "Seed mass", "Richness", "Evenness", "Cover")) +
+  scale_x_discrete(limits = c("SLA", "CN", "LDMC", "LTH", "LA", "height", "diversity", "richness", "evenness", "sumcover"), labels = c("SLA", "C:N ratio", "Leaf dry \n matter content", "Leaf thickness", "Leaf area", "Height", "diversity", "Richness", "Evenness", "Cover")) +
   facet_wrap(~test, strip.position = "top", scales = "free_x") +
   labs(y = "Standardised coefficients", x = "Leaf economic traits                 Structural traits               Community structure") +
   theme_cowplot(font_family = "Helvetica") +

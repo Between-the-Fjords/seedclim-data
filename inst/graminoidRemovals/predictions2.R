@@ -194,9 +194,10 @@ ggsave(PmodPredsTraits, filename = "~/OneDrive - University of Bergen/Research/F
 #------------- TIME DELTAS ---------------------------
 #------------- TEMPERATURE ---------------------------
 
+
 treatwmTD <- timedelta %>% 
-  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvseedMass)) %>%
-  filter(trait %in% c("deltawmeanSLA", "deltawmeanLTH", "deltawmeanCN", "deltawmeanheight", "deltawmeanLDMC")) %>%
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>%
+  filter(trait %in% c("deltawmeanSLA", "deltawmeanLTH", "deltawmeanCN", "deltawmeanheight")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel), linetype = TTtreat, alpha = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
   scale_colour_manual(values = pal1[c(3,5,4)]) +
@@ -209,11 +210,13 @@ treatwmTD <- timedelta %>%
   theme(strip.background = element_blank(),
         axis.title = element_blank(),
         axis.text = element_text(size = 10),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
         legend.position = "bottom")
 
 treatwvTD <- timedelta %>% 
-  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvseedMass)) %>%
-  filter(trait %in% c("deltacwvSLA", "deltacwvLTH", "deltacwvCN", "deltacwvheight", "deltacwvLDMC")) %>%
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>%
+  filter(trait %in% c("deltacwvSLA", "deltacwvLTH", "deltacwvCN", "deltacwvheight")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel), linetype = TTtreat, alpha = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
   scale_colour_manual(values = pal1[c(3,5,4)]) +
@@ -232,6 +235,25 @@ treatwvTD <- timedelta %>%
 legend <- get_legend(treatwmTD)
 
 #------------- PRECIPITATION ---------------------------
+timedelta <- mutate(timedelta, deltaExpH = exp(deltawmeanheight))
+
+treatwmPD <- timedelta %>% 
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>%
+  filter(trait %in% c("deltawmeanSLA", "deltawmeanLTH", "deltawmeanCN", "deltaExpH")) %>%
+  ggplot(aes(x = Year, y = measurement, colour = factor(precipLevel), linetype = TTtreat, alpha = TTtreat)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
+  scale_colour_manual(values = pal2[c(7,4,1,3)]) +
+  scale_alpha_manual("", values = c(1, 0.6), labels = c("Removal", "Untreated")) +
+  scale_linetype_discrete("", labels = c("Removal", "Untreated")) +
+  facet_wrap(~trait, scales = "free_y", 
+             nrow = 1) +
+  geom_hline(yintercept = 0) +
+  theme_cowplot() +
+  theme(strip.background = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_text(size = 10),
+        legend.position = "bottom")
+
 plotModprecip <- modMNA %>% filter(term %in% c("(Intercept)", "P", "P x removal", "P x year", "P x year x removal")) %>%
   filter(trait %in% c("SLA", "LTH", "CN", "height", "LDMC")) %>%
   filter(test == "Mean") %>% 
@@ -247,9 +269,9 @@ plotModprecip <- modMNA %>% filter(term %in% c("(Intercept)", "P", "P x removal"
         legend.position = "bottom") +
   scale_x_discrete(expand=c(0.07, 0.07))
 
-legendPrecip <- get_legend(plotModprecip)
+legendPrecip <- get_legend(treatwmPD)
 
-tmodPredsTraits <- plot_grid(treatwmTD + theme(legend.position = "none"), treatwvTD, plotModprecip + theme(legend.position = "none"), nrow = 3, labels = c("A", "B", "C"), align = "hv", axis = "tblr", rel_heights = c(0.35, 0.35, 0.3))
+tmodPredsTraits <- plot_grid(treatwmTD + theme(legend.position = "none"), treatwvTD, treatwmPD + theme(legend.position = "none"), nrow = 3, labels = c("A", "B"), align = "hv", axis = "tblr", rel_heights = c(0.5, 0.5))
 legends <- plot_grid(legend, legendPrecip, nrow = 1)
 combiPlot <- plot_grid(tmodPredsTraits, legends, nrow = 2, ncol = 1, rel_heights = c(0.9,0.1))
 ggsave(combiPlot, filename = "~/OneDrive - University of Bergen/Research/FunCaB/paper 1/figures/combiTest.jpg", dpi = 300, height = 8, width = 12.5)
@@ -261,7 +283,7 @@ ggsave(tmodPredsTraits, filename = "~/OneDrive - University of Bergen/Research/F
 
 plotmodMNP
 timedelta %>% 
-  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvseedMass)) %>%
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>%
   filter(trait %in% c("deltawmeanSLA", "deltawmeanLTH", "deltawmeanCN", "deltawmeanheight", "deltawmeanLDMC")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(precipLevel), linetype = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1, mapping = aes(alpha = TTtreat)) +
@@ -275,7 +297,7 @@ timedelta %>%
   theme(strip.background = element_blank())
 
 plotmodVarP <- timedelta %>% 
-  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvseedMass)) %>%
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>%
   filter(trait %in% c("deltacwvSLA", "deltacwvLTH", "deltacwvCN", "deltacwvheight", "deltacwvLDMC")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(precipLevel), linetype = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1, mapping = aes(alpha = TTtreat)) +
@@ -292,7 +314,7 @@ plotmodVarP <- timedelta %>%
 #------------- TEMPERATURE RAW ---------------------------
 rawWm <- forbcom %>% 
   mutate(Year = as.numeric(as.character(Year))) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvseedMass)) %>%
+  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvCN)) %>%
   filter(trait %in% c("wmeanSLA", "wmeanLTH", "wmeanCN", "wmeanheight", "wmeanLDMC")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel), linetype = TTtreat, alpha = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
@@ -307,7 +329,7 @@ rawWm <- forbcom %>%
 
 rawWv <- forbcom %>% 
   mutate(Year = as.numeric(as.character(Year))) %>% 
-  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvseedMass)) %>%
+  gather(key = trait, value = measurement, c(richness, evenness, sumcover, wmeanLDMC:cwvCN)) %>%
   filter(trait %in% c("cwvSLA", "cwvLTH", "cwvCN", "cwvheight", "cwvLDMC")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel), linetype = TTtreat, alpha = TTtreat)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
@@ -327,42 +349,68 @@ trawTraits <- plot_grid(rawWm + theme(legend.position = "none"), rawWv, nrow = 2
 trawTraits <- plot_grid(trawTraits, legend, rel_widths = c(0.9,0.1))
 ggsave(trawTraits, filename = "~/OneDrive - University of Bergen/Research/FunCaB/paper 1/figures/tempRawTraits.jpg", dpi = 300, height = 6.5, width = 15)
 
-
-#------------- TREATMENT DELTA ------------------
-treatwmD <- rtcmeta %>% 
-  mutate(Year = as.numeric(as.character(Year))) %>% 
-  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvseedMass)) %>%
-  filter(trait %in% c("deltawmeanSLA", "deltawmeanLTH", "deltawmeanCN", "deltawmeanheight", "deltawmeanLDMC")) %>%
-  ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel))) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
-  scale_colour_manual("Mean summer\n temperature", values = pal1[c(3,5,4)]) +
-  facet_wrap(~trait, scales = "free_y", nrow = 1) +
-  labs(x = "") +
-  geom_vline(xintercept = 2011.5, linetype = "dashed", colour = "grey60") +
-  geom_hline(yintercept = 0) +
-  theme_cowplot() +
-  theme(strip.background = element_blank())
-
 treatwvD <- rtcmeta %>% 
   mutate(Year = as.numeric(as.character(Year))) %>% 
-  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvseedMass)) %>%
-  filter(trait %in% c("deltacwvSLA", "deltacwvLTH", "deltacwvCN", "deltacwvheight", "deltacwvLDMC")) %>%
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>%
+  filter(trait %in% c("deltacwvSLA", "deltacwvLTH", "deltacwvCN", "deltacwvheight")) %>%
   ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel))) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
   scale_colour_manual("Mean summer\n temperature", values = pal1[c(3,5,4)]) +
-  facet_wrap(~trait, scales = "free_y", nrow = 1) +
-  labs(x = "") +
-  geom_vline(xintercept = 2011.5, linetype = "dashed", colour = "grey60") +geom_hline(yintercept = 0) +
+  facet_wrap(~ trait, scales = "free_y", nrow = 1) +
+  labs(x = "", y = "") +
+  geom_hline(yintercept = 0) +
   theme_cowplot() +
   theme(strip.background = element_blank(),
         legend.position = "none")
 
-legend <- get_legend(treatwmD)
+#------------- TREATMENT DELTA ------------------
+rtcmetaPlot <- rtcmeta %>% 
+  mutate(Year = as.numeric(as.character(Year))) %>% 
+  gather(key = trait, value = measurement, c(deltarichness, deltaevenness, deltasumcover, deltawmeanLDMC:deltacwvCN)) %>% 
+  mutate(trait = substr(trait, 6, n())) %>% 
+  mutate(test = case_when(
+    grepl("wmean", trait) ~ "Mean",
+    grepl("cwv", trait) ~ "Variance",
+    grepl("^s|^r|^e|^d", trait) ~ "Mean")) %>% 
+  mutate(trait = if_else(grepl("wmean", trait), substr(trait, 6, n()), 
+                         if_else(grepl("cwv", trait), substr(trait, 4, n()), trait)))
+
+treatwmD <- rtcmetaPlot  %>%
+  filter(trait %in% c("SLA", "LTH", "CN", "height"), test == "Mean") %>%
+  ggplot(aes(x = Year, y = measurement, colour = factor(tempLevel))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 0.75) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), shape = 1, geom = "point") +
+  scale_colour_manual("Mean summer\n temperature", values = pal1[c(3,5,4)]) +
+  facet_wrap(~trait, scales = "free_y", nrow = 1) +
+  labs(x = "", y = "") +
+  geom_hline(yintercept = 0) +
+  theme(strip.background = element_blank(), 
+        axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        plot.margin = margin(unit(c(0, 0, 0, 0), "cm")))
+
+treatwmDprecip <- rtcmetaPlot %>% 
+  filter(trait %in% c("SLA", "LTH", "CN", "height"), test == "Mean") %>%
+  ggplot(aes(x = Year, y = measurement, colour = factor(precipLevel))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), geom = "line", size = 1) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = 0.6), shape = 1, geom = "point") +
+  scale_colour_manual("Mean annual\n precipitation", values = c('#BF5C6A','#D8B772','#68AB82','#3E6E3F')) +
+  facet_wrap(~trait, scales = "free_y", nrow = 1) +
+  labs(x = "", y = "") +
+  geom_hline(yintercept = 0) +
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        plot.margin = margin(unit(c(0, 0, 0, 0), "cm")))
 
 
-tmodPredsTraits <- plot_grid(treatwmD + theme(legend.position = "none"), treatwvD, nrow = 2)
-tmodPredsTraits <- plot_grid(tmodPredsTraits, legend, rel_widths = c(0.9,0.1))
-ggsave(tmodPredsTraits, filename = "~/OneDrive - University of Bergen/Research/FunCaB/paper 1/figures/tempdeltaTraits.jpg", dpi = 300, height = 6.5, width = 15)
+legendT <- get_legend(treatwmD)
+legendP <- get_legend(treatwmDprecip)
+
+tmodPredsTraits <- plot_grid(treatwmD + theme(legend.position = "none"), treatwmDprecip + theme(legend.position = "none"), nrow = 2, align = "hv")
+
+legends <- plot_grid(legendT, legendP, ncol = 1)
+tmodPredsTraits <- plot_grid(tmodPredsTraits, legends, rel_widths = c(0.9,0.1))
+ggsave(tmodPredsTraits, filename = "~/OneDrive - University of Bergen/Research/FunCaB/paper 1/figures/tempdeltaTraitsII.jpg", dpi = 300, height = 7, width = 13.846)
 
 # ------------- 2016 ONLY --------------------
 ## TEMP/PRECIP INTERACTION

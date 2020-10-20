@@ -1,48 +1,50 @@
-##############################################################################
+#################################################################
 #Script for paper on effect of graminoid removal on plant community properties
-##############################################################################
+#################################################################
 
 library(tidyverse)
 library(DBI)
 library(dbplyr)
 library(SDMTools)
-con <- src_mysql(group = "seedclim", dbname = "seedclimComm", password = "password")
+library(RSQLite)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-############### Cover data ###############
+con <- src_sqlite(path = "~/OneDrive - University of Bergen/Research/FunCaB/seedclim.sqlite", create = FALSE)
+#con <- src_mysql(group = "seedclim", dbname = "seedclimComm", password = "password")
+
+#source joining dictionaries
+source("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/funcab/dictionaries.R")
+
+#~~~~~~~~~~ Cover data ~~~~~~~~~~#
 ## ---- my.GR.data.import ---- 
-problems <- read.csv("~/OneDrive - University of Bergen/Research/FunCaB/Data/speciesCorrections.csv", sep = ";", stringsAsFactors = FALSE) %>%
-  filter(!old %in% c("Vio.can", "Com.ten", "Sel.sel")) %>%
-  filter(cover != "WHAT HAPPENED") %>%
-  mutate(cover = as.numeric(cover))
 
-problems.cover <- filter(problems, !is.na(cover)) %>%
-  select(turfID, year = Year, species = old, cover)
+# extract functional groups from DB
+FG <- tbl(con, "character_traits") %>% 
+  filter(trait == "functionalGroup") %>% 
+  select(species, functionalGroup = value) %>% 
+  collect()
 
+# extract community data for 2010-2016
 my.GR.data <-tbl(con, "subTurfCommunity") %>%
   group_by(turfID, year, species) %>% 
   summarise(n_subturf = n()) %>% 
   collect() %>% 
   full_join(tbl(con, "turfCommunity") %>% collect()) %>%
-  full_join(problems.cover, by = c("year", "turfID", "species"), suffix = c(".community", ".problems")) %>%
-  mutate(cover = if_else(is.na(cover.community),
-                         cover.problems,
-                         cover.community)) %>% 
+  #mutate(cover = if_else(is.na(cover.community),
+  #                       cover.problems,
+  #                       cover.community)) %>% 
   left_join(tbl(con, "taxon"), copy = TRUE) %>%
   left_join(tbl(con, "turfs"), copy = TRUE) %>%
   left_join(tbl(con, "plots"), by = c("destinationPlotID" = "plotID"), copy = TRUE) %>%
   left_join(tbl(con, "blocks"), by = "blockID", copy = TRUE) %>%
   left_join(tbl(con, "sites"), by = "siteID", copy = TRUE) %>%
   left_join(tbl(con, "turfEnvironment"), copy = TRUE) %>%
-  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, recorder, totalVascular, totalBryophytes, functionalGroup, vegetationHeight, mossHeight, litter, pleuro, acro, liver, lichen, soil, rock, totalLichen, comment, date) %>%
+  select(siteID, blockID, plotID = destinationPlotID, turfID, TTtreat, GRtreat, Year = year, species, cover, recorder, totalVascular, totalBryophytes, vegetationHeight, mossHeight, litter, pleuro, acro, liver, lichen, soil, rock, totalLichen, comment, date) %>%
   mutate(TTtreat = factor(TTtreat), GRtreat = factor(GRtreat)) %>%
-  ungroup()
-
-my.GR.data <- my.GR.data %>% filter(Year > 2009, TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC")
-
-my.GR.data
+  ungroup() %>%
+  filter(Year %in% c(2010, 2011, 2013, 2015, 2016), TTtreat == "TTC"|GRtreat == "RTC"|GRtreat == "TTC")
 
 my.GR.data <- my.GR.data %>%
+  left_join(FG) %>% 
   mutate(functionalGroup = if_else(species %in% c("Gen.sp.", "Cre.pal", "Frag.vir", "Sch.gig", "Ste.bor", "Hie.ore", "Sel.sel."), "forb", functionalGroup),
          functionalGroup = if_else(species %in% c("Agr.can", "Phl.sp"), "graminoid", functionalGroup))
 
@@ -84,40 +86,13 @@ owen.fix <- paste(as.character(my.GR.data$turfID), my.GR.data$Year) %in% paste(o
 my.GR.data$cover[owen.fix] <- my.GR.data$cover[owen.fix]/1.5
 
 
-# replace species names where mistakes have been found in database
-prob.sp <- problems %>%
-  filter(!is.na(Year))
-
-for(i in 1:nrow(prob.sp)) {
-  my.GR.data$species[my.GR.data$Year == prob.sp$Year[i] & my.GR.data$turfID == prob.sp$turfID[i] & my.GR.data$species == prob.sp$old[i]] <- prob.sp$new[i]
-}
-
-#A function that takes a dataframe, and a list of problems and resolutions, and runs them through replace_all() 
-probfixes=function(df, old, new){
-  for(i in 1:length(old)){
-    df=replace_all(df,old[i],new[i])
-  }
-  return(df)
-}
-
-#A function that finds and replaces a string (using regex) in a dataframe
-replace_all <- function(df, pattern, replacement) {
-  char <- vapply(df, function(x) is.factor(x) || is.character(x), logical(1))
-  df[char] <- lapply(df[char], str_replace_all, pattern, replacement)  
-  df
-}
-
-prob.sp.name <- problems %>% 
-  filter(is.na(Year))
-
-my.GR.data <- probfixes(my.GR.data, prob.sp.name$old, prob.sp.name$new)
-
 #gridded temperature etc
 source("inst/graminoidRemovals/weather.R")
 #save(weather, file = "~/Desktop/weather.Rdata")
 
 my.GR.data <- my.GR.data %>%
-  left_join(weather, by = "siteID") 
+  left_join(weather, by = "siteID") %>% 
+  ungroup()
 
 
 #### code to get rid of turfs that have been attacked by ants or cows ####
@@ -134,43 +109,40 @@ my.GR.data %>% filter(turfID %in% c("Ovs2RTC", "Ovs3RTC", "126 TTC", functionalG
 ## ---- Traits.data.import ---- 
 
 # source Ragnhild's trait data
-source("inst/graminoidRemovals/gramRem_load-traits.R")
+source("~/OneDrive - University of Bergen/Research/FunCaB/SeedclimComm/inst/graminoidRemovals/gramRem_load-traits.R")
+
+#source("~/OneDrive - University of Bergen/Research/FunCaB/SeedClim-Climate-Data/funcab/vegetation/trait_imputation.R")
 
 #load from data base
-traits <- tbl(con, "taxon") %>% 
+traits <- tbl(con, "numeric_traits") %>% 
   collect() %>% 
-  left_join(tbl(con, "moreTraits"), copy = TRUE, by = "species") %>% 
-  select(species, Lower, Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp, Upper, seedMass)
-
-traits$HAlp <- as.numeric(traits$HAlp)
-traits[,(3:10)][is.na(traits[,3:10])] <- 0 #change this to something more interpretable!
+  filter(trait %in% c("Lower", "Nem", "BNem", "SBor", "MBor", "Nbor", "LAlp", "MAlp", "HAlp", "Upper"))
 
 traits <- traits %>% 
   group_by(species) %>% 
-  mutate(abundance = sum(Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp, na.rm = TRUE)) %>%
+  mutate(abundance = sum(value)) %>%
+  spread(trait, value) %>% 
   mutate(specialism = factor(case_when(
     Nem == 0 & BNem == 0 & SBor == 0 & LAlp == 1 ~ "alpine", 
     HAlp == 0 & MAlp == 0 & LAlp == 0 & Nem == 1 ~ "lowland", 
     abundance >= 5.5 ~ "generalist",
     abundance < 5.5 ~ "other"))) %>% 
-  select(-c(Lower, Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp, Upper)) %>% 
+  select(-c(Nem, BNem, SBor, MBor, Nbor, LAlp, MAlp, HAlp)) %>% 
   ungroup()
-
-head(traits)
-
-# "Agr.can"  "Cre.pal"  "Frag.vir" "Gen.sp."  "Hie.ore"  "Sch.gig" the species that don't appear in the traits but do appear in cover
 
 
 # adding traits to my.GR.data
 my.GR.data <- my.GR.data %>%
   left_join(traits, by = "species") %>%
-  left_join(traitdata, by = c("species", "siteID")) 
+  left_join(traitdata, by = c("species","siteID"))
+  #left_join(Species_traits, by = c("species", "siteID")) 
   
 #comment these out depending on the analysis you want to run
 my.GR.data <- my.GR.data %>% 
   mutate(TTtreat = factor(TTtreat),
          functionalGroup = recode(functionalGroup, "pteridophyte" = "forb", "woody" = "forb"),
          specialism = recode(specialism, "lowland" = "other"))
+
 
 
 ## ---- Traits.data.end ---- 
@@ -192,42 +164,33 @@ my.GR.data <- my.GR.data %>%
 
 ## ---- Diversity.data.end ---- 
 
-#save(my.GR.data, file = "~/OneDrive - University of Bergen/Research/FunCaB/Data/myGRdata.RData")
-#load("~/OneDrive - University of Bergen/Research/FunCaB/Data/myGRdata.RData")
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-############## WEIGHTED MEANS ###############
+#~~~~~~~~~~~~ WEIGHTED MEANS ###############
 
 ## ---- Community.mean.weighting ---- 
 
 ###### weighted means for whole community, grouped by functional group and year
 wholecom <- my.GR.data %>% 
-  group_by(ID, functionalGroup) %>%
-  mutate(sumcover = sum(cover),
+  group_by(ID, functionalGroup, siteID, blockID, turfID, TTtreat, Year, functionalGroup, tempLevel, temp7010, temp0916, precipLevel, precip7010, precip0916, richness, evenness, diversity) %>%
+  summarise(sumcover = sum(cover),
          wmeanLDMC = weighted.mean(LDMC_mean, cover, na.rm = TRUE),
          wmeanSLA = weighted.mean(SLA_mean, cover, na.rm = TRUE),
          wmeanLTH = weighted.mean(Lth_mean, cover, na.rm = TRUE),
          wmeanLA = weighted.mean(LA_mean, cover, na.rm = TRUE),
          wmeanheight = weighted.mean(Height_mean, cover, na.rm = TRUE),
          wmeanCN = weighted.mean(CN_mean, cover, na.rm = TRUE),
-         wmeanseedMass = weighted.mean(seedMass, cover, na.rm = TRUE),
          cwvLDMC = wt.var(LDMC_mean, wt = cover),
          cwvSLA = wt.var(SLA_mean, wt = cover),
          cwvLTH = wt.var(Lth_mean, wt = cover),
          cwvLA = wt.var(LA_mean, wt = cover),
          cwvheight = wt.var(Height_mean, wt = cover),
          cwvCN = wt.var(CN_mean, wt = cover),
-         cwvseedMass = wt.var(seedMass, wt = cover),
          cwsdLDMC = wt.sd(LDMC_mean, wt = cover),
          cwsdSLA = wt.sd(SLA_mean, wt = cover),
          cwsdLTH = wt.sd(Lth_mean, wt = cover),
          cwsdLA = wt.sd(LA_mean, wt = cover),
          cwsdheight = wt.sd(Height_mean, wt = cover),
-         cwsdCN = wt.sd(CN_mean, wt = cover),
-         cwsdseedMass = wt.sd(seedMass, wt = cover)) %>% 
+         cwsdCN = wt.sd(CN_mean, wt = cover)) %>% 
   ungroup() %>%
-  select((siteID:Year), functionalGroup, (precip0916:specialism), (richness:cwsdseedMass)) %>%
-  distinct(Year, turfID, functionalGroup, .keep_all = TRUE) %>% 
   mutate(funYear = as.factor(paste(functionalGroup, Year, sep = "_")))
 
 # create forb-only data frame
@@ -245,7 +208,7 @@ forbcom <- wholecom %>%
 deltacalc <- sapply(1:nrow(forbcom[forbcom$TTtreat == "RTC",]), function(i){
   R <- forbcom[forbcom$TTtreat == "RTC",][i,]
   #browser()
-  cols <- c("sumcover", "wmeanseedMass", "diversity", "richness", "evenness", "wmeanLDMC", "wmeanSLA", "wmeanLTH", "wmeanLA", "wmeanheight", "wmeanCN", "cwvLDMC", "cwvSLA", "cwvLTH", "cwvLA", "cwvheight", "cwvCN", "cwvseedMass")
+  cols <- c("sumcover", "diversity", "richness", "evenness", "wmeanLDMC", "wmeanSLA", "wmeanLTH", "wmeanLA", "wmeanheight", "wmeanCN", "cwvLDMC", "cwvSLA", "cwvLTH", "cwvLA", "cwvheight", "cwvCN")
   friend <- forbcom$Year == R$Year & forbcom$blockID == R$blockID & forbcom$functionalGroup == R$functionalGroup & forbcom$TTtreat == "TTC"
   if(all (!friend)) {print(R$turfID)
     return(rep(NA, length(cols)))}
@@ -269,7 +232,7 @@ rtcmeta$Year <- factor(rtcmeta$Year)
 timedeltacalc <- sapply(1:nrow(forbcom[forbcom$Year != 2011,]), function(i){
  R <- forbcom[forbcom$Year != 2011,][i,]
    #browser()
-  cols <- c("sumcover", "wmeanseedMass", "diversity", "richness", "evenness", "wmeanLDMC", "wmeanSLA", "wmeanLTH", "wmeanLA", "wmeanheight", "wmeanCN", "cwvLDMC", "cwvSLA", "cwvLTH", "cwvLA", "cwvheight", "cwvCN", "cwvseedMass")
+  cols <- c("sumcover", "diversity", "richness", "evenness", "wmeanLDMC", "wmeanSLA", "wmeanLTH", "wmeanLA", "wmeanheight", "wmeanCN", "cwvLDMC", "cwvSLA", "cwvLTH", "cwvLA", "cwvheight", "cwvCN")
    friend <- forbcom$turfID == R$turfID & forbcom$Year == 2011
   if(all (!friend)) {print(R$turfID)
      return(rep(NA, length(cols)))}
@@ -285,8 +248,8 @@ timedelta <- cbind((forbcom[forbcom$Year != 2011,]), timedeltacalc)
 timedelta <- filter(timedelta, deltasumcover > -80)
 
 
-### ------------------------ data for Siri --------------------------###
-#### -------------------------- not run --------------------------- ####
+### ------------------- data for Siri ----------------------###
+#### --------------------- not run ----------------------- ####
 #my.GR.data.FERT <- tbl(con, "subTurfCommunity") %>% 
 #  collect() %>% 
 #  left_join(tbl(con, "taxon"), copy = TRUE) %>%

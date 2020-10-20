@@ -13,10 +13,11 @@ library(ape)
 # Variable weighting can be accomplished by transforming scaled values so that more important values have wider ranges
 # and therefore account for more of the distance matrix
 
+#multiplier adjusts branch lengths so that negative rates don't appear when log transforming
 
 ##########
 
-scale_branches_multidimensional<-function(tree,traits,rate=F){
+scale_branches_multidimensional<-function(tree,traits,rate=F,log_tf=F, branch_length_multiplier = NULL){
   
   
   #First, remove species from trait data that aren't in the phylogeny:
@@ -37,14 +38,25 @@ scale_branches_multidimensional<-function(tree,traits,rate=F){
         
         bl<-dist(rbind(value_1,value_2))[1]
         
-        if(rate){
+        if(rate & !log_tf){
         bl<- (bl/tree$edge.length[i])
-          
         }
+        
+        
+        if(rate & log_tf & is.null(multiplier)){
+          bl <- log10(bl/(tree$edge.length[i]))
+        }
+        
+        if(rate & log_tf & !is.null(multiplier)){
+          bl <- log10(bl*multiplier/(tree$edge.length[i]))
+        }
+        
         
         output_branches[i]<-bl
         
       }#i loop
+      
+
       
       tree_x$edge.length<-output_branches
       
