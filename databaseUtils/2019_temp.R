@@ -229,6 +229,16 @@ data2019 <- data2019 %>%
   select(-comment_1, -X259) %>% 
    #enter missing years
    mutate(year = if_else(is.na(year), "2019", year))
+ 
+ # mix measurer/measure mess
+data2019 <- data2019 %>% 
+   mutate(
+     recorder = coalesce(Measurer, recorder), #populate recorder field
+     Measure = case_when(
+       subPlot == "%" ~ "Cover", 
+       str_detect(subPlot, "^\\d{1,2}$") ~ "Presence"
+     )) %>% 
+   select(-Measurer) 
 
 #### save data for ingestion ####
 data2019 %>% 
