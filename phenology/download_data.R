@@ -2,7 +2,13 @@
 #### DOWNLOAD DATA FROM OSF ####
 ##################################
 
-get_file(node = "f3knq",
-         file = "transplant.sqlite",
-         path = "community/data/",
-         remote_path = "Community")
+get_file(node = "npfa9",
+         file = "phenology_2014.zip",
+         path = "phenology/data",
+         remote_path = "Phenology_data")
+
+
+get_file(node = "npfa9",
+         file = "phenology_2015.zip",
+         path = "phenology/data",
+         remote_path = "Phenology_data")
