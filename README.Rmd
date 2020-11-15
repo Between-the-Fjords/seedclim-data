@@ -1,0 +1,74 @@
+---
+output: github_document
+fig_caption: yes
+---
+
+<style>
+p.caption {
+  font-size: 0.8em;
+}
+</style>
+
+````{r InitialSettings, out.width='100%', include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+library("tidyverse")
+library("lubridate")
+library("readxl")
+library("tibble")
+library("dataDownloader")
+library("vegan")
+library("patchwork")
+
+
+theme_set(theme_bw(base_size = 12))
+
+source("data_dic.R")
+
+```
+
+This is the GitHub repository for the SeedClim project.
+Data paper: Vandvik et al....
+
+## PROJECT AND SITE INFORMATION
+This project reports on...
+
+
+
+## DATASETS, CODE AND ANALYSES
+The raw and cleaned datasets are stored on OSF...
+
+The data was processed and analysed using R. All code is stored on github:...
+
+### Download data
+To download the data, the following function can be used: ...
+
+
+### Data sets
+Describe relationships of the data sets...
+
+```{r data-relationship, echo=FALSE, out.width='60%', fig.cap= "Relationship of all data sets."}
+knitr::include_graphics("ChinaDatabase.png")
+```
+
+### SITES
+
+```{r site-dic, echo=FALSE}
+knitr::kable(site_dic)
+```
+
+### BLOCK
+
+```{r block-dic, echo=FALSE}
+knitr::kable(block_dic)
+```
+
+### PLOT
+
+```{r plot-dic, echo=FALSE}
+knitr::kable(plot_dic)
+```
