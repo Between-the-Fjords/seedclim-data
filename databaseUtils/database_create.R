@@ -29,7 +29,7 @@ con <- dbConnect(SQLite(), dbname = "database/seedclim.sqlite")
 
 ##set up structure ####
 
-setup <- readChar("databaseUtils/seedclimstructure.txt", nchar = 100000)
+setup <- readChar("databaseUtils/setup-data/seedclimstructure.txt", nchar = 100000)
 sapply(paste("CREATE", strsplit(setup, "CREATE")[[1]][-(1:2)]),
        dbExecute, conn = con)
 
@@ -44,10 +44,10 @@ if (extract_from_mysql) {
 ### load taxa ####
 if (extract_from_mysql) {
   oldDB_taxon <- dbGetQuery(old_DB, "select * from taxon")
-  write_csv(oldDB_taxon, path = "databaseUtils/taxon_table.csv")
+  write_csv(oldDB_taxon, path = "databaseUtils/setup-data/taxon_table.csv")
 }
 
-taxa <- read_csv("databaseUtils/taxon_table.csv", quote = "'") %>%
+taxa <- read_csv("databaseUtils/setup-data/taxon_table.csv", quote = "'") %>%
   mutate(species = recode(
     species,
   #old code = new code
@@ -91,11 +91,11 @@ db_pad_write_table(conn = con, table = "taxon",
 ## load traits
 if (extract_from_mysql) {
   oldDB_traits <- dbGetQuery(old_DB, "select * from moreTraits")
-  write_delim(oldDB_traits, path = "databaseUtils/moreTraits_table.tab",
+  write_delim(oldDB_traits, path = "databaseUtils/setup-data/moreTraits_table.tab",
               delim = "\t")
 }
 
-traits <- read_delim("databaseUtils/moreTraits_table.tab", quote = "'",
+traits <- read_delim("databaseUtils/setup-data/moreTraits_table.tab", quote = "'",
                      delim = "\t")
 
 all_traits <- traits %>%
@@ -120,10 +120,10 @@ all_traits %>%
 cat("sites upload")
 if (extract_from_mysql) {
   oldDB_sites <- dbGetQuery(old_DB, "select * from sites")
-  write_csv(oldDB_sites, path = "databaseUtils/site_table.csv")
+  write_csv(oldDB_sites, path = "databaseUtils/setup-data/site_table.csv")
 }
 
-sites <- read_csv("databaseUtils/site_table.csv")
+sites <- read_csv("databaseUtils/setup-data/site_table.csv")
 
 site_fields <- dbListFields(conn = con, "sites")
 
@@ -169,30 +169,30 @@ bind_rows(
 ## load blocks ####
 if (extract_from_mysql) {
   oldDB_blocks <- dbGetQuery(old_DB, "select * from blocks")
-  write_csv(oldDB_blocks, path = "databaseUtils/blocks_table.csv")
+  write_csv(oldDB_blocks, path = "databaseUtils/setup-data/blocks_table.csv")
 }
 
-blocks <- read_csv("databaseUtils/blocks_table.csv")
+blocks <- read_csv("databaseUtils/setup-data/blocks_table.csv")
 db_pad_write_table(conn = con, table = "blocks", value = blocks)
 
 
 ## load plots ####
 if (extract_from_mysql) {
   oldDB_plots <- dbGetQuery(old_DB, "select * from plots")
-  write_csv(oldDB_plots, path = "databaseUtils/plots_table.csv")
+  write_csv(oldDB_plots, path = "databaseUtils/setup-data/plots_table.csv")
 }
 
-plots <- read_csv("databaseUtils/plots_table.csv")
+plots <- read_csv("databaseUtils/setup-data/plots_table.csv")
 
 db_pad_write_table(conn = con, table = "plots", value = plots)
 
 ## load turfs ####
 if (extract_from_mysql) {
   oldDB_turfs <- dbGetQuery(old_DB, "select * from turfs")
-  write_csv(oldDB_turfs, path = "databaseUtils/turfs_table.csv")
+  write_csv(oldDB_turfs, path = "databaseUtils/setup-data/turfs_table.csv")
 }
 
-turfs <- read_csv("databaseUtils/turfs_table.csv")
+turfs <- read_csv("databaseUtils/setup-data/turfs_table.csv")
 
 db_pad_write_table(conn = con, table = "turfs", value = turfs)
 
@@ -201,11 +201,11 @@ db_pad_write_table(conn = con, table = "turfs", value = turfs)
 ## load mergeDictionary ####
 if (extract_from_mysql) {
   oldDB_mergedictionary <- dbGetQuery(old_DB, "select * from mergedictionary")
-  write_csv(oldDB_mergedictionary, path = "databaseUtils/mergedictionary.csv")
+  write_csv(oldDB_mergedictionary, path = "databaseUtils/setup-data/mergedictionary.csv")
   dbDisconnect(old_DB)
 }
 
-merge_dictionary <- read_csv("databaseUtils/mergedictionary.csv") %>%
+merge_dictionary <- read_csv("databaseUtils/setup-data/mergedictionary.csv") %>%
   mutate(newID = recode(newID, "Vis alp" = "Vis.alp")) %>%
   bind_rows(
     read_csv(comment = "#",
@@ -233,7 +233,7 @@ Gal.sp,Gal.uli
 
 
 ## load main data ####
-source("inst/uploadDataSource/importcommunityNY_test_16.des.2013.r")
+source("databaseUtils/R/importcommunity.r")
 
 ## get list of data files
 datafiles <- dir(path = "rawdata/", pattern = "csv$",
@@ -251,7 +251,7 @@ meta_cols <- c("DestinationSite", "DestinationBlock", "originPlotID", "TTtreat",
            "comment",  "X",  "X.1", "X.2", "missing")
 
 ## process 2019 data
-source("databaseUtils/2019_temp.R")
+source("databaseUtils/R/2019_temp.R")
 
 
 datafiles %>% #grep("2017", ., value = TRUE) %>%
@@ -272,4 +272,4 @@ datafiles %>% #grep("2017", ., value = TRUE) %>%
 
 ## do corrections
 
-source("databaseUtils/speciesCorrections.R")
+source("databaseUtils/R/speciesCorrections.R")

@@ -180,7 +180,7 @@ data2019 <- data2019_1 %>%
 
 
 #load turfs
-turfs <- read_csv("databaseUtils/turfs_table.csv") 
+turfs <- read_csv("databaseUtils/setup-data/turfs_table.csv") 
 
 #check for uncorrected turfID
 ID2 <- data2019 %>% 

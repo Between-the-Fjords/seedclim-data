@@ -1,6 +1,6 @@
 # making corrections
 # load file
-corrections <- read_csv("databaseUtils/speciesCorrections.csv", 
+corrections <- read_csv("databaseUtils/setup-data/speciesCorrections.csv", 
                         comment = "#")
 
 corrections <- corrections %>% 
