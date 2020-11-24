@@ -172,7 +172,12 @@ if (extract_from_mysql) {
   write_csv(oldDB_blocks, path = "databaseUtils/setup-data/blocks_table.csv")
 }
 
-blocks <- read_csv("databaseUtils/setup-data/blocks_table.csv")
+blocks <- read_csv("databaseUtils/setup-data/blocks_table.csv") %>% 
+  mutate(siteID = recode(siteID,  
+                         "Ovstedal" = "Ovstedalen" , 
+                         "Skjellingahaugen" = "Skjelingahaugen", 
+                         "Ulvhaugen" = "Ulvehaugen"))
+
 db_pad_write_table(conn = con, table = "blocks", value = blocks)
 
 
