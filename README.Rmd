@@ -72,3 +72,9 @@ knitr::kable(block_dic)
 ```{r plot-dic, echo=FALSE}
 knitr::kable(plot_dic)
 ```
+
+### TURF
+
+```{r turf-dic, echo=FALSE}
+knitr::kable(turf_dic)
+```

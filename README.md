@@ -76,3 +76,14 @@ Relationship of all data sets.
 | blockID       | categorical   | Alr1 - Vik5              | defined      | Alr1, Vik5                           |
 | aspect        | numeric       | 0 - 0                    | measured     | degree                               |
 | slope         | numeric       | 0 - 0                    | measured     | degree                               |
+
+### TURF
+
+| Variable name     | Variable type | Variable range or levels | How measured | Units/formats/treatment level coding |
+| :---------------- | :------------ | :----------------------- | :----------- | :----------------------------------- |
+| turfID            | categorical   | 1 TT2 28 - Vik5RTG       | defined      | 1 TT2 28 - Vik5RTG                   |
+| TTtreat           | categorical   | TT1 - TTC                | defined      | TT1 - TTC                            |
+| RTtreat           | categorical   | \- RTS                   | defined      | RTS                                  |
+| GRtreat           | categorical   | \- TTC                   | defined      | TTC                                  |
+| originPlotID      | numeric       | \-145 - 30610            | defined      | 1, 2, 3                              |
+| destinationPlotID | numeric       | \-168 - 30610            | defined      | 1, 2, 3                              |
