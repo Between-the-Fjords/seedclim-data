@@ -117,28 +117,50 @@ all_traits %>%
 
 
 ## load sites ####
+cat("sites upload")
 if (extract_from_mysql) {
   oldDB_sites <- dbGetQuery(old_DB, "select * from sites")
   write_csv(oldDB_sites, path = "databaseUtils/site_table.csv")
 }
 
-sites <- read_csv("databaseUtils/site_table.csv") %>%
-  rename(annualPrecipitation_gridded = Annualprecipitation_gridded,
-         temperature_level = Temperature_level,
-         summerTemperature_gridded =  SummerTemperature_gridded,
-         precipitation_level = Precipitation_level)
+sites <- read_csv("databaseUtils/site_table.csv")
 
 site_fields <- dbListFields(conn = con, "sites")
+
+sites <- sites %>% 
+  mutate(
+    site_code = str_replace(site_code, "low", "bor"), 
+    site_code = str_replace(site_code, "int", "sub"), 
+    biogeographic_zone = case_when(
+      str_detect(site_code, "alp") ~ "Low-alpine", 
+      str_detect(site_code, "sub") ~ "Sub-alpine", 
+      str_detect(site_code, "bor") ~ "North-boreal"
+    ),
+    biogeographic_section = case_when(
+      str_detect(site_code, "1") ~ "O2", 
+      str_detect(site_code, "2|3") ~ "O1", 
+      str_detect(site_code, "4") ~ "OC"
+    )
+  )
 
 
 db_pad_write_table(conn = con, table = "sites",
                 value = sites %>% select(one_of(site_fields)))
 
 ## site attributes
-sites %>%
-  group_by(siteID) %>% #will force addition of siteID column
-  select(-one_of(site_fields)) %>%
-  gather(key = variable, value = value, -siteID) %>%
+sites_attributes <- sites %>% 
+  group_by(siteID) %>% 
+  select(-any_of(site_fields)) %>% 
+  select(where(~!all(is.na(.))))
+
+bind_rows(
+  character_attributes = sites_attributes %>% 
+    select(!where(is.numeric)) %>% 
+    pivot_longer(-siteID, names_to = "attribute", values_to = "value_character"), 
+  numeric_attributes = sites_attributes %>%
+    select(!where(is.character)) %>% 
+    pivot_longer(-siteID, names_to = "attribute", values_to = "value_numeric")
+) %>% 
   db_pad_write_table(conn = con, table = "site_attributes", value = .)
 
   

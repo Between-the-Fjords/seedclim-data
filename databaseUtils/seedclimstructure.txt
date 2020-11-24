@@ -18,28 +18,27 @@
 CREATE TABLE `sites`
  (
 	`siteID`			varchar (40), 
-	`norwegianName`			varchar (40), 
-	`siteCode`			varchar (12), 
+	`norwegian_name`		varchar (40), 
+	`site_code`			varchar (12), 
 	`latitude`			float, 
 	`longitude`			float, 
-	`x_UTM33_North`			float, 
-	`y_UTM33_north`			int, 
-	`altitude(DEM)`			int, 
-	`annualPrecipitation_gridded`			float, 
+	`elevation_m`			int, 
+ 	`biogeographic_zone`		varchar (20),
+	`biogeographic_section`		varchar (2),
+	`annual_precipitation_gridded_mm`	float, 
 	`temperature_level`			int, 
-	`summerTemperature_gridded`			float, 
-	`precipitation_level`			int, 
-	`geology`			varchar (100), 
-	`landUse`			varchar (100),
+	`summer_temperature_gridded_C`		float, 
+	`precipitation_level`			int,
 	 PRIMARY KEY (siteID)
 );
 
 CREATE TABLE `site_attributes`
  (
 	`siteID`			varchar (40), 
-	`variable`			varchar (40), 
-	`value`			        float, 
-	 PRIMARY KEY (siteID, variable),
+	`attribute`			varchar (40), 
+	`value_numeric`			        float,
+	`value_character`		varchar (100),
+	 PRIMARY KEY (siteID, attribute),
          FOREIGN KEY (siteID) REFERENCES sites(siteID)
 );
 
@@ -49,7 +48,7 @@ CREATE TABLE `blocks`
  (
 	`blockID`			varchar (20), 
 	`siteID`			varchar (40), 
-	`slope`			float, 
+	`slope`				float, 
 	`aspect`			float, 
 	`comment`			text (255),
 	 PRIMARY KEY (blockID),
