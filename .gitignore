@@ -37,9 +37,7 @@ vignettes/*.pdf
 *.csv
 *.txt
 *.sqlite
-!seedclimstructure.txt
-!speciesCorrections.csv
-!site_table.csv
+!/databaseUtils/setup-data/*
 
 #tmpfiles
 *~

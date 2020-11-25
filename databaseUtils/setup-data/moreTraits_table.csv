@@ -1,0 +1,197 @@
+species,Norwegian name,Polyploid (2n),Flowering start,F-V<e5>r,F-Fso,F-Mso,F-Sso,F-H<f8>,Flowering finish,Min height,Max height,Lower,Nem,BNem,SBor,MBor,Nbor,LAlp,MAlp,HAlp,Upper,Habitat,grassland,forest,rocky,wetland,Soil type,Common-rear,Lids page,Mossberg page,comment
+Ach.mil,Ryllik,3,MSo,NA,NA,1,1,1,H<f8>st,10,60,Nem,1,1,1,1,1,1,0.5,NA,LAlp (MAlp),Grassland,1,NA,NA,NA,not base-rich,Common,777,NA,NA
+Aco.sep,Tyrihjelm,1,FSo,NA,1,1,NA,NA,MSo,100,200,BNem,NA,1,1,1,1,1,0.5,NA,LAlp (MAlp),Forest,NA,1,NA,NA,base-rich,Common,287,NA,New name?
+Agr.cap,Engkvein,3,MSo,NA,NA,1,1,NA,SSo,20,80,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,not base-rich,Common,1047,NA,NA
+Agr.mer,Fjellkvein,1,MSo,NA,NA,1,1,NA,SSo,10,30,MBor,NA,NA,NA,1,1,0.5,0.5,NA,NBor (MAlp),Grassland/Rocky ground,1,NA,1,NA,not base-rich,Common,1048,NA,NA
+Aju.pyr,Jonsokkoll,1,V<e5>r,1,1,NA,NA,NA,FSo,5,25,Nem,1,1,1,1,0.5,0.5,NA,NA,MBor (NBor-LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,658,NA,NA
+Alc.alp,Fjellmarik<e5>pe,NA,MSo,NA,NA,1,1,NA,SSo,5,20,(Nem-SBor) MBor,0.5,0.5,0.5,1,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,451,NA,Kromosom nr not known.
+Alc.sp,Marik<e5>pe art,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,448,NA,NA
+Ane.nem,Hvitveis,3,V<e5>r,1,NA,NA,NA,NA,V<e5>r,10,30,Nem,1,1,1,1,NA,NA,NA,NA,MBor,Forest,NA,1,NA,NA,not base-rich,Common,289,NA,NA
+Ant.alp,Fjellkattefot,3,FSo,NA,1,1,1,NA,SSo,5,20,NBor,NA,NA,NA,NA,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,764,NA,"Female plant common, male plant scattered."
+Ant.dio,Kattefot,1,FSo,NA,1,1,NA,NA,MSo,5,25,Nem,1,1,1,1,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,764,NA,NA
+Ant.odo,Gulaks,1,V<e5>r,1,1,NA,NA,NA,FSo,10,50,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,1040,NA,NA
+Arc.alp,Rypeb<e6>r,1,V<e5>r,1,NA,NA,NA,NA,V<e5>r,3,5,(Nem-MBor) NBor,0.5,0.5,0.5,0.5,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,indifferent,Common,603,NA,Sirkumpolar.
+Ast.alp,Setermjelt,1,FSo,NA,1,1,NA,NA,MSo,8,20,(SBor-MBor) NBor,NA,NA,0.5,0.5,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,501,NA,NA
+Ave.fle,Smyle,2,MSo,NA,NA,1,1,NA,SSo,20,70,Nem,1,1,1,1,1,1,1,0.5,MAlp (HAlp),Grassland,1,NA,NA,NA,not base-rich,Common,1059,NA,Spredd sirkumpolar og bipolar.
+Ave.pra,Enghavre,2,FSo,NA,1,1,NA,NA,MSo,30,60,(Nem) BNem,0.5,1,1,0.5,0.5,NA,NA,NA,SBor (MBor-NBor),Grassland,1,NA,NA,NA,base-rich,Common,1062,NA,NA
+Ave.pub,Dunhavre,2,FSo,NA,1,1,NA,NA,MSo,50,120,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,base-rich,Common,1062,NA,NA
+Bart.alp,Svarttopp,3,FSo,NA,1,1,NA,NA,MSo,10,30,MBor,NA,NA,NA,1,1,1,1,0.5,MAlp (HAlp),Rocky ground,NA,NA,1,NA,base-rich,Common,717,NA,"Amfi-atlantisk, arktisk."
+Bet.nan,Dvergbj<f8>rk,1,V<e5>r,1,1,NA,NA,NA,FSo,10,100,(BNem) SBor,NA,NA,NA,NA,NA,1,0.5,NA,LAlp (MAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,184,NA,Sirkumpolar. To underarter i Norge.
+Bet.pub,Bj<f8>rk,1,V<e5>r,1,1,NA,NA,NA,FSo,300,1500,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Forest,NA,1,NA,NA,not base-rich,Common,184,NA,NA
+Bis.viv,Harerug,3,FSo,NA,1,1,NA,NA,MSo,5,30,(Nem) BNem,0.5,1,1,1,1,1,1,1,HAlp,Grassland,1,NA,NA,NA,base-rich,Common,209,NA,NA
+Bot.lun,Marin<f8>kkel,1,FSo,NA,1,1,NA,NA,MSo,3,15,Nem,1,1,1,1,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,base-rich,Scattered,115,NA,Sirkumboreal/polar og bipolar.
+Cal.vul,R<f8>sslyng,1,MSo,NA,NA,1,1,NA,SSo,10,50,Nem,1,1,1,1,1,1,NA,NA,LAlp,Grassland,1,NA,NA,NA,not base-rich,Common,605,NA,NA
+Cam.rot,Bl<e5>klokke,3,FSo,NA,1,1,1,NA,SSo,10,50,Nem,1,1,1,1,1,1,1,0.5,MAlp (HAlp),Grassland,1,NA,NA,NA,not base-rich,Common,739,NA,"Sirkumboreal og-polar i flere raser/arter, trolig tre i Norge."
+Cap.bur,Gjetertaske,2,V<e5>r,1,1,1,1,1,H<f8>st,5,40,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,359,NA,NA
+Car.atr,Svartstarr,3,FSo,NA,1,1,NA,NA,MSo,20,60,(MBor) NBor,NA,NA,NA,0.5,1,1,1,0.5,MAlp (HAlp),Forest,NA,1,NA,NA,base-rich,Common,995,NA,"Sirkumpolar i flere raser, v<e5>r (ssp atarta) er amfi-atlantisk, arktisk."
+Car.big,Stivstarr,2,FSo,NA,1,1,NA,NA,MSo,10,40,(MBor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,983,NA,ssp rigida. Amfi-atlantisk.
+Car.cap,H<e5>rstarr,2,FSo,NA,1,1,NA,NA,MSo,5,25,(BNem) SBor,NA,0.5,1,1,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,1015,NA,"Sirkumboreal og-polar i flere raser/arter, to i Norge."
+Car.dio,S<e6>rbustarr,3,V<e5>r,1,1,1,NA,NA,MSo,10,30,Nem,1,1,1,1,1,1,NA,NA,LAlp,Wetland,NA,NA,NA,1,base-rich,Common,967,NA,NA
+Car.ech,Stjernesratt,2,FSo,NA,1,1,NA,NA,MSo,10,30,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Wetland,NA,NA,NA,1,not base-rich,Common,977,NA,"Amfi-atlantisk, bipolar"
+Car.fla,Gulstarr,2,FSo,NA,1,1,NA,NA,MSo,10,50,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Wetland,NA,NA,NA,1,base-rich,Common,1005,NA,"Amfi-atlantisk, boreal"
+Car.lep,Harestarr,3,FSo,NA,1,1,NA,NA,MSo,10,50,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,979,NA,NA
+Car.nig,Sl<e5>ttestarr,3,V<e5>r,1,NA,1,NA,NA,MSo,10,50,Nem,1,1,1,1,1,1,NA,NA,LAlp,Wetland,NA,NA,NA,1,not base-rich,Common,985,NA,"ssp nigra. Amfi-atlantisk, boreal."
+Car.nor,Fjellstarr,2,FSo,NA,1,1,NA,NA,MSo,10,40,(MBor) NBor,NA,NA,NA,0.5,1,1,NA,NA,LAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,993,NA,"Amfi-atlantisk, arktisk"
+Car.pal,Bleikstarr,2,FSo,NA,1,1,NA,NA,MSo,20,60,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,not base-rich,Common,1009,NA,NA
+Car.pan,Kornstarr,1,FSo,NA,1,1,NA,NA,MSo,20,50,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,1011,NA,NA
+Car.pil,Br<e5>testarr,1,FSo,NA,1,1,NA,NA,MSo,10,40,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,1001,NA,NA
+Car.pul,Loppestarr,2,V<e5>r,1,1,NA,NA,NA,FSo,10,20,Nem,1,1,1,1,NA,NA,NA,NA,MBor,Wetland,NA,NA,NA,1,base-rich,Common,965,NA,NA
+Car.rup,Bergstarr,2,V<e5>r,1,1,1,NA,NA,MSo,5,20,(BNem-MBor) NBor,NA,0.5,0.5,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,967,NA,Sirkumpolar.
+Car.sax,Blankstarr,1,MSo,NA,NA,1,1,NA,SSo,10,40,(MBor) NBor,NA,NA,NA,0.5,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,1020,NA,"Sirkumpolar i flere raser, to underarter i Norge."
+Car.ser,Beitestarr,2,FSo,NA,1,1,NA,NA,MSo,10,25,Nem,1,1,1,1,NA,NA,NA,NA,MBor,Grassland,1,NA,NA,NA,base-rich,Common,1005,NA,Synonym:  Carex viridula viridula
+Car.sp,Starr sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,960,NA,NA
+Car.vag,Slirestarr,1,V<e5>r,1,1,NA,NA,NA,FSo,20,50,BNem,NA,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,1011,NA,NA
+Caru.car,Karve,2,FSo,NA,1,1,NA,NA,MSo,15,50,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,582,NA,NA
+Cer.alp,Fjellarve,1,FSo,NA,1,1,NA,NA,MSo,5,20,MBor (NBor),NA,NA,NA,1,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,260,NA,NA
+Cer.cer,Brearve,3,MSo,NA,NA,1,1,NA,SSo,3,10,(MBor) NBor,NA,NA,NA,0.5,1,1,1,0.5,MAlp (HAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,259,NA,"Amfi-atlantisk, arktisk"
+Cer.fon,Skogarve,3,FSo,NA,1,1,NA,NA,MSo,10,40,MBor,NA,NA,NA,1,1,1,NA,NA,LAlp,Forest,NA,1,NA,NA,base-rich,Common,261,NA,"Amfi-atlantisk i flere raser, to (eller flere i Norge)"
+Cir.pal,Myrtistel,1,MSo,NA,NA,1,1,1,H<f8>st,50,200,Nem,1,1,1,1,1,NA,NA,NA,NBor,Forest,NA,1,NA,NA,not base-rich,Common,803,NA,NA
+Coe.vir,Gr<f8>nnkurle,2,FSo,NA,1,1,1,NA,SSo,5,30,BNem,NA,1,1,1,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,base-rich,Common,914,NA,Sirkumboreal og-polar i minst to raser.
+Com.ten,Sm<e5>s<f8>te,1,MSo,NA,NA,1,1,NA,SSo,3,10,NBor,NA,NA,NA,NA,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,base-rich,Common,619,NA,Spredd sirkumpolar
+Dac.glo,Hundegras,1,FSo,NA,1,1,NA,NA,MSo,40,120,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,1067,838,NA
+Dan.dec,Knegras,1,FSo,NA,1,1,1,NA,SSo,10,40,Nem,1,1,1,0.5,0.5,NA,NA,NA, SBor (MBor-NBor),Grassland,1,NA,NA,NA,indifferent,Common,1035,NA,NA
+Des.alp,Fjellbunke,3,MSo,NA,NA,1,1,NA,SSo,15,50,(MBor-NBor) LAlp,NA,NA,NA,0.5,0.5,1,1,1,HAlp,Rocky ground/Wetland,NA,NA,1,1,base-rich,Common,1057,862,"Amfi-atlantisk, arktisk"
+Des.ces,S<f8>lvbunke,3,FSo,NA,1,1,1,NA,SSo,40,100,Nem,1,1,1,1,1,1,NA,NA,LAlp,Grassland,1,NA,NA,NA,not base-rich,Common,1057,NA,NA
+Dia.del,Engnellik,1,FSo,NA,1,1,1,NA,SSo,10,25,Nem,1,1,1,0.5,0.5,NA,NA,NA,SBor (MBor-NBor),Grassland,1,NA,NA,NA,base-rich,Common,273,NA,NA
+Dro.rot,Rundsoldogg,2,FSo,NA,1,1,NA,NA,MSo,5,15,Nem,1,1,1,1,1,NA,NA,NA,NBor,Wetland,NA,NA,NA,1,not base-rich,Common,377,NA,Sirkumboreal.
+Dry.oct,Reinrose,1,FSo,NA,1,1,1,NA,SSo,3,10,(BNem-SBor) MBor,NA,0.5,0.5,1,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,412,NA,NA
+Dry.sp,Stortelg sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,130,NA,NA
+Emp.nig,Krekling,1,V<e5>r,1,1,NA,NA,NA,FSo,5,30,Nem,1,1,1,1,NA,NA,NA,NA,MBor,Forest,NA,1,NA,NA,not base-rich,Common,609,459,NA
+Epi.ana,Dvergmj<f8>lke,1,MSo,NA,NA,1,1,NA,SSo,3,15,(MBor) NBor,NA,NA,NA,0.5,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,not base-rich,Common,563,NA,Spredd sirkumpolar
+Epi.sp,Mj<f8>lke sp.,1,MSo,NA,NA,1,1,NA,SSo,3,15,(MBor) NBor,NA,NA,NA,0.5,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,not base-rich,Common,563,NA,Epilobium anagallidifolium data.
+Eri.uni,Sn<f8>bakkestjerne,1,MSo,NA,NA,1,1,NA,SSo,5,15,LAlp,NA,NA,NA,NA,NA,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,758,NA,NA
+Eup.sp,<d8>yentr<f8>st sp.,1,MSo,NA,NA,1,1,NA,SSo,5,25,Nem,1,1,1,0.5,0.5,NA,NA,NA,SBor (MBor-NBor),Grassland,1,NA,NA,NA,not base-rich,Common,707,NA,Euphrasia stricta data.
+Fes.ovi,Sauesvingel,1,FSo,NA,1,1,NA,NA,MSo,15,40,Nem,1,1,1,1,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,1093,NA,NA
+Fes.rub,R<f8>dsvingel,1,FSo,NA,1,1,1,NA,SSo,20,70,Nem,1,1,1,1,1,1,0.5,0.5,LAlp (MAlp-HAlp),Grassland,1,NA,NA,NA,not base-rich,Common,1092,NA,NA
+Fes.viv,Geitsvingel,3,MSo,NA,NA,1,1,NA,SSo,10,30,(Nem-BNem) SBor,0.5,0.5,1,1,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,1093,NA,NA
+Fil.ulm,Mj<f8>durt,3,FSo,NA,1,1,1,NA,SSo,50,150,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,409,NA,NA
+Gal.bor,Hvitmaure,1,MSo,NA,NA,1,1,1,H<f8>st,15,40,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,625,NA,NA
+Gal.sax,Kystmaure,2,FSo,NA,1,1,1,NA,SSo,5,20,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,628,NA,NA
+Gal.sp,Maure sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,624,NA,NA
+Gal.uli,Sumpmaure,3,FSo,NA,1,1,1,NA,SSo,5,40,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,base-rich,Common,625,NA,NA
+Gal.ver,Gulmaure,3,FSo,NA,1,1,1,1,H<f8>st,20,60,Nem,1,1,1,0.5,0.5,NA,NA,NA,SBor (MBor-NBor),Rocky ground,NA,NA,1,NA,base-rich,Common,627,NA,NA
+Gen.ama,Bitters<f8>te,1,MSo,NA,NA,1,1,NA,SSo,5,25,BNem,NA,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,base-rich,Scattered,620,NA,"Sirkumpolar i flere raser,v<e5>re eurasiatiske."
+Gen.cam,Bakkes<f8>te,1,MSo,NA,NA,1,1,1,H<f8>st,5,30,Nem,1,1,1,1,1,1,NA,NA,LAlp,Grassland,1,NA,NA,NA,not base-rich,Scattered,620,NA,NA
+Gen.niv,Sn<f8>s<f8>te,1,MSo,NA,NA,1,1,NA,SSo,3,20,(MBor) NBor,NA,NA,NA,0.5,1,1,1,0.5,MAlp (HAlp),Grassland,1,NA,NA,NA,base-rich,Common,617,NA,"Amfi-atlantisk, arktisk"
+Gen.pur,S<f8>terot,1,SSo,NA,NA,NA,1,NA,SSo,20,80,NBor,NA,NA,NA,NA,1,1,NA,NA,LAlp,Grassland,1,NA,NA,NA,not base-rich,Common,617,NA,NA
+Ger.syl,Skogstorkenebb,1,FSo,NA,1,1,NA,NA,MSo,20,80,Nem,1,1,1,1,1,1,0.5,NA,LAlp (MAlp),Forest,NA,1,NA,NA,not base-rich,Common,517,NA,NA
+Geu.riv,Enghumleblom,1,V<e5>r,1,1,1,NA,NA,MSo,20,40,Nem,1,1,1,1,1,1,NA,NA,LAlp,Forest,NA,1,NA,NA,not base-rich,Common,409,NA,"Amfi-atlantisk, boreal."
+Geu.urb,Kratthumleblom,1,FSo,NA,1,1,NA,NA,MSo,30,70,Nem,1,1,1,0.5,0.5,NA,NA,NA,SBor (MBor-NBor),Forest,NA,1,NA,NA,base-rich,Common,411,NA,NA
+Gym.dry,Fugletelg,1,MSo,NA,NA,1,1,NA,SSo,10,30,Nem,1,1,1,1,1,1,0.5,NA,LAlp (MAlp),Forest,NA,1,NA,NA,not base-rich,Common,129,NA,Sirkumboreal
+Hie.alp,Fjellsveve,NA,MSo,NA,NA,1,1,NA,SSo,5,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,Rocky ground,NA,NA,1,NA,not base-rich,Common,857,NA,NA
+Hie.pil,H<e5>rsveve,3,FSo,NA,1,1,NA,NA,MSo,5,30,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,837,NA,NA
+Hie.sp,Sveve sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,833,NA,NA
+Hie.umb,Skjermsveve,2,MSo,NA,NA,1,1,NA,SSo,5,80,Nem,1,1,1,0.5,NA,NA,NA,NA,SBor (MBor),Rocky ground,NA,NA,1,NA,not base-rich,Common,851,NA,NA
+Hie.vul,Beitesveve,NA,FSo,NA,1,1,NA,NA,MSo,20,80,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,Grassland,1,NA,NA,NA,not base-rich,Common,858,NA,NA
+Hup.sel,Lusegras,1,MSo,NA,NA,1,1,NA,SSo,10,25,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Forest,NA,1,NA,NA,not base-rich,Common,105,NA,"Brett amfi-atlantisk, boreal"
+Hyp.mac,Firkantperikum,1,MSo,NA,NA,1,1,NA,SSo,20,100,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,544,NA,NA
+Hypo.mac,Flekkgris<f8>re,2,FSo,NA,1,1,NA,NA,MSo,20,60,Nem,1,1,1,1,0.5,0.5,NA,NA,MBor (NBor-LAlp),Grassland,1,NA,NA,NA,base-rich,Common,813,NA,NA
+Hypo.rad,Kystgris<f8>re,1,MSo,NA,NA,1,1,NA,SSo,20,40,Nem,1,1,0.5,NA,NA,NA,NA,NA,BNem (SBor),Grassland,1,NA,NA,NA,not base-rich,Common,813,NA,NA
+Jun.alp,Skogsiv,1,FSo,NA,1,1,NA,NA,MSo,20,40,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,933,NA,Sirkumboreal.
+Jun.arc,Finnmarksiv,2,FSo,NA,1,1,NA,NA,MSo,10,40,NBor,NA,NA,NA,NA,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,base-rich,Scattered,927,NA,NA
+Jun.com,Einer,1,V<e5>r,1,NA,NA,NA,NA,V<e5>r,50,1500,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,not base-rich,Common,147,67,Sirkumboreal/polar.
+Jun.tri,Rabbesiv,1,FSo,NA,1,1,NA,NA,MSo,5,25,(MBor) NBor,NA,NA,NA,0.5,1,1,1,0.5,MAlp (HAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,927,NA,"Amfi-atlantisk, arktisk"
+Kna.arv,R<f8>dknapp,2,MSo,NA,NA,1,1,NA,SSo,30,80,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,735,NA,NA
+Kob.sim,Myrtust,1,FSo,NA,1,1,NA,NA,MSo,50,30,NBor,NA,NA,NA,NA,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,base-rich,Scattered,960,NA,NA
+Leo.aut,F<f8>lblom,1,MSo,NA,NA,1,1,1,H<f8>st,5,40,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,814,NA,NA
+Leu.vul,Prestekrage,3,FSo,NA,1,1,1,NA,SSo,20,70,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,783,NA,NA
+Loi.pro,Greplyng,1,V<e5>r,1,1,NA,NA,NA,FSo,2,10,NBor,NA,NA,NA,NA,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,indifferent,Common,602,NA,Synonym:  Kalmia procumbens
+Lot.cor,Tiriltunge,1,FSo,NA,1,1,NA,NA,MSo,10,30,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Rocky ground,NA,NA,1,NA,not base-rich,Common,497,NA,NA
+Luz.mul,Engfrytle,2,FSo,NA,1,1,NA,NA,MSo,10,40,Nem,1,1,1,1,0.5,0.5,NA,NA,MBor (NBor-LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,942,NA,"Amfi-atlantisk, boreal."
+Luz.pil,H<e5>rfrytle,3,V<e5>r,1,NA,NA,NA,NA,V<e5>r,10,25,Nem,1,1,1,1,1,1,NA,NA,LAlp,Forest,NA,1,NA,NA,not base-rich,Common,937,NA,NA
+Luz.sp,Frytle sp.,2,FSo,NA,1,1,NA,NA,MSo,10,40,Nem,1,1,1,1,0.5,0.5,NA,NA,MBor (NBor-LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,942,NA,Luzula multiflora data.
+Luz.spi,Aksfrytle,3,FSo,NA,1,1,NA,NA,MSo,10,25,NBor,NA,NA,NA,NA,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,941,NA,NA
+Mel.pra,Stormarimjelle,1,FSo,NA,1,1,1,NA,SSo,10,40,Nem,1,1,1,1,1,1,NA,NA,LAlp,Forest,NA,1,NA,NA,not base-rich,Common,702,NA,NA
+Mel.sp,Marimjelle sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,702,NA,NA
+Mel.syl,Sm<e5>marimjelle,1,FSo,NA,1,1,1,NA,SSo,10,40,Nem,1,1,1,1,1,1,NA,NA,LAlp,Forest,NA,1,NA,NA,base-rich,Common,703,NA,NA
+Min.bif,Tuearve,1,FSo,NA,1,1,NA,NA,MSo,3,10,NBor,NA,NA,NA,NA,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,indifferent,Common,247,NA,Sirkumpolar.
+Mol.cae,Bl<e5>topp,1,MSo,NA,NA,1,1,NA,SSo,15,90,Nem,1,1,1,1,1,1,NA,NA,LAlp,Wetland,NA,NA,NA,1,indifferent,Common,1035,NA,NA
+Myo.dec,Fjellminneblomst,1,FSo,NA,1,1,1,NA,SSo,20,40,MBor,NA,NA,NA,1,1,1,0.5,NA,LAlp (MAlp),Forest,NA,1,NA,NA,base-rich,Common,649,NA,NA
+Nar.str,Finnskjegg,3,MSo,NA,NA,1,1,NA,SSo,15,30,Nem,1,1,1,1,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,1106,NA,NA
+NID Seedling,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NID.gram,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NID.herb,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NID.rosett,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NID.seedling,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Noc.cae,V<e5>rpengeurt,1,V<e5>r,1,NA,NA,NA,NA,V<e5>r,10,30,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,359,NA,NA
+Oma.nor,Setergr<e5>urt,1,MSo,NA,NA,1,1,NA,SSo,15,30,NBor,NA,NA,NA,NA,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,not base-rich,Common,763,NA,"Amfi-atlantisk, arktisk"
+Oma.sup,Dverggr<e5>urt,1,MSo,NA,NA,1,1,NA,SSo,3,15,NBor,NA,NA,NA,NA,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,763,NA,"Amfi-atlantisk, arktisk"
+Oma.syl,Skoggr<e5>urt,1,MSo,NA,NA,1,1,NA,SSo,15,40,Nem,1,1,1,1,1,NA,NA,NA,NBor,Forest,NA,1,NA,NA,not base-rich,Common,761,NA,"Amfi-atlantisk, boreal."
+Oxa.ace,Gaukesyre,3,V<e5>r,1,1,NA,NA,NA,FSo,5,10,Nem,1,1,1,1,1,1,NA,NA,LAlp,Forest,NA,1,NA,NA,not base-rich,Common,515,NA,NA
+Oxy.dig,Fjellsyre,1,FSo,NA,1,1,NA,NA,MSo,10,30,(Mbor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Wetland,NA,NA,NA,1,not base-rich,Common,205,NA,"Sirkumpolar, alpin."
+Par.pal,J<e5>blom,3,FSo,NA,1,1,NA,NA,MSo,5,25,Nem,1,1,1,1,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,base-rich,Common,385,NA,Sirkumboreal.
+Phl.alp,Fjelltimotei,3,FSo,NA,1,1,1,NA,SSo,10,30,MBor,NA,NA,NA,1,1,1,1,0.5,MAlp (HAlp),Grassland,1,NA,NA,NA,not base-rich,Common,1041,NA,Om lag sirkumpolar og bipolar i flere raser.
+Phl.pra,Timotei,2,FSo,NA,1,1,1,NA,SSo,40,100,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,1041,NA,NA
+Phy.cae,Bl<e5>lyng,1,FSo,NA,1,1,NA,NA,MSo,10,15,(Mbor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Forest,NA,1,NA,NA,indifferent,Common,602,NA,Spredd sirkumpolar.
+Pic.abi,Gran,1,V<e5>r,1,NA,NA,NA,NA,V<e5>r,30,4800,Nem (BNem),1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,indifferent,Common,143,62,NA
+Pim.sax,Gjeldkarve,3,FSo,NA,1,1,1,NA,SSo,20,50,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,base-rich,Common,583,NA,NA
+Pin.vul,Tettegras,1,FSo,NA,1,1,NA,NA,MSo,5,20,Nem,1,1,1,1,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,not base-rich,Common,719,NA,Spredd sirkumboreal.
+Pla.lan,Smalkjempe,2,FSo,NA,1,1,NA,NA,MSo,10,50,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,724,NA,NA
+Pla.maj,Groblad,1,MSo,NA,NA,1,1,1,H<f8>st,5,30,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,724,NA,Sirkumboreal i flere raser.
+Pla.med,Dunkjempe,2,FSo,NA,1,1,NA,NA,MSo,20,50,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,base-rich,Common,724,NA,NA
+Poa.alp,Fjellrapp,3,FSo,NA,1,1,NA,NA,MSo,15,40,(Nem) BNem,0.5,1,1,1,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,1074,NA,Spredd sirkumpolar.
+Poa.ann,Tunrapp,1,V<e5>r,1,NA,NA,NA,NA,V<e5>r,5,25,Nem,1,1,1,1,1,1,0.5,NA,LAlp  (MAlp),Grassland,1,NA,NA,NA,not base-rich,Common,1081,NA,Blomstrer hele <e5>ret n<e5>r det ikke er frost.
+Poa.pra,Engrapp,2,FSo,NA,1,1,1,NA,SSo,10,100,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,1071,NA,NA
+Pot.arg,S<f8>lvmure,3,FSo,NA,1,1,1,1,H<f8>st,15,50,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Rocky ground,NA,NA,1,NA,indifferent,Common,416,NA,NA
+Pot.cra,Flekkmure,3,V<e5>r,1,1,NA,NA,NA,FSo,5,25,BNem,NA,1,1,1,1,1,1,NA,MAlp,Rocky ground,NA,NA,1,NA,base-rich,Scattered,419,NA,"Amfi-atlantisk, arktisk/boreal."
+Pot.ere,Tepperot,1,FSo,NA,1,1,1,NA,SSo,10,30,Nem,1,1,1,1,1,1,NA,NA,LAlp,Grassland,1,NA,NA,NA,not base-rich,Common,421,NA,NA
+Pru.vul,Bl<e5>koll,2,MSo,NA,NA,1,1,NA,SSo,5,25,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,662,NA,Sirkumboreal i flere underarter. V<e5>r rase er eurasiatisk.
+Pyr.min,Perlevintergr<f8>nn,1,FSo,NA,1,1,1,NA,SSo,5,20,Nem,1,1,1,1,1,1,0.5,NA,LAlp (MAlp),Forest,NA,1,NA,NA,not base-rich,Common,597,NA,NA
+Pyr.rot,Legevintergr<f8>nn,1,FSo,NA,1,1,NA,NA,MSo,15,25,BNem,NA,1,1,1,0.5,NA,NA,NA,MBor (NBor),Forest,NA,1,NA,NA,not base-rich,Common,598,NA,"Amfi-atlantisk, boreal."
+Pyr.sp,NA,1,FSo,NA,1,1,NA,NA,MSo,15,25,BNem,NA,1,1,1,0.5,NA,NA,NA,MBor (NBor),Forest,NA,1,NA,NA,not base-rich,Common,598,NA,Pyrola rotundifolia data.
+Ran.acr,Engsoleie,1,FSo,NA,1,1,1,NA,SSo,20,75,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,296,NA,NA
+Ran.aur,Nyresoleie,3,V<e5>r,1,1,NA,NA,NA,FSo,10,50,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,base-rich,Common,297,NA,NA
+Ran.rep,Krypsoleie,3,FSo,NA,1,1,1,NA,SSo,15,40,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,base-rich,Common,296,NA,NA
+Rhi.min,Sm<e5>engkall,2,FSo,NA,1,1,NA,NA,MSo,10,40,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,713,NA,Forsommerrase.
+Rho.ros,Rosenrot,1,FSo,NA,1,1,NA,NA,MSo,5,30,(Nem-MBor) NBor,0.5,0.5,0.5,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,378,NA,Amfi-atlantisk.
+Rub.ida,Bringeb<e6>r,3,FSo,NA,1,1,NA,NA,MSo,50,150,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,base-rich,Common,428,NA,"Sirkumboreal i flere raser, v<e5>r rase i Europa og V-Asia."
+Rum.ace,Engsyre,2,FSo,NA,1,1,NA,NA,MSo,20,80,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,203,NA,NA
+Rum.acl,Sm<e5>syre,2,FSo,NA,1,1,NA,NA,MSo,10,50,Nem,1,1,1,1,1,1,NA,NA,LAlp,Grassland,1,NA,NA,NA,not base-rich,Common,204,NA,NA
+Sag.sp,Sm<e5>arve sp.,1,V<e5>r,1,1,1,1,1,H<f8>st,2,5,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,245,NA,NA
+Sal.her,Mus<f8>re,1,MSo,NA,NA,1,1,NA,SSo,1,5,(SBor-MBor) NBor,NA,NA,0.5,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,not base-rich,Common,176,NA,Amfi-atlantisk.
+Sal.ret,Rynkevier,1,FSo,NA,1,1,NA,NA,MSo,1,5,(Mbor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,176,NA,Spredd sirkumpolar.
+Sal.sp,Vier sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,150,NA,NA
+Sau.alp,Fjelltistel,3,MSo,NA,NA,1,1,NA,SSo,10,50,(BNem-SBor) MBor,NA,0.5,0.5,1,1,1,1,1,HAlp,Grassland,1,NA,NA,NA,base-rich,Common,800,NA,NA
+Sax.aiz,Gulsildre,1,MSo,NA,NA,1,1,NA,SSo,5,15,(MBor) NBor,NA,NA,NA,0.5,1,1,1,NA,MAlp,Rocky ground/Wetland,NA,NA,1,1,base-rich,Common,391,NA,"Brett amfi-atlantisk, arktisk"
+Sax.ces,Tuesildre,1,FSo,NA,1,NA,1,NA,SSo,3,15,(MBor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,394,NA,Sirkumpolar.
+Sax.opp,R<f8>dsildre,3,V<e5>r,1,1,1,NA,NA,MSo,2,5,(Nem-MBor) NBor,0.5,0.5,0.5,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,389,NA,Sirkumpolar i flere raser.
+Sed.acr,Bitterbergknapp,3,FSo,NA,1,1,NA,NA,MSo,5,10,Nem,1,1,1,1,1,NA,NA,NA,NBor,Rocky ground,NA,NA,1,NA,not base-rich,Common,382,NA,NA
+Sel.sel,Dvergjamne,1,MSo,NA,NA,1,1,NA,SSo,3,10,(Nem) BNem,0.5,1,1,1,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,base-rich,Scattered,107,NA,Sirkumboreal/polar.
+Sib.pro,Trefingerurt,1,MSo,NA,NA,1,1,NA,SSo,3,10,NBor,NA,NA,NA,NA,1,1,1,0.5,MAlp (HAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,412,NA,Spredd sirkumpolar.
+Sil.aca,Fjellsmelle,1,FSo,NA,1,1,NA,NA,MSo,2,5,(Mbor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Rocky ground,NA,NA,1,NA,base-rich,Common,270,NA,NA
+Sil.vul,Engsmelle,1,FSo,NA,1,1,1,NA,SSo,20,70,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,270,NA,NA
+Sol.vir,Gullris,1,MSo,NA,NA,1,1,1,H<f8>st,20,100,Nem,1,1,1,1,1,1,NA,NA,LAlp,Forest/Grassland,1,1,NA,NA,not base-rich,Common,753,NA,NA
+Sor.auc,Rogn,1,FSo,NA,1,NA,NA,NA,FSo,300,1e3,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Forest,NA,1,NA,NA,not base-rich,Common,463,NA,NA
+Ste.gra,Gresstjerneblom,3,FSo,NA,1,1,1,NA,SSo,20,30,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,255,NA,NA
+Ste.med,Vassarve,3,V<e5>r,1,NA,NA,NA,NA,V<e5>r,5,30,Nem,1,1,1,1,1,1,NA,NA,LAlp ,Grassland,1,NA,NA,NA,not base-rich,Common,253,NA,Blomstrer hele <e5>ret n<e5>r det ikke er frost.
+Suc.pra,Bl<e5>knapp,1,SSo,NA,NA,NA,1,1,H<f8>st,20,60,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,indifferent,Common,735,NA,NA
+Tar.sp,L<f8>vetann sp.,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,822,NA,NA
+Tha.alp,Fjellfr<f8>stjerne,2,FSo,NA,1,1,NA,NA,MSo,5,20,(SBor) MBor,NA,NA,0.5,1,1,1,1,0.5,MAlp (HAlp),Grassland,1,NA,NA,NA,base-rich,Common,283,NA,Spredd sirkumpolar.
+Thl.arv,Pengeurt,1,FSo,NA,1,1,1,NA,SSo,10,50,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Rocky ground,NA,NA,1,NA,not base-rich,Common,359,NA,NA
+Tof.pus,Bj<f8>rnebrodd,2,FSo,NA,1,1,1,NA,SSo,5,20,(BNem) SBor,NA,0.5,1,1,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,base-rich,Common,885,NA,Sirkumpolar.
+Tri.ces,Bj<f8>rneskjegg,1,V<e5>r,1,1,NA,NA,NA,FSo,5,40,Nem,1,1,1,1,1,1,0.5,NA,LAlp (MAlp),Wetland,NA,NA,NA,1,not base-rich,Common,949,NA,Sirkumboreal/polar.
+Tri.eur,Skogstjerne,3,FSo,NA,1,1,NA,NA,MSo,5,20,Nem,1,1,1,1,1,1,0.5,NA,LAlp (MAlp),Forest,NA,1,NA,NA,not base-rich,Common,615,NA,Sirkumboreal i flere raser.
+Tri.med,Skogkl<f8>ver,3,FSo,NA,1,1,1,NA,SSo,20,50,Nem,1,1,1,0.5,NA,NA,NA,NA,SBor (MBor),Rocky ground,NA,NA,1,NA,base-rich,Common,495,NA,NA
+Tri.mon,Bakkekl<f8>ver,2,FSo,NA,1,1,NA,NA,MSo,15,50,BNem,NA,1,NA,NA,NA,NA,NA,NA,BNem,Rocky ground,NA,NA,1,NA,base-rich,Common,494,NA,Fredet.
+Tri.pra,R<f8>dkl<f8>ver,3,FSo,NA,1,1,1,NA,SSo,15,50,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,494,NA,NA
+Tri.rep,Hvitkl<f8>ver,3,FSo,NA,1,1,1,NA,SSo,10,40,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,494,NA,NA
+Vac.myr,Bl<e5>b<e6>r,1,V<e5>r,1,1,NA,NA,NA,FSo,10,50,Nem,1,1,1,1,1,1,1,NA,MAlp,Forest,NA,1,NA,NA,not base-rich,Common,607,NA,NA
+Vac.sp,B<e6>rlyng sp.,1,V<e5>r,1,1,NA,NA,NA,FSo,10,50,Nem,1,1,1,1,1,1,1,NA,MAlp,Forest,NA,1,NA,NA,not base-rich,Common,607,NA,Vaccinium myrtillus data.
+Vac.uli,Blokkeb<e6>r,1,V<e5>r,1,1,NA,NA,NA,FSo,5,60,Nem,1,1,1,1,1,1,1,NA,MAlp,Wetland,NA,NA,NA,1,indifferent,Common,607,NA,"Amfi-atlantisk,boreal."
+Vac.vit,Tytteb<e6>r,3,V<e5>r,1,1,NA,NA,NA,FSo,5,30,Nem,1,1,1,1,1,1,1,0.5,MAlp (HAlp),Forest,NA,1,NA,NA,indifferent,Common,605,NA,Sirkumboreal i to underarter.
+Val.sam,Vendelrot,1,FSo,NA,1,1,NA,NA,MSo,50,150,BNem,NA,1,1,NA,NA,NA,NA,NA,SBor,Forest/Wetland,NA,NA,1,1,not base-rich,Scattered,733,NA,NA
+Ver.alp,Fjellveronika,1,MSo,NA,NA,1,1,NA,SSo,5,15,(MBor) NBor,NA,NA,NA,0.5,1,1,1,1,HAlp,Grassland,1,NA,NA,NA,not base-rich,Common,697,NA,"Amfi-atlantisk, arktisk."
+Ver.arv,Bakkeveronika,1,V<e5>r,1,1,NA,NA,NA,FSo,5,25,Nem,1,1,1,0.5,NA,NA,NA,NA,SBor (MBor),Rocky ground,NA,NA,1,NA,base-rich,Scattered,699,NA,NA
+Ver.cha,Tveskjeggveronika,1,V<e5>r,1,1,1,NA,NA,MSo,5,30,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Grassland,1,NA,NA,NA,not base-rich,Common,698,NA,NA
+Ver.fru,Bergveronika,1,FSo,NA,1,1,NA,NA,MSo,5,10,NBor,NA,NA,NA,NA,1,1,1,0.5,MAlp (HAlp),Rocky ground,NA,NA,1,NA,base-rich,Common,697,NA,"Amfi-atlantisk, arktisk."
+Ver.off,Legeveronika,3,FSo,NA,1,1,1,NA,SSo,10,30,Nem,1,1,1,1,1,NA,NA,NA,NBor,Grassland,1,NA,NA,NA,not base-rich,Common,698,NA,NA
+Ver.ser,Snauveronika,1,FSo,NA,1,1,1,1,H<f8>st,5,20,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Rocky ground,NA,NA,1,NA,not base-rich,Common,698,NA,NA
+Ver.sp,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,694,NA,NA
+Vic.cra,Fuglevikke,3,FSo,NA,1,1,1,NA,SSo,20,80,Nem,1,1,1,1,1,0.5,NA,NA,NBor (LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,507,NA,NA
+Vic.sep,Gjerdevikke,1,FSo,NA,1,1,1,NA,SSo,30,60,Nem,1,1,1,1,0.5,0.5,NA,NA,MBor (NBor-LAlp),Grassland,1,NA,NA,NA,not base-rich,Common,507,NA,NA
+Vio.bif,Fjellfiol,1,FSo,NA,1,1,NA,NA,MSo,5,15,MBor,NA,NA,NA,1,1,1,1,NA,MAlp,Grassland,1,NA,NA,NA,base-rich,Common,547,NA,NA
+Vio.pal,Myrfiol,1,V<e5>r,1,1,NA,NA,NA,FSo,3,10,Nem,1,1,1,1,1,1,1,NA,MAlp,Grassland/Wetland,1,NA,NA,1,not base-rich,Common,547,NA,Amfi-atlantisk.
+Vio.riv,Skogfiol,3,V<e5>r,1,1,NA,NA,NA,FSo,10,20,Nem,1,1,1,1,1,NA,NA,NA,NBor,Forest,NA,1,NA,NA,not base-rich,Common,549,NA,NA
+Vio.sp,NA,3,V<e5>r,1,1,NA,NA,NA,FSo,10,20,Nem,1,1,1,1,1,NA,NA,NA,NBor,Forest,NA,1,NA,NA,not base-rich,Common,549,NA,Viola riviniana data.
+Vio.tri,Stemorsblomst,3,V<e5>r,1,NA,NA,NA,NA,V<e5>r,5,30,Nem,1,1,1,1,0.5,NA,NA,NA,MBor (NBor),Rocky ground,NA,NA,1,NA,not base-rich,Common,548,NA,Blomstrer hele <e5>ret n<e5>r det er t<f8>rr-v<e6>r.
+Vis.vul,Engtj<e6>reblom,1,FSo,NA,1,1,NA,NA,MSo,20,40,Nem,1,1,1,0.5,0.5,NA,NA,NA,SBor (MBor-NBor),Grassland/Rocky ground,1,NA,1,NA,not base-rich,Common,265,NA,NA
