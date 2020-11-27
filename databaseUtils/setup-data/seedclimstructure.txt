@@ -110,7 +110,7 @@ CREATE TABLE `attributes`
 CREATE TABLE `subTurfEnvironment`
  (
 	`turfID`			varchar (100), 
-	`subTurf`			int, 
+	`subturf`			int, 
 	`year`				int, 
 	`pleuro`			int, 
 	`acro`	 			int, 
@@ -121,7 +121,7 @@ CREATE TABLE `subTurfEnvironment`
 	`rock`				int, 
 	`comment`			varchar (510), 
 	`bad`				  varchar (2),
-	 PRIMARY KEY (turfID, subTurf, year),
+	 PRIMARY KEY (turfID, subturf, year),
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 );
 
@@ -167,7 +167,7 @@ CREATE TABLE `turfEnvironment`
 CREATE TABLE `subTurfCommunity`
  (
 	`turfID`			varchar (40), 
-	`subTurf`			int, 
+	`subturf`			int, 
 	`year`			  int, 
 	`species`			varchar (100), 
 	`presence`    varchar (30),
@@ -179,7 +179,7 @@ CREATE TABLE `subTurfCommunity`
   `dominant`    int,
 	`cf`			    int,
 	`flag`        varchar(10) default "none",
-	 PRIMARY KEY (turfID, subTurf, year, species, flag),
+	 PRIMARY KEY (turfID, subturf, year, species, flag),
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 
 );

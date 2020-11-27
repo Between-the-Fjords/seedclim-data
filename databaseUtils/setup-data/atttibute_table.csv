@@ -31,7 +31,7 @@ year,2009,Year of the sampling,defined
 cover,percentage,Percent cover of a species in a turf,measured
 cf,NA,Uncertain species identification,defined
 flag,NA,Values flagged for possible error,NA
-sub_turf,1,Location of subturf within the turf,defined
+subturf,1,Location of subturf within the turf,defined
 presence,0-1,Presence of species,measured
 seedlings,0-1,Presence of seedlings where cotyledons are visible,measured
 juvenile,0-1,Presence of juveniles that are not fully grown plants,measured

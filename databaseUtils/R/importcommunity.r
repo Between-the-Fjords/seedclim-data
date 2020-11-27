@@ -79,8 +79,8 @@ import_data <- function(file, con, merge_dictionary){
   #subTurf env ####
   subturfEnv <- dat %>% 
     filter(Measure != "Cover") %>% 
-    select(turfID, subTurf = subPlot, year, pleuro, acro, liver, lichen, litter, soil, rock, comment) %>% 
-    mutate(subTurf = as.integer(subTurf))
+    select(turfID, subturf = subPlot, year, pleuro, acro, liver, lichen, litter, soil, rock, comment) %>% 
+    mutate(subturf = as.integer(subturf))
   
 
   if(!is.null(dat$missing)){
@@ -156,9 +156,9 @@ import_data <- function(file, con, merge_dictionary){
   
     subspp <- dat %>% 
       filter(Measure != "Cover") %>% 
-      select(turfID, year, subTurf = subPlot, (which(names(dat) == "recorder") + 1):(which(names(dat) == "pleuro") -1)) %>% 
-      mutate(subTurf = as.integer(subTurf)) %>% 
-      gather(key = species, value = presence, -turfID, -subTurf, -year) %>%
+      select(turfID, year, subturf = subPlot, (which(names(dat) == "recorder") + 1):(which(names(dat) == "pleuro") -1)) %>% 
+      mutate(subturf = as.integer(subturf)) %>% 
+      gather(key = species, value = presence, -turfID, -subturf, -year) %>%
       filter(!is.na(presence), presence != 0, presence != "")  #remove absent taxa
 
     # #oddity search
@@ -168,8 +168,8 @@ import_data <- function(file, con, merge_dictionary){
    subspp <- subspp %>% 
        left_join(merge_dictionary, by = c("species" = "oldID")) %>% 
        mutate(newID = coalesce(newID, species)) %>% 
-       select(turfID, subTurf, year, species = newID, presence) %>% 
-       group_by(year, turfID, subTurf, species) %>% 
+       select(turfID, subturf, year, species = newID, presence) %>% 
+       group_by(year, turfID, subturf, species) %>% 
        summarise(presence = paste0(presence, collapse = "")) %>% #aggregate taxa
        ungroup()
      

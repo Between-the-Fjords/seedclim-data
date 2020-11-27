@@ -204,7 +204,7 @@ turfCom2 <- turfCom2 %>%
   summarise(cover = sum(cover))
   
 subturfCom2 <- subturfCom2 %>% 
-  group_by(turfID, subTurf, year, species, flag) %>% 
+  group_by(turfID, subturf, year, species, flag) %>% 
   summarise(
     presence = paste(presence, collapse = " & "),
     seedlings = sum(seedlings),
