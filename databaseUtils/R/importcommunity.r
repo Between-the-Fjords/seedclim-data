@@ -91,7 +91,7 @@ import_data <- function(file, con, merge_dictionary){
     subturfEnv <-  subturfEnv %>% mutate(bad = "")  
   }
   subturfEnv 
-  db_pad_write_table(con, "subTurfEnvironment", subturfEnv, row.names = FALSE, append = TRUE)
+  db_pad_write_table(con, "subturf_environment", subturfEnv, row.names = FALSE, append = TRUE)
   nrow(subturfEnv)
     
     #TurfEnv ####
@@ -109,7 +109,7 @@ import_data <- function(file, con, merge_dictionary){
     if(any(nchar(as.character(turfEnv$comment)) > 255, na.rm = TRUE)) {
       stop ("more than 255 characters in a comment field in turfEnv")
     }
-    db_pad_write_table(con, "turfEnvironment", turfEnv, row.names = FALSE, append = TRUE)
+    db_pad_write_table(con, "turf_environment", turfEnv, row.names = FALSE, append = TRUE)
   nrow(turfEnv)   
   
   #TurfCommunity ####  
@@ -143,16 +143,16 @@ import_data <- function(file, con, merge_dictionary){
   spp %>% anti_join(spp_list) %>% verify(nrow(.) == 0)
   
   #inject
-  initNrowTurfCommunity <- dbGetQuery(con, "select count(*) as n from turfCommunity")
-  db_pad_write_table(con, "turfCommunity", spp)
-  finalNrowTurfCommunity <- dbGetQuery(con, "select count(*) as n from turfCommunity")
+  initNrowTurfCommunity <- dbGetQuery(con, "select count(*) as n from turf_community")
+  db_pad_write_table(con, "turf_community", spp)
+  finalNrowTurfCommunity <- dbGetQuery(con, "select count(*) as n from turf_community")
 
   stopifnot(nrow(spp) == finalNrowTurfCommunity - initNrowTurfCommunity)
 
                                               
   #subTurfCommunity  ####
 
-  message("subturfcommunity")  
+  message("subturf_community")  
   
     subspp <- dat %>% 
       filter(Measure != "Cover") %>% 
@@ -236,9 +236,9 @@ import_data <- function(file, con, merge_dictionary){
   
 
     #inject
-    initNrowSubTurfCommunity <- dbGetQuery(con, "select count(*) as n from subturfCommunity")
-    db_pad_write_table(con, "subturfCommunity", subspp)
-    finalNrowSubTurfCommunity <- dbGetQuery(con, "select count(*) as n from subturfCommunity")
+    initNrowSubTurfCommunity <- dbGetQuery(con, "select count(*) as n from subturf_community")
+    db_pad_write_table(con, "subturf_community", subspp)
+    finalNrowSubTurfCommunity <- dbGetQuery(con, "select count(*) as n from subturf_community")
     
     stopifnot(nrow(subspp) == finalNrowSubTurfCommunity - initNrowSubTurfCommunity)
     
@@ -279,11 +279,11 @@ import_data <- function(file, con, merge_dictionary){
 #   
 #     data.frame(seed$recorder, seed$seedlings, seedsum$SumOfseedlings, seed$seedlings2)
 #   
-#     #insert N1 into subTurfCommunity as unident seedling
+#     #insert N1 into subturf_community as unident seedling
 #   
 #     seed <- seed[seed$seedlings2 > 0,]
 #     seed <- data.frame(turfID = seed$turfID, year = seed$year, subTurf = seed$subPlot, species = "seed.unid", seedlings = seed$seedlings2, juvenile = 0,adult = 0,fertile = 0,vegetative = 0,dominant = 0, cf = 1)
-#     dbWriteTable(con, "subTurfCommunity", seed, row.names=FALSE, append = TRUE)
+#     dbWriteTable(con, "subturf_community", seed, row.names=FALSE, append = TRUE)
 #   }
 #   ######################### vigdis seedling problem fixed                                                                   
 }

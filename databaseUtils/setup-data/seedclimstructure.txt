@@ -107,7 +107,7 @@ CREATE TABLE `attributes`
 	 PRIMARY KEY (attribute)
 );
 
-CREATE TABLE `subTurfEnvironment`
+CREATE TABLE `subturf_environment`
  (
 	`turfID`			varchar (100), 
 	`subturf`			int, 
@@ -125,7 +125,7 @@ CREATE TABLE `subTurfEnvironment`
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 );
 
-CREATE TABLE `turfCommunity`
+CREATE TABLE `turf_community`
  (
 	`turfID`		varchar (40), 
 	`year`			int, 
@@ -138,7 +138,7 @@ CREATE TABLE `turfCommunity`
 
 );
 
-CREATE TABLE `turfEnvironment`
+CREATE TABLE `turf_environment`
  (
 	`turfID`			varchar (100), 
 	`year`			  int, 
@@ -164,7 +164,7 @@ CREATE TABLE `turfEnvironment`
 );
 
 
-CREATE TABLE `subTurfCommunity`
+CREATE TABLE `subturf_community`
  (
 	`turfID`			varchar (40), 
 	`subturf`			int, 

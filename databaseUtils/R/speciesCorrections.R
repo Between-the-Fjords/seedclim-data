@@ -36,8 +36,8 @@ if(nrow(missing_new) > 0) {
 }
 
 # load database data
-turfCom <- tbl(con, "turfCommunity") %>% collect()
-subturfCom <- tbl(con, "subturfCommunity") %>% collect()
+turfCom <- tbl(con, "turf_community") %>% collect()
+subturfCom <- tbl(con, "subturf_community") %>% collect()
 
 # check turfID
 turfID_glitch <- corrections %>% 
@@ -220,11 +220,11 @@ subturfCom2 <- subturfCom2 %>%
 subturfCom2 %>% ungroup() %>% filter(grepl("&", presence)) 
 
 # delete contents of tables
-dbExecute(conn = con, "DELETE FROM turfCommunity")
-dbExecute(conn = con, "DELETE FROM subturfCommunity")
+dbExecute(conn = con, "DELETE FROM turf_community")
+dbExecute(conn = con, "DELETE FROM subturf_community")
 
 
 # add revised contents
-db_pad_write_table(conn = con, table = "turfCommunity", value = turfCom2)
+db_pad_write_table(conn = con, table = "turf_community", value = turfCom2)
 
-db_pad_write_table(conn = con, table = "subturfCommunity", value = subturfCom2)
+db_pad_write_table(conn = con, table = "subturf_community", value = subturfCom2)
