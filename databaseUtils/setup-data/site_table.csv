@@ -1,4 +1,4 @@
-siteID,norwegian_name,site_code,latitude,longitude,elevation_m,annual_precipitation_gridded_mm,temperature_level,summer_temperature_gridded_C,precipitation_level,geology,land_use,aspect,solar_radiation(DEM)(mw/hour/m^2),Total N (red+oxi)                           (mg N/m2 yr),slope
+siteID,norwegian_name,site_code,latitude,longitude,elevation,annual_precipitation_gridded,temperature_level,summer_temperature_gridded,precipitation_level,geology,land_use,aspect,solar_radiation(DEM)(mw/hour/m^2),Total N (red+oxi)                           (mg N/m2 yr),slope
 Alrust,Ålrust,int1,60.8203,8.70466,815,788.647,2,9.13926,1,"Metasandstein, skifer",NA,NA,0.893925,338,NA
 Arhelleren,Arhelleren,low3,60.6652,6.33738,431,2043.64,3,10.5975,3,"Fylitt, glimmerskifer",NA,0,0.819129,607,0
 Fauske,Fauske,low1,61.0355,9.07876,589,600,3,10.3,1,"Fyllitt, glimmerskifer",NA,NA,0.826864,338,NA

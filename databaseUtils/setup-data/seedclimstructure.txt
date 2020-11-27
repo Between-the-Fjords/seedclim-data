@@ -22,12 +22,12 @@ CREATE TABLE `sites`
 	`site_code`			varchar (12), 
 	`latitude`			float, 
 	`longitude`			float, 
-	`elevation_m`			int, 
+	`elevation`			int, 
  	`biogeographic_zone`		varchar (20),
 	`biogeographic_section`		varchar (20),
-	`annual_precipitation_gridded_mm`	float, 
+	`annual_precipitation_gridded`	float, 
 	`temperature_level`			int, 
-	`summer_temperature_gridded_C`		float, 
+	`summer_temperature_gridded`		float, 
 	`precipitation_level`			int,
 	 PRIMARY KEY (siteID)
 );
@@ -80,7 +80,7 @@ CREATE TABLE `turfs`
 CREATE TABLE `taxon`
  (
 	`species`			varchar (10), 
-	`speciesName`			varchar (200), 
+	`species_name`			varchar (200), 
 	`authority` varchar(200),
 	`family`			varchar (50), 
 	`comment`			varchar (510), 
