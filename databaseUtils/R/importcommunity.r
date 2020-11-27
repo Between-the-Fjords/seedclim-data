@@ -97,12 +97,18 @@ import_data <- function(file, con, merge_dictionary){
     #TurfEnv ####
     turfEnv <- dat %>%
       filter(Measure == "Cover") %>% 
-      select(turfID, year, pleuro, acro, liver, lichen, litter, soil, rock, totalVascular, totalBryophytes, totalLichen, vegetationHeight, mossHeight, comment, recorder, date)
+      select(turfID, year, pleuro, acro, liver, lichen, litter, soil, rock,
+             total_vascular = totalVascular, 
+             total_bryophytes = totalBryophytes, 
+             total_lichen = totalLichen, 
+             vegetation_height = vegetationHeight, 
+             moss_height = mossHeight, 
+             comment, recorder, date)
   
-  if(mode(turfEnv$mossHeight) == "character"){
+  if(mode(turfEnv$moss_height) == "character"){
     turfEnv <- turfEnv %>% 
-      mutate(mossHeight = gsub(",", ".", mossHeight),
-             mossHeight = as.numeric(mossHeight))
+      mutate(moss_height = gsub(",", ".", moss_height),
+             moss_height = as.numeric(moss_height))
     
   }
     

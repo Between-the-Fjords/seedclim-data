@@ -47,10 +47,10 @@ litter,percentage,Cover of litter per (sub)turf,measured
 soil,percentage,Cover of soil per (sub)turf,measured
 rock,percentage,Cover of rock per (sub)turf,measured	
 bad,NA,Comment on damaged subturfs,NA
-totalVascular,percent,Total percent cover by vascular plants,measured
-totalBryophytes,percent,Total percent cover by bryophytes,measured
-totalLichen,percent,Total percent cover by lichens,measured
-vegetationHeight,cm,Average height of the vascular vegetation in the plot,measured
-mossHeight,cm,Average height of the mosses,measured
+total_vascular,percent,Total percent cover by vascular plants,measured
+total_bryophytes,percent,Total percent cover by bryophytes,measured
+total_lichen,percent,Total percent cover by lichens,measured
+vegetation_height,cm,Average height of the vascular vegetation in the plot,measured
+moss_height,cm,Average height of the mosses,measured
 recorder,NA,Observer of the vegetation,defined
 date,yyyy-mm-dd,Date of observation,recorded
