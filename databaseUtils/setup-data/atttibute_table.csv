@@ -21,7 +21,7 @@ blockID,Alr1,Unique block ID as combination of three letter site code and block 
 slope,degree,Slope of the block,measured
 aspect,degree,Aspect of the block,measured
 plotID,1,Unique numeric plot ID for geographic location of the turf,defined
-turfID,1,TT2 28,Unique ID of vegetation turf as originplotID, treatment and destinationplotID,defined
+turfID,1 TT2 28,"Unique ID of vegetation turf as originplotID, treatment and destinationplotID",defined
 TTtreat,TT2,Treatment of turf transplant,defined
 RTtreat,RTC,Treatment of recruit tag,defined
 GRtreat,RTC,Treatment of graminoids removal,defined

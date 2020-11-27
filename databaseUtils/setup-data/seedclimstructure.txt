@@ -98,6 +98,15 @@ CREATE TABLE `species_attributes`
          FOREIGN KEY (species) REFERENCES taxon(species)
 );
 
+CREATE TABLE `attributes`
+ (
+	`attribute`			varchar (50), 
+	`unit`				varchar (30),
+	`description`			varchar (100),
+	`how_measured`			varchar (20),
+	 PRIMARY KEY (attribute)
+);
+
 CREATE TABLE `subTurfEnvironment`
  (
 	`turfID`			varchar (100), 

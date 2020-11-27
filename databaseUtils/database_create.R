@@ -263,6 +263,10 @@ Dac.alp,Dac.glo
 Gal.sp,Gal.uli
 "))
 
+## attributes
+attributes <- read_csv("databaseUtils/setup-data/atttibute_table.csv")
+
+db_pad_write_table(conn = con, table = "attributes", value = attributes)
 
 
 ## load main data ####
