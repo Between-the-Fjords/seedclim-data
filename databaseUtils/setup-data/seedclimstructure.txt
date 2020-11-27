@@ -24,7 +24,7 @@ CREATE TABLE `sites`
 	`longitude`			float, 
 	`elevation_m`			int, 
  	`biogeographic_zone`		varchar (20),
-	`biogeographic_section`		varchar (2),
+	`biogeographic_section`		varchar (20),
 	`annual_precipitation_gridded_mm`	float, 
 	`temperature_level`			int, 
 	`summer_temperature_gridded_C`		float, 
@@ -88,20 +88,14 @@ CREATE TABLE `taxon`
 );
 
 
-CREATE TABLE `numeric_traits`
+CREATE TABLE `species_attributes`
  (
-	`species`			varchar (10), 
-	`trait`			        varchar (50), 
-	`value`                         float,
-	 PRIMARY KEY (species, trait)
-);
-
-CREATE TABLE `character_traits`
- (
-	`species`			varchar (10), 
-	`trait`			        varchar (50), 
-	`value`                         varchar (50),
-	 PRIMARY KEY (species, trait)
+	`species`			varchar (40), 
+	`attribute`			varchar (40), 
+	`value_numeric`			        float,
+	`value_character`		varchar (100),
+	 PRIMARY KEY (species, attribute),
+         FOREIGN KEY (species) REFERENCES taxon(species)
 );
 
 CREATE TABLE `subTurfEnvironment`

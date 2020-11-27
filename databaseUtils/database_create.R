@@ -95,28 +95,53 @@ if (extract_from_mysql) {
               delim = "\t")
 }
 
-traits <- read_delim("databaseUtils/setup-data/moreTraits_table.tab", quote = "'",
-                     delim = "\t")
+species_attributes <- read_delim("databaseUtils/setup-data/moreTraits_table.tab",
+                                 quote = "'", delim = "\t")
 
-all_traits <- traits %>%
+species_attributes <- species_attributes %>%
   rename(
-    Norwegian_name = `Norwegian name`,
-    functional_group = functionalGroup,
-    lifespan = lifeSpan) %>%
-  full_join(select(taxa, species, functional_group, lifespan)) %>%
+   common_rare = `Common-rear`,
+   polyploid_2n = `Polyploid (2n)`, 
+   
+   flowers_spring = `F-V<e5>r`,
+   flowers_early_summer = `F-Fso`, 
+   flowers_mid_summer = `F-Mso`, 
+   flowers_late_summer = `F-Sso`, 
+   flowers_autumn = `F-H<f8>`,
+   
+   nemoral = Nem, 
+   boreal_nemoral = BNem,
+   south_boreal = SBor,
+   mid_boreal = MBor,
+   north_boreal = Nbor,
+   low_alpine = LAlp,
+   mid_alpine = MAlp,
+   high_alpine = HAlp
+  ) %>% 
+  rename_with(.cols = matches(" "), ~str_replace(., " ", "_")) %>% 
+  rename_with(.cols = c(-Norwegian_name, -Lids_page, -`Mossberg_page`), tolower) %>% 
+  rename_with(.cols = c(lower, upper), ~paste0(., "_limit")) %>%  
+  full_join(select(taxa, species, functional_group = functionalGroup, lifespan = lifeSpan)) %>%
+  mutate(across(starts_with("flowering_"), ~ recode(.,
+                                                    "MSo" = "mid-summer", 
+                                                    "H<f8>st" = "autumn",
+                                                    "FSo" = "early summer",
+                                                    "SSo" = "late summer", 
+                                                    "V<e5>r" = "spring"))) %>% 
   group_by(species)
 
-all_traits %>%
-  select_if(is.numeric) %>%
-  gather(key = trait, value = value, -species) %>%
-  filter(!is.na(value)) %>%
-  db_pad_write_table(conn = con, table = "numeric_traits", value = .)
+bind_rows(
+  character_attributes = species_attributes %>% 
+    select(!where(is.numeric)) %>% 
+    pivot_longer(-species, names_to = "attribute", values_to = "value_character"), 
+  
+  numeric_attributes = species_attributes %>%
+    select(!where(is.character)) %>% 
+    pivot_longer(-species, names_to = "attribute", values_to = "value_numeric")
+) %>%
+  filter(!(is.na(value_character) & is.na(value_numeric))) %>% 
+  db_pad_write_table(conn = con, table = "species_attributes", value = .)
 
-all_traits %>%
-  select_if(is.character) %>%
-  gather(key = trait, value = value, -species) %>%
-  filter(!is.na(value)) %>%
-  db_pad_write_table(conn = con, table = "character_traits", value = .)
 
 
 ## load sites ####
