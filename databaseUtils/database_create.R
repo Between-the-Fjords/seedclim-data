@@ -99,8 +99,11 @@ traits <- read_delim("databaseUtils/setup-data/moreTraits_table.tab", quote = "'
                      delim = "\t")
 
 all_traits <- traits %>%
-  rename(Norwegian_name = `Norwegian name`) %>%
-  full_join(select(taxa, -speciesName, -family, -comment)) %>%
+  rename(
+    Norwegian_name = `Norwegian name`,
+    functional_group = functionalGroup,
+    lifespan = lifeSpan) %>%
+  full_join(select(taxa, species, functional_group, lifespan)) %>%
   group_by(species)
 
 all_traits %>%
