@@ -1,1 +1,56 @@
-attribute,unit,how_measured,description
+attribute,unit,description,how_measured
+species,Ach.mil,three letter codes for genus and species names,identified
+species_name,Achillea millefolium,full genus and species names,identified
+authority,NA,taxanomic authority,defined
+family,Asteraceae,Plant family name,identified
+functional_group,graminoid,Plant functional group,identified
+comment,NA,NA,NA
+siteID,Alrust,Unique site ID,defined
+norwegian_name,Ålrust,Unique site ID in Norwegian,from map
+site_code,Alp1,Site ID as a combination of biogeographic zone and precipitation level,defined
+latitude,decimal degree,coordinate of site,measured
+longitude,decimal degree,coordinate of site,measured
+elevation,meter above sea level, elevation derived from DEM,measured
+biogeographic_zone,Low-alpine,Biogeographic zone,defined
+biogeographic_section,O2,Biogeographic section,defined
+annual_precipitation_gridded,mm,Downscaled annual precipitation,measured
+temperature_level,1-3,Numeric value for temperature level,defined
+summer_temperature_gridded,degree celcius,Downscaled summer temperature,measured
+precipitation_level,1-4,Numeric value for precipitation level,defined
+blockID,Alr1,Unique block ID as combination of three letter site code and block number,defined		
+slope,degree,Slope of the block,measured
+aspect,degree,Aspect of the block,measured
+plotID,1,Unique numeric plot ID for geographic location of the turf,defined
+turfID,1,TT2 28,Unique ID of vegetation turf as originplotID, treatment and destinationplotID,defined
+TTtreat,TT2,Treatment of turf transplant,defined
+RTtreat,RTC,Treatment of recruit tag,defined
+GRtreat,RTC,Treatment of graminoids removal,defined
+originPlotID,1,Origin location of the turf,defined
+destinationPlotID,28,Destination location of the turf,defined
+year,2009,Year of the sampling,defined		
+cover,percentage,Percent cover of a species in a turf,measured
+cf,NA,Uncertain species identification,defined
+flag,NA,Values flagged for possible error,NA
+sub_turf,1,Location of subturf within the turf,defined
+presence,0-1,Presence of species,measured
+seedlings,0-1,Presence of seedlings where cotyledons are visible,measured
+juvenile,0-1,Presence of juveniles that are not fully grown plants,measured
+adult,0-1,Presence of adults,measured
+fertile,0-1,Presence of fertile,measured
+vegetative,0-1,Presence of vegetative,measured
+dominant,0-1,Species cover more than 50 percent of subturf,measured
+pleuro,percentage,Cover of pleurocarp per (sub)turf,measured
+acro,percentage,Cover of acrocarp per (sub)turf,measured
+liver,percentage,Cover of liverworth per (sub)turf,measured
+lichen,percentage,Cover of lichen per (sub)turf,measured
+litter,percentage,Cover of litter per (sub)turf,measured
+soil,percentage,Cover of soil per (sub)turf,measured
+rock,percentage,Cover of rock per (sub)turf,measured	
+bad,NA,Comment on damaged subturfs,NA
+totalVascular,percent,Total percent cover by vascular plants,measured
+totalBryophytes,percent,Total percent cover by bryophytes,measured
+totalLichen,percent,Total percent cover by lichens,measured
+vegetationHeight,cm,Average height of the vascular vegetation in the plot,measured
+mossHeight,cm,Average height of the mosses,measured
+recorder,NA,Observer of the vegetation,defined
+date,yyyy-mm-dd,Date of observation,recorded
