@@ -17,27 +17,27 @@
 
 CREATE TABLE `sites`
  (
-	`siteID`			varchar (40), 
+	`siteID`			      varchar (40), 
 	`norwegian_name`		varchar (40), 
-	`site_code`			varchar (12), 
-	`latitude`			float, 
-	`longitude`			float, 
-	`elevation`			int, 
+	`site_code`			    varchar (12), 
+	`latitude`			    float, 
+	`longitude`			    float, 
+	`elevation`			    int, 
  	`biogeographic_zone`		varchar (20),
-	`biogeographic_section`		varchar (20),
+	`biogeographic_section`	varchar (20),
 	`annual_precipitation_gridded`	float, 
-	`temperature_level`			int, 
+	`temperature_level`			        int, 
 	`summer_temperature_gridded`		float, 
-	`precipitation_level`			int,
+	`precipitation_level`		      	int,
 	 PRIMARY KEY (siteID)
 );
 
 CREATE TABLE `site_attributes`
  (
-	`siteID`			varchar (40), 
-	`attribute`			varchar (40), 
-	`value_numeric`			        float,
-	`value_character`		varchar (100),
+	`siteID`			    varchar (40), 
+	`attribute`			  varchar (40), 
+	`value_numeric`		float,
+	`value_character`	varchar (100),
 	 PRIMARY KEY (siteID, attribute),
          FOREIGN KEY (siteID) REFERENCES sites(siteID)
 );
@@ -60,18 +60,18 @@ CREATE TABLE `plots`
 	`plotID`			int, 
 	`blockID`			varchar (40), 
 	`aspect`			float, 
-	`slope`			float,
+	`slope`			  float,
 	 PRIMARY KEY (plotID),
 	 FOREIGN KEY (blockID) REFERENCES blocks(blockID)
 );
 
 CREATE TABLE `turfs`
  (
-	`turfID`			varchar (40), 
-	`TTtreat`			varchar (10), 
-        `RTtreat`                       varchar(10) DEFAULT NULL,
-        `GRtreat`                       varchar(10) DEFAULT NULL,
-	`originPlotID`			int, 
+	`turfID`		        	varchar (40), 
+	`TTtreat`		        	varchar (10), 
+  `RTtreat`             varchar(10) DEFAULT NULL,
+  `GRtreat`             varchar(10) DEFAULT NULL,
+	`originPlotID`			  int, 
 	`destinationPlotID`		int,
 	 PRIMARY KEY (turfID),
 	 FOREIGN KEY (originPlotID) REFERENCES plots(plotID)
@@ -79,20 +79,20 @@ CREATE TABLE `turfs`
 
 CREATE TABLE `taxon`
  (
-	`species`			varchar (10), 
-	`species_name`			varchar (200), 
-	`authority` varchar(200),
-	`family`			varchar (50), 
-	`comment`			varchar (510), 
+	`species`			  varchar (10), 
+	`species_name`	varchar (200), 
+	`authority`     varchar(200),
+	`family`			  varchar (50), 
+	`comment`			  varchar (510), 
 	 PRIMARY KEY (species)
 );
 
 
 CREATE TABLE `species_attributes`
  (
-	`species`			varchar (40), 
-	`attribute`			varchar (40), 
-	`value_numeric`			        float,
+	`species`			      varchar (40), 
+	`attribute`			    varchar (40), 
+	`value_numeric`	    float,
 	`value_character`		varchar (100),
 	 PRIMARY KEY (species, attribute),
          FOREIGN KEY (species) REFERENCES taxon(species)
@@ -101,9 +101,9 @@ CREATE TABLE `species_attributes`
 CREATE TABLE `attributes`
  (
 	`attribute`			varchar (50), 
-	`unit`				varchar (30),
-	`description`			varchar (100),
-	`how_measured`			varchar (20),
+	`unit`				  varchar (30),
+	`description`		varchar (100),
+	`how_measured`	varchar (20),
 	 PRIMARY KEY (attribute)
 );
 
@@ -120,19 +120,19 @@ CREATE TABLE `subTurfEnvironment`
 	`soil`				int, 
 	`rock`				int, 
 	`comment`			varchar (510), 
-	`bad`				varchar (2),
+	`bad`				  varchar (2),
 	 PRIMARY KEY (turfID, subTurf, year),
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 );
 
 CREATE TABLE `turfCommunity`
  (
-	`turfID`			varchar (40), 
+	`turfID`		varchar (40), 
 	`year`			int, 
-	`species`			varchar (100), 
+	`species`		varchar (100), 
 	`cover`			float, 
-	`cf`			int default "",
-	`flag`    varchar(10) default "none",
+	`cf`			  int default "",
+	`flag`      varchar(10) default "none",
 	 PRIMARY KEY (turfID, year, species, flag),
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 
@@ -141,23 +141,23 @@ CREATE TABLE `turfCommunity`
 CREATE TABLE `turfEnvironment`
  (
 	`turfID`			varchar (100), 
-	`year`			int, 
-	`pleuro` float DEFAULT NULL,
-  `acro` float DEFAULT NULL,
-  `liver` float DEFAULT NULL,
+	`year`			  int, 
+	`pleuro`      float DEFAULT NULL,
+  `acro`        float DEFAULT NULL,
+  `liver`       float DEFAULT NULL,
 	`lichen`			float, 
 	`litter`			float, 
-	`soil`			float, 
-	`rock`			float, 
+	`soil`	  		float, 
+	`rock`		  	float, 
 	`totalVascular`			float, 
-	`totalBryophytes`			float, 
-	`totalLichen`			float, 
-	`vegetationHeight`			float, 
-	`mossHeight`			float, 
-	`litterThickness`			float, 
-	`comment`			varchar (510), 
+	`totalBryophytes`		float, 
+	`totalLichen`			  float, 
+	`vegetationHeight`	float, 
+	`mossHeight`			  float, 
+	`litterThickness`		float, 
+	`comment`			  varchar (510), 
 	`recorder`			varchar (100), 
-	`date`			varchar (100),
+	`date`			    varchar (100),
 	 PRIMARY KEY (turfID, year),
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 
@@ -177,9 +177,8 @@ CREATE TABLE `subTurfCommunity`
 	`fertile`     int,
   `vegetative`  int,
   `dominant`    int,
-
-	`cf`			int,
-	`flag`    varchar(10) default "none",
+	`cf`			    int,
+	`flag`        varchar(10) default "none",
 	 PRIMARY KEY (turfID, subTurf, year, species, flag),
 	 FOREIGN KEY (turfID) REFERENCES turfs(turfID)
 
