@@ -37,7 +37,7 @@
 
 cover.thin <- tbl(con, sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subTurfEnvironment.bad) AS CountOfbad
 FROM subTurfEnvironment where (subTurfEnvironment.year = turfCommunity.year) AND (subTurfEnvironment.turfID = turfCommunity.turfID)
- AND ( (subTurfEnvironment.bad)='')) AS notbad, sites.Temperature_level, sites.Summertemperature_gridded as summerTemperature, sites.Annualprecipitation_gridded as annualPrecipitation, sites.Precipitation_level, turfCommunity.Year, turfCommunity.species, turfCommunity.cover, turfEnvironment.recorder , dest_blocks.siteID as destSiteID
+ AND ( (subTurfEnvironment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded_C as summer_temperature, sites.annual_precipitation_gridded_mm as annual_precipitation, sites.precipitation_level, turfCommunity.Year, turfCommunity.species, turfCommunity.cover, turfEnvironment.recorder , dest_blocks.siteID as destSiteID
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
 INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID) INNER JOIN turfEnvironment ON (turfEnvironment.year = turfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID)
 WHERE NOT turfs.TTtreat='' AND ((Not (turfCommunity.Year)=2010))")) %>% 
