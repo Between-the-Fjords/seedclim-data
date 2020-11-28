@@ -90,5 +90,5 @@ grassland,1,Species main habitat type is grassland,recorded
 forest,1,Species main habitat type is forest,recorded
 rocky,1,Species main habitat type is rocky,recorded
 wetland,1,Species main habitat type is wetland,recorded
-lids_page,6,Page number of species in Lids Flora,recorded
-mossberg_page32,Page number of species in Mossbergs Flora,recorded
+Lids_page,6,Page number of species in Lids Flora,literature
+Mossberg_page32,Page number of species in Mossbergs Flora,literature
