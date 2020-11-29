@@ -1,13 +1,13 @@
-siteID,norwegian_name,site_code,latitude,longitude,elevation,annual_precipitation_gridded,temperature_level,summer_temperature_gridded,precipitation_level,geology,land_use,aspect,solar_radiation(DEM)(mw/hour/m^2),Total N (red+oxi)                           (mg N/m2 yr),slope
-Alrust,Ålrust,int1,60.8203,8.70466,815,788.647,2,9.13926,1,"Metasandstein, skifer",NA,NA,0.893925,338,NA
-Arhelleren,Arhelleren,low3,60.6652,6.33738,431,2043.64,3,10.5975,3,"Fylitt, glimmerskifer",NA,0,0.819129,607,0
-Fauske,Fauske,low1,61.0355,9.07876,589,600,3,10.3,1,"Fyllitt, glimmerskifer",NA,NA,0.826864,338,NA
-Gudmedalen,Gudmedalen,alp3,60.8328,7.17561,1213,1924.6,1,5.86638,3,"Fyllitt, glimmerskifer",NA,NA,0.986367,558,NA
-Hogsete,Høgsete,int2,60.876,7.17666,700,1356.21,2,9.16749,2,"Fyllitt, glimmerskifer",NA,NA,0.712464,558,NA
-Lavisdalen,Låvisdalen,alp2,60.8231,7.27596,1097,1320.5,1,6.45452,2,"Fyllitt, glimmerskifer",NA,NA,0.645019,607,NA
-Ovstedalen,Øvstedalen,low4,60.6901,5.96487,346,2923.19,3,10.7775,4,"Ryolitt, ryodacitt, dacitt",NA,NA,0.791402,305,NA
-Rambera,Rambera,int3,61.0866,6.63028,769,1848.17,2,8.76748,3,"Fyllitt, glimmerskifer",NA,NA,0.837069,305,NA
-Skjelingahaugen,Skjelingahaugen,alp4,60.9335,6.41504,1088,2724.85,1,6.57624,4,Marmor,NA,NA,0.935914,558,NA
-Ulvehaugen,Ulvehaugen,alp1,61.0243,8.12343,1208,596.348,1,6.16848,1,"Diorittisk til granittisk gneis, migmatitt",NA,NA,0.985254,364,NA
-Veskre,Veskre,int4,60.5445,6.51468,797,3028.69,2,8.66692,4,"Metasandstein, skifer",NA,NA,0.856233,496,NA
-Vikesland,Vikesland,low2,60.8803,7.16982,474,1161.14,3,10.5541,2,"Fyllitt, glimmerskifer",NA,NA,0.643973,558,NA
+siteID,norwegian_name,site_code,latitude,longitude,elevation,annual_precipitation_gridded,temperature_level,summer_temperature_gridded,precipitation_level,geology,land_use,aspect,solar_radiation,total_N_red_oxi                           (mg N/m2 yr),slope
+Alrust,Ålrust,int1,60.8203,8.70466,815,788.647,2,9.13926,1,"metasandstone, slate","pasture, horses",NA,0.893925,338,NA
+Arhelleren,Arhelleren,low3,60.6652,6.33738,431,2043.64,3,10.5975,3,"phyllite, mica schist","pasture, none, formerly cattle, sheep",0,0.819129,607,0
+Fauske,Fauske,low1,61.0355,9.07876,589,600,3,10.3,1,"phyllite, mica schist","pasture, cattle",NA,0.826864,338,NA
+Gudmedalen,Gudmedalen,alp3,60.8328,7.17561,1213,1924.6,1,5.86638,3,"phyllite, mica schist","free-range grazing, goats, sheep, reindeer",NA,0.986367,558,NA
+Hogsete,Høgsete,int2,60.876,7.17666,700,1356.21,2,9.16749,2,"phyllite, mica schist","free-range grazing, goats, sheep, reindeer, former pasture, hayfield",NA,0.712464,558,NA
+Lavisdalen,Låvisdalen,alp2,60.8231,7.27596,1097,1320.5,1,6.45452,2,"phyllite, mica schist","free-range grazing, sheep, reindeer",NA,0.645019,607,NA
+Ovstedalen,Øvstedalen,low4,60.6901,5.96487,346,2923.19,3,10.7775,4,"rhyolite, rhyodacite, dacite","pasture, sheep",NA,0.791402,305,NA
+Rambera,Rambera,int3,61.0866,6.63028,769,1848.17,2,8.76748,3,"phyllite, mica schist","free-range, grazing, cattle, sheep, goat, reindeer",NA,0.837069,305,NA
+Skjelingahaugen,Skjelingahaugen,alp4,60.9335,6.41504,1088,2724.85,1,6.57624,4,marble,"free-range grazing, sheep, reindeer",NA,0.935914,558,NA
+Ulvehaugen,Ulvehaugen,alp1,61.0243,8.12343,1208,596.348,1,6.16848,1,"diorite to granitic gneiss, migmatite","free-range grazing, cattle, sheep, reindeer",NA,0.985254,364,NA
+Veskre,Veskre,int4,60.5445,6.51468,797,3028.69,2,8.66692,4,"metasandstone, slate","free-range grazing, cattle, sheep, reindeer",NA,0.856233,496,NA
+Vikesland,Vikesland,low2,60.8803,7.16982,474,1161.14,3,10.5541,2,"phyllite, mica schist","free-range grazing, goats, sheep, cat",NA,0.643973,558,NA
