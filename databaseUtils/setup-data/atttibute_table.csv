@@ -5,7 +5,7 @@ authority,NA,taxanomic authority,defined
 family,Asteraceae,Plant family name,identified
 comment,NA,NA,NA
 siteID,Alrust,Unique site ID,defined
-norwegian_name,Ålrust,Unique site ID in Norwegian,from map
+site_name,Ålrust,Unique site name in Norwegian,from map
 site_code,Alp1,Site ID as a combination of biogeographic zone and precipitation level,defined
 latitude,decimal degree,coordinate of site,measured
 longitude,decimal degree,coordinate of site,measured
