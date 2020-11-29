@@ -100,7 +100,7 @@ species_attributes <- read_delim("databaseUtils/setup-data/moreTraits_table.tab"
 
 species_attributes <- species_attributes %>%
   rename(
-   common_rare = `Common-rear`,
+   rarity = `Common-rear`,
    polyploid_2n = `Polyploid (2n)`, 
    
    flowers_spring = `F-V<e5>r`,
@@ -119,8 +119,8 @@ species_attributes <- species_attributes %>%
    high_alpine = HAlp
   ) %>% 
   rename_with(.cols = matches(" "), ~str_replace(., " ", "_")) %>% 
-  rename_with(.cols = c(-Norwegian_name, -Lids_page, -`Mossberg_page`), tolower) %>% 
-  rename_with(.cols = c(lower, upper), ~paste0(., "_limit")) %>%  
+  rename_with(.cols = c(-Lids_page, -`Mossberg_page`), tolower) %>% 
+  rename_with(.cols = c(lower, upper), ~paste0(., "vegetation_zone")) %>%  
   full_join(select(taxa, species, functional_group = functionalGroup, lifespan = lifeSpan)) %>%
   mutate(across(starts_with("flowering_"), ~ recode(.,
                                                     "MSo" = "mid-summer", 
