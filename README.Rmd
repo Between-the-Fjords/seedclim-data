@@ -78,3 +78,45 @@ knitr::kable(plot_dic)
 ```{r turf-dic, echo=FALSE}
 knitr::kable(turf_dic)
 ```
+
+### TAXON
+
+```{r taxon-dic, echo=FALSE}
+knitr::kable(taxon_dic)
+```
+
+### TURF COMMUNITY
+
+```{r turf-comm-dic, echo=FALSE}
+knitr::kable(turf_community_dic)
+```
+
+### SUBTURF COMMUNITY
+
+```{r subturf-comm-dic, echo=FALSE}
+knitr::kable(subturf_community_dic)
+```
+
+### TURF ENVIRONMENT
+
+```{r turf-env-dic, echo=FALSE}
+knitr::kable(turf_environment_dic)
+```
+
+### SUBTURF ENVIRONMENT
+
+```{r subturf-env-dic, echo=FALSE}
+knitr::kable(subturf_environment_dic)
+```
+
+### SITE ATTRIBUTES
+
+```{r site-attr-dic, echo=FALSE}
+knitr::kable(site_attributes_dic)
+```
+
+### SPECIES ATTRIBUTES
+
+```{r sp-attr-dic, echo=FALSE}
+knitr::kable(species_attributes_dic)
+```
