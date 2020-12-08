@@ -120,7 +120,7 @@ species_attributes <- species_attributes %>%
   ) %>% 
   rename_with(.cols = matches(" "), ~str_replace(., " ", "_")) %>% 
   rename_with(.cols = c(-Lids_page, -`Mossberg_page`), tolower) %>% 
-  rename_with(.cols = c(lower, upper), ~paste0(., "vegetation_zone")) %>%  
+  rename_with(.cols = c(lower, upper), ~paste0(., "_vegetation_zone")) %>%  
   full_join(select(taxa, species, functional_group = functionalGroup, lifespan = lifeSpan)) %>%
   mutate(across(starts_with("flowering_"), ~ recode(.,
                                                     "MSo" = "mid-summer", 
