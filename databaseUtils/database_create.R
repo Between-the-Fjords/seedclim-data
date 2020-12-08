@@ -156,6 +156,7 @@ sites <- read_csv("databaseUtils/setup-data/site_table.csv")
 site_fields <- dbListFields(conn = con, "sites")
 
 sites <- sites %>% 
+  rename(norwegian_name = site_name) %>% 
   mutate(
     site_code = str_replace(site_code, "low", "bor"), 
     site_code = str_replace(site_code, "int", "sub"), 
@@ -173,7 +174,7 @@ sites <- sites %>%
 
 
 db_pad_write_table(conn = con, table = "sites",
-                value = sites %>% select(one_of(site_fields)))
+                value = sites %>% select(all_of(site_fields)))
 
 ## site attributes
 sites_attributes <- sites %>% 
