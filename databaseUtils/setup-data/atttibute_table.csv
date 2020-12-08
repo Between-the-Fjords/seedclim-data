@@ -62,8 +62,8 @@ value_categorical,Text,Categorical values,literature
 norwegian_name,NA,Norwegian species name,literature
 flowering_start,spring,Start of flowering defined as spring early mid or late summer,literature
 flowering_finish,mid-summer,End of flowering defined as spring early mid late summer or autumn,literature
-lower_vegetation_zone,Nem,Lower vegetation zone,literature
-upper_vegetation_zone,Lalp,Upper vegetation zone,literature
+lowervegetation_zone,Nem,Lower vegetation zone,literature
+uppervegetation_zone,Lalp,Upper vegetation zone,literature
 habitat,Grassland,Habitat the species occurs,literature
 soil_type,base-rich,Species association with base rich soils,literature
 rarity,Common,Common or scattered species,literature
