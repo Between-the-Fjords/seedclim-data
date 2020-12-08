@@ -15,9 +15,9 @@ knitr::opts_knit$set(root.dir = "../")
 ```{r importChunk}
 #load packages
 library("tidyverse")
-library("furrr")#for parallel processing
+#library("furrr")#for parallel processing
 library("DBI")# also needs RMySQL installed
-plan(multiprocess, workers = 2)
+#plan(multiprocess, workers = 2)
 ```
 
 
@@ -31,7 +31,7 @@ source("start_here.R")
 subturf_cover_thin <- full_join(cover.thin, subturf.thin) %>% 
     mutate(problems = case_when(
       is.na(cover) ~ "no cover",
-      is.na(subTurf) ~ "no subturf",
+      is.na(subturf) ~ "no subturf",
       TRUE ~ "OK"
     ))
 
@@ -39,8 +39,8 @@ subturf_cover_thin %>% count(problems)
 ```
 
 ```{r}
-tibble(subTurf = 1:25) %>% 
-ggplot(aes(x = (subTurf - 1) %% 5, y = 5 - ((subTurf - 1) %/% 5), label = subTurf)) +
+tibble(subturf = 1:25) %>% 
+ggplot(aes(x = (subturf - 1) %% 5, y = 5 - ((subturf - 1) %/% 5), label = subturf)) +
     geom_tile(colour = "grey60", fill = "grey90", show.legend = FALSE, alpha = .8) +
   geom_text() +
   scale_x_continuous(expand = c(0, 0)) +  
@@ -57,10 +57,10 @@ x <- subturf_cover_thin %>%
   arrange(destSiteID, TTtreat, turfID) %>% 
   group_by(turfID) %>% 
   nest(.key = "data") %>% 
-  {future_pmap(
+  {pmap(
     .l = list(d = .$data, turfID = .$turfID),
     .f = function(d, turfID){
-  g <- ggplot(d, aes(x = (subTurf - 1) %% 5, y = 5 - ((subTurf - 1) %/% 5), fill = cover)) +
+  g <- ggplot(d, aes(x = (subturf - 1) %% 5, y = 5 - ((subturf - 1) %/% 5), fill = cover)) +
     geom_tile(colour = "grey60") +
     facet_grid(species ~ year) +
     ggtitle(paste0("Plot ", turfID, "; destination ", d$destSiteID)) +
