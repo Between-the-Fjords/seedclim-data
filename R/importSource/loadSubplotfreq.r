@@ -9,15 +9,15 @@ subturf.thin <- tbl(con, "sites") %>%
                      select(plotID, destBlockID = blockID),
       by = c("destinationPlotID" = "plotID")
     ) %>% 
-    inner_join(tbl(con, "subTurfCommunity"), by = "turfID") %>% 
-    inner_join(tbl(con, "subTurfEnvironment") %>% 
-                 select(turfID, year, subTurf, bad),
-               by = c("turfID", "year", "subTurf")) %>% 
-   inner_join(tbl(con, "turfEnvironment") %>% 
+    inner_join(tbl(con, "subturf_community"), by = "turfID") %>% 
+    inner_join(tbl(con, "subturf_environment") %>% 
+                 select(turfID, year, subturf, bad),
+               by = c("turfID", "year", "subturf")) %>% 
+   inner_join(tbl(con, "turf_environment") %>% 
                 select(turfID, year, recorder), 
               by  = c("turfID", "year")) %>% 
    filter(TTtreat != "", year != 2010) %>% 
-   select(siteID, blockID, TTtreat, turfID, subTurf, year, species, destBlockID, bad, temperature_level, precipitation_level, recorder) %>% 
+   select(siteID, blockID, TTtreat, turfID, subturf, year, species, destBlockID, bad, temperature_level, precipitation_level, recorder) %>% 
   collect()
 
 
@@ -44,8 +44,8 @@ subturf <- subturf %>%
   select(-(siteID:recorder)) 
 
 #stomping correction
-boxplot(rowSums(subturf) ~ bad, data = subturf.meta, notch = TRUE)
-boxplot(rowSums(subturf) ~ recorder + temperature_level, data=subturf.meta, notch = TRUE, las = 2)
+boxplot(rowSums(subturf) ~ bad, data = select(subturf.meta, -subturf), notch = TRUE)
+boxplot(rowSums(subturf) ~ recorder + temperature_level, data = select(subturf.meta, -subturf), notch = TRUE, las = 2)
 
 subturf.meta[subturf.meta$bad == "x",]
 #impute data from previous year for damaged subplots

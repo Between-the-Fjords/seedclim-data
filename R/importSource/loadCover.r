@@ -35,12 +35,12 @@
 # cover$Epi.sp <- cover$Epi.sp + cover$Epi.ana
 # cover$Epi.ana <- NULL
 
-cover.thin <- tbl(con, sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subTurfEnvironment.bad) AS CountOfbad
-FROM subTurfEnvironment where (subTurfEnvironment.year = turfCommunity.year) AND (subTurfEnvironment.turfID = turfCommunity.turfID)
- AND ( (subTurfEnvironment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded_C as summer_temperature, sites.annual_precipitation_gridded_mm as annual_precipitation, sites.precipitation_level, turfCommunity.Year, turfCommunity.species, turfCommunity.cover, turfEnvironment.recorder , dest_blocks.siteID as destSiteID
+cover.thin <- tbl(con, sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subturf_environment.bad) AS CountOfbad
+FROM subturf_environment where (subturf_environment.year = turf_community.year) AND (subturf_environment.turfID = turf_community.turfID)
+ AND ( (subturf_environment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded as summer_temperature, sites.annual_precipitation_gridded as annual_precipitation, sites.precipitation_level, turf_community.Year, turf_community.species, turf_community.cover, turf_environment.recorder , dest_blocks.siteID as destSiteID
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
-INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turfCommunity ON turfs.turfID = turfCommunity.turfID) INNER JOIN turfEnvironment ON (turfEnvironment.year = turfCommunity.Year) AND (turfs.turfID = turfEnvironment.turfID)
-WHERE NOT turfs.TTtreat='' AND ((Not (turfCommunity.Year)=2010))")) %>% 
+INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turf_community ON turfs.turfID = turf_community.turfID) INNER JOIN turf_environment ON (turf_environment.year = turf_community.year) AND (turfs.turfID = turf_environment.turfID)
+WHERE NOT turfs.TTtreat='' AND ((Not (turf_community.Year)=2010))")) %>% 
   collect()
 
 cover.thin
@@ -48,10 +48,10 @@ cover.thin
 #correct for stomping
 cover.thin %>% count(notbad)
 
-# stompingQ<-"SELECT blocks.siteID, blocks.blockID, turfs.turfID, subTurfEnvironment.year, turfs.TTtreat, Count(subTurfEnvironment.bad) AS CountOfbad
-# FROM blocks INNER JOIN (plots INNER JOIN (turfs INNER JOIN subTurfEnvironment ON turfs.turfID = subTurfEnvironment.turfID) ON plots.plotID = turfs.destinationPlotID) ON blocks.blockID = plots.blockID
-# GROUP BY blocks.siteID, blocks.blockID, turfs.turfID, subTurfEnvironment.year, turfs.TTtreat, subTurfEnvironment.bad
-# HAVING (((subTurfEnvironment.bad)='x'))"
+# stompingQ<-"SELECT blocks.siteID, blocks.blockID, turfs.turfID, subturf_Environment.year, turfs.TTtreat, Count(subturf_environment.bad) AS CountOfbad
+# FROM blocks INNER JOIN (plots INNER JOIN (turfs INNER JOIN subturf_Environment ON turfs.turfID = subturf_Environment.turfID) ON plots.plotID = turfs.destinationPlotID) ON blocks.blockID = plots.blockID
+# GROUP BY blocks.siteID, blocks.blockID, turfs.turfID, subturf_Environment.year, turfs.TTtreat, subturf_Environment.bad
+# HAVING (((subturf_Environment.bad)='x'))"
 # stomping <- tbl(con, sql(stompingQ)) %>% collect()
 # #stomping <- filter(stomping, is.na(TTtreat)|TTtreat == "TTC") %>% 
 # #  distinct()
@@ -75,23 +75,23 @@ siri <- tbl(con, "sites") %>%
   inner_join(tbl(con, "blocks"), by  = "siteID") %>% 
   inner_join(tbl(con, "plots"), by = "blockID") %>% 
   inner_join(tbl(con, "turfs"), by = c("plotID" = "destinationPlotID")) %>% 
-  inner_join(tbl(con, "turfEnvironment"), by = "turfID") %>% 
-  inner_join(tbl(con, "TurfCommunity"), by = c("turfID", "year")) %>% 
+  inner_join(tbl(con, "turf_environment"), by = "turfID") %>% 
+  inner_join(tbl(con, "Turf_community"), by = c("turfID", "year")) %>% 
   filter(recorder == "Siri") %>% 
-  group_by(turfID, year, date, totalVascular, TTtreat, temperature_level) %>% 
+  group_by(turfID, year, date, total_vascular, TTtreat, temperature_level) %>% 
   summarise(SumOfCover = sum(cover)) %>% 
   collect()  
   
 
 
-# tbl(con, sql("SELECT turfs.turfID, TurfCommunity.Year, turfEnvironment.date, Sum(TurfCommunity.cover) AS SumOfcover, turfEnvironment.totalVascular, turfs.TTtreat, sites.Temperature_level
+# tbl(con, sql("SELECT turfs.turfID, Turf_community.Year, turf_environment.date, Sum(TurfCommunity.cover) AS SumOfcover, turf_environment.totalVascular, turfs.TTtreat, sites.Temperature_level
 # FROM ((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN ((turfs INNER JOIN turfEnvironment ON turfs.turfID = turfEnvironment.turfID) INNER JOIN TurfCommunity ON (TurfCommunity.Year = turfEnvironment.year) AND (turfs.turfID = TurfCommunity.turfID)) ON plots.plotID = turfs.destinationPlotID
 # WHERE (((turfEnvironment.recorder)='Siri'))
 # GROUP BY turfs.turfID, TurfCommunity.Year, turfEnvironment.date, turfEnvironment.totalVascular, turfs.TTtreat, sites.Temperature_level
 # HAVING ((Not (turfs.TTtreat)=''))
 # ORDER BY TurfCommunity.Year, turfEnvironment.date, Sum(TurfCommunity.cover) DESC")) 
 
-siriLOW <- siri[siri$SumOfCover/siri$totalVascular < 1.35,]
+siriLOW <- siri[siri$SumOfCover/siri$total_vascular < 1.35,]
 
 siri.fix <- paste(cover.thin$turfID, cover.thin$year) %in% paste(siriLOW$turfID, siriLOW$year)
 

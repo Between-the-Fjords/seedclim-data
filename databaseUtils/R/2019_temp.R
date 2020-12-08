@@ -59,7 +59,9 @@ corrections_2019 <- tribble(~current, ~correct,
                             "Valeriana", "Val.sam", 
                             "Fes pra", "Sch.pra",
                             "NID graminoid", "NID.gram",
-                            "#Seedling", "NID.seedling"
+                            "#Seedling", "NID.seedling",
+                            ## HYP MAC problem
+                            "Hyp mac", "Hype.mac"## temporary fix (90% wrong) so can be assigned 
 )
 
 
