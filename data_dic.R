@@ -101,8 +101,10 @@ turf_dic <- map_df(database$turfs %>% as_tibble, class) %>%
 
 #***********************************************************************************************
 ### TAXON
-range_taxon <- database$taxon %>%
+range_taxon <- database$taxon %>% 
   as_tibble() %>% 
+  filter(species_name != "???",
+         !family %in% c("??", "???")) %>% 
   summarise(
     across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
     across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
@@ -121,6 +123,7 @@ taxon_dic <- map_df(database$taxon %>% as_tibble, class) %>%
 ### TURF COMMUNITY
 range_turf_community <- database$turf_community %>%
   as_tibble() %>% 
+  filter(!species %in% c("X....1", "X...")) %>% 
   summarise(
     across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
     across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
@@ -137,8 +140,9 @@ turf_community_dic <- map_df(database$turf_community %>% as_tibble, class) %>%
 
 #***********************************************************************************************
 ### SUBTURF COMMUNITY
-range_subturf_community <- database$subturf_community %>%
+range_subturf_community <- database$subturf_community %>% 
   as_tibble() %>% 
+  filter(!species %in% c("X....1", "X...")) %>% 
   summarise(
     across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
     across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
@@ -191,34 +195,71 @@ subturf_environment_dic <- map_df(database$subturf_environment %>% as_tibble, cl
 
 #***********************************************************************************************
 ### SITE ATTRIBUTES
+a_range <- database$site_attributes %>% 
+  as_tibble() %>% 
+  select(-siteID) %>% 
+  group_by(attribute) %>% 
+  summarise(
+    across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
+    across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
+  ) %>% 
+  mutate(value_character = if_else(value_character == "NA - NA", NA_character_, value_character),
+         range = coalesce(value_character, value_numeric)) %>% 
+  select(attribute, range) %>% 
+  rename("Variable name" = "attribute", "Variable range or levels" = "range")
+  
 range_site_attributes <- database$site_attributes %>%
   as_tibble() %>% 
+  select(siteID) %>% 
   summarise(
     across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
     across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
   ) %>%
-  pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels")
+  pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels") %>% 
+  bind_rows(a_range)
 
 site_attributes_dic <- map_df(database$site_attributes %>% as_tibble, class) %>%
+  select(siteID) %>% 
   pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable type") %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
-  left_join(range_site_attributes, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  full_join(range_site_attributes, by = "Variable name") %>%
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(`Variable type` = if_else(`Variable name` %in% c("aspect", "slope", "solar_radiation", "total_N_red_oxi"), "numeric", "categorical"))
 
 #***********************************************************************************************
 ### SPECIES ATTRIBUTES
+sp_range <- database$species_attributes %>% 
+  as_tibble() %>% 
+  select(-species) %>% 
+  group_by(attribute) %>% 
+  summarise(
+    across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
+    across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
+  ) %>% 
+  mutate(value_character = if_else(value_character == "NA - NA", NA_character_, value_character),
+         range = coalesce(value_character, value_numeric)) %>% 
+  select(attribute, range) %>% 
+  rename("Variable name" = "attribute", "Variable range or levels" = "range")
+
+
 range_species_attributes <- database$species_attributes %>%
   as_tibble() %>% 
+  select(species) %>% 
   summarise(
     across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
     across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
   ) %>%
-  pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels")
+  pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels") %>% 
+  bind_rows(sp_range)
 
 species_attributes_dic <- map_df(database$species_attributes %>% as_tibble, class) %>%
+  select(species) %>% 
   pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable type") %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
-  left_join(range_species_attributes, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  full_join(range_species_attributes, by = "Variable name") %>%
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(`Variable type` = case_when(`Variable name` == "comment" ~ NA_character_,
+                                     `Variable name` %in% c("flowering_finish", "flowering_start", "functional_group", "habitat", "lifespan", "lowervegetation_zone", "norwegian_name", "rarity", "soil_type", "uppervegetation_zone") ~ "categorical",
+                                     TRUE ~ "numeric"))

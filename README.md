@@ -88,13 +88,13 @@ Relationship of all data sets.
 
 ### TAXON
 
-| Variable name | Variable type | Variable range or levels               | Units/treatment level | Description                                    | How measured |
-| :------------ | :------------ | :------------------------------------- | :-------------------- | :--------------------------------------------- | :----------- |
-| species       | categorical   | Ach.mil - X….1                         | Ach.mil               | three letter codes for genus and species names | identified   |
-| species\_name | categorical   | ??? - Viscaria vulgaris                | Achillea millefolium  | full genus and species names                   | identified   |
-| authority     | categorical   | NA - NA                                | NA                    | taxanomic authority                            | defined      |
-| family        | categorical   | ?? - Woodsiaceae                       | Asteraceae            | Plant family name                              | identified   |
-| comment       | categorical   | New name? - Synonym: Kalmia procumbens | NA                    | NA                                             | NA           |
+| Variable name | Variable type | Variable range or levels                 | Units/treatment level | Description                                    | How measured |
+| :------------ | :------------ | :--------------------------------------- | :-------------------- | :--------------------------------------------- | :----------- |
+| species       | categorical   | Ach.mil - Vis.vul                        | Ach.mil               | three letter codes for genus and species names | identified   |
+| species\_name | categorical   | Achillea millefolium - Viscaria vulgaris | Achillea millefolium  | full genus and species names                   | identified   |
+| authority     | categorical   | NA - NA                                  | NA                    | taxanomic authority                            | defined      |
+| family        | categorical   | Apiaceae - Woodsiaceae                   | Asteraceae            | Plant family name                              | identified   |
+| comment       | categorical   | New name? - Synonym: Kalmia procumbens   | NA                    | NA                                             | NA           |
 
 ### TURF COMMUNITY
 
@@ -102,7 +102,7 @@ Relationship of all data sets.
 | :------------ | :------------ | :---------------------------------------------------------------------------------------- | :-------------------- | :---------------------------------------------------------------------------- | :----------- |
 | turfID        | categorical   | 1 TT2 28 - Vik5RTG                                                                        | 1 TT2 28              | Unique ID of vegetation turf as originplotID, treatment and destinationplotID | defined      |
 | year          | numeric       | 2009 - 2019                                                                               | 2009                  | Year of the sampling                                                          | defined      |
-| species       | categorical   | Ach.mil - X….1                                                                            | Ach.mil               | three letter codes for genus and species names                                | identified   |
+| species       | categorical   | Ach.mil - Vis.vul                                                                         | Ach.mil               | three letter codes for genus and species names                                | identified   |
 | cover         | numeric       | 0.04 - 100                                                                                | percentage            | Percent cover of a species in a turf                                          | measured     |
 | cf            | numeric       | 0 - 1                                                                                     | NA                    | Uncertain species identification                                              | defined      |
 | flag          | categorical   | imputed from NID.seedling presence - Subturf w/o cover. Imputed as mean of adjacent years | NA                    | Values flagged for possible error                                             | NA           |
@@ -114,7 +114,7 @@ Relationship of all data sets.
 | turfID        | categorical   | 1 TT2 28 - Vik5RTG       | 1 TT2 28              | Unique ID of vegetation turf as originplotID, treatment and destinationplotID | defined      |
 | subturf       | numeric       | 1 - 25                   | 1                     | Location of subturf within the turf                                           | defined      |
 | year          | numeric       | 2009 - 2019              | 2009                  | Year of the sampling                                                          | defined      |
-| species       | categorical   | Ach.mil - X….1           | Ach.mil               | three letter codes for genus and species names                                | identified   |
+| species       | categorical   | Ach.mil - Vis.vul        | Ach.mil               | three letter codes for genus and species names                                | identified   |
 | presence      | categorical   | \- VV                    | 0-1                   | Presence of species                                                           | measured     |
 | seedlings     | numeric       | 0 - 12                   | 0-1                   | Presence of seedlings where cotyledons are visible                            | measured     |
 | juvenile      | numeric       | 0 - 12                   | 0-1                   | Presence of juveniles that are not fully grown plants                         | measured     |
@@ -167,18 +167,52 @@ Relationship of all data sets.
 
 ### SITE ATTRIBUTES
 
-| Variable name    | Variable type | Variable range or levels    | Units/treatment level | Description    | How measured      |
-| :--------------- | :------------ | :-------------------------- | :-------------------- | :------------- | :---------------- |
-| siteID           | categorical   | Alrust - Vikesland          | Alrust                | Unique site ID | defined           |
-| attribute        | categorical   | aspect - total\_N\_red\_oxi | NA                    | NA             | NA                |
-| value\_numeric   | numeric       | 0 - 607                     | Number                | Numeric values | measured-recorded |
-| value\_character | categorical   | Ålrust - Vikesland          | NA                    | NA             | NA                |
+| Variable name      | Variable type | Variable range or levels                                             | Units/treatment level                    | Description                              | How measured |
+| :----------------- | :------------ | :------------------------------------------------------------------- | :--------------------------------------- | :--------------------------------------- | :----------- |
+| siteID             | categorical   | Alrust - Vikesland                                                   | Alrust                                   | Unique site ID                           | defined      |
+| aspect             | numeric       | 0 - 0                                                                | degree                                   | Aspect of the block                      | measured     |
+| geology            | categorical   | diorite to granitic gneiss, migmatite - rhyolite, rhyodacite, dacite | marble                                   | Main bedrock types                       | defined      |
+| land\_use          | categorical   | free-range grazing, cattle, sheep, reindeer - pasture, sheep         | free-range grazing cattle sheep reindeer | Main land-use type                       | defined      |
+| site\_name         | categorical   | Ålrust - Vikesland                                                   | Ålrust                                   | Unique site name in Norwegian            | from map     |
+| slope              | numeric       | 0 - 0                                                                | degree                                   | Slope of the block                       | measured     |
+| solar\_radiation   | numeric       | 0.643973 - 0.986367                                                  | mw\_hour\_m-2                            | Solar radiation                          | measured     |
+| total\_N\_red\_oxi | numeric       | 305 - 607                                                            | mg\_N\_m-2\_yr-1                         | Total soil nitrogen reduced and oxidiced | measured     |
 
 ### SPECIES ATTRIBUTES
 
-| Variable name    | Variable type | Variable range or levels  | Units/treatment level | Description                                    | How measured      |
-| :--------------- | :------------ | :------------------------ | :-------------------- | :--------------------------------------------- | :---------------- |
-| species          | categorical   | Ach.mil - Vis.vul         | Ach.mil               | three letter codes for genus and species names | identified        |
-| attribute        | categorical   | boreal\_nemoral - wetland | NA                    | NA                                             | NA                |
-| value\_numeric   | numeric       | 0.5 - 4800                | Number                | Numeric values                                 | measured-recorded |
-| value\_character | categorical   | SBor (MBor-NBor) - woody  | NA                    | NA                                             | NA                |
+| Variable name          | Variable type | Variable range or levels                                                       | Units/treatment level | Description                                                        | How measured |
+| :--------------------- | :------------ | :----------------------------------------------------------------------------- | :-------------------- | :----------------------------------------------------------------- | :----------- |
+| species                | numeric       | Ach.mil - Vis.vul                                                              | Ach.mil               | three letter codes for genus and species names                     | identified   |
+| boreal\_nemoral        | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is boreal to nemoral                  | recorded     |
+| comment                | NA            | Amfi-atlantisk i flere raser, to (eller flere i Norge) - Viola riviniana data. | NA                    | NA                                                                 | NA           |
+| flowering\_finish      | categorical   | autumn - spring                                                                | mid-summer            | End of flowering defined as spring early mid late summer or autumn | recorded     |
+| flowering\_start       | categorical   | early summer - spring                                                          | spring                | Start of flowering defined as spring early mid or late summer      | recorded     |
+| flowers\_autumn        | numeric       | 1 - 1                                                                          | 1                     | Species with main flowering time in autumn                         | recorded     |
+| flowers\_early\_summer | numeric       | 1 - 1                                                                          | 1                     | Species with main flowering time in early summer                   | recorded     |
+| flowers\_late\_summer  | numeric       | 1 - 1                                                                          | 1                     | Species with main flowering time in late summer                    | recorded     |
+| flowers\_mid\_summer   | numeric       | 1 - 1                                                                          | 1                     | Species with main flowering time in mid-summer                     | recorded     |
+| flowers\_spring        | numeric       | 1 - 1                                                                          | 1                     | Species with main flowering time in spring                         | recorded     |
+| forest                 | numeric       | 1 - 1                                                                          | 1                     | Species main habitat type is forest                                | recorded     |
+| functional\_group      | categorical   | forb - woody                                                                   | forb                  | Plant functional group                                             | recorded     |
+| grassland              | numeric       | 1 - 1                                                                          | 1                     | Species main habitat type is grassland                             | recorded     |
+| habitat                | categorical   | Forest - Wetland                                                               | Grassland             | Habitat the species occurs                                         | recorded     |
+| high\_alpine           | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is high alpine                        | recorded     |
+| Lids\_page             | numeric       | 105 - 1106                                                                     | 6                     | Page number of species in Lids Flora                               | literature   |
+| lifespan               | categorical   | annual - perennial                                                             | annual                | Species lifespan                                                   | recorded     |
+| low\_alpine            | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is low alpine                         | recorded     |
+| lowervegetation\_zone  | categorical   | (BNem-MBor) NBor - Nem (BNem)                                                  | NA                    | NA                                                                 | NA           |
+| max\_height            | numeric       | 5 - 4800                                                                       | cm                    | Maximum species height                                             | recorded     |
+| mid\_alpine            | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is mid-alpine                         | recorded     |
+| mid\_boreal            | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is mid boreal                         | recorded     |
+| min\_height            | numeric       | 1 - 300                                                                        | cm                    | Minimum species height                                             | recorded     |
+| Mossberg\_page         | numeric       | 62 - 862                                                                       | 32                    | Page number of species in Mossbergs Flora                          | literature   |
+| nemoral                | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is nemoral                            | recorded     |
+| north\_boreal          | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is north boreal                       | recorded     |
+| norwegian\_name        | categorical   | <d8>yentr<f8>st sp. - Vier sp.                                                 | NA                    | Norwegian species name                                             | recorded     |
+| polyploid\_2n          | numeric       | 1 - 3                                                                          | 1-3                   | Species polyploidy level                                           | recorded     |
+| rarity                 | categorical   | Common - Scattered                                                             | Common                | Common or scattered species                                        | recorded     |
+| rocky                  | numeric       | 1 - 1                                                                          | 1                     | Species main habitat type is rocky                                 | recorded     |
+| soil\_type             | categorical   | base-rich - not base-rich                                                      | base-rich             | Species association with base rich soils                           | recorded     |
+| south\_boreal          | numeric       | 0.5 - 1                                                                        | 0.5-1                 | Species main vegetation zone is south boreal                       | recorded     |
+| uppervegetation\_zone  | categorical   | SBor (MBor-NBor) - SBor (MBor)                                                 | NA                    | NA                                                                 | NA           |
+| wetland                | numeric       | 1 - 1                                                                          | 1                     | Species main habitat type is wetland                               | recorded     |
