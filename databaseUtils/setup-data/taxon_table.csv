@@ -1,216 +1,216 @@
-species,speciesName,family,functionalGroup,lifeSpan,comment,height,leafSize,seedMass,SLA
-Ach.mil,Achillea millefolium,Asteraceae,forb,perennial,NA,0.402,5.04598,0.1692,15.0353
-Aco.sep,Aconitum septentrionale,Ranunculaceae,forb,perennial,New name?,NA,NA,NA,NA
-Agr.cap,Agrostis capillaris,Poaceae,graminoid,perennial,NA,0.708667,1.41808,0.0641,20.5394
-Agr.mer,Agrostis mertensii,Poaceae,graminoid,perennial,NA,0.0943788,0.436865,0.125938,16.3922
-Aju.pyr,Ajuga pyramidalis,Lamiaceae,forb,perennial,NA,0.259542,5.51083,1.7032,15.0457
-Alc.alp,Alchemilla alpina,Rosaceae,forb,perennial,NA,0.2282,4.23399,0.4404,12.893
-Alc.sp,Alchemilla sp,Rosaceae,forb,perennial,NA,0.2282,14.2278,0.4404,17.0033
-Ane.nem,Anemone nemorosa,Ranunculaceae,forb,perennial,NA,0.217596,5.74928,1.7796,19.1464
-Ant.alp,Antennaria alpina,Asteraceae,forb,perennial,NA,NA,NA,NA,NA
-Ant.dio,Antennaria dioica,Asteraceae,forb,perennial,NA,0.157298,0.544585,0.0535,17.482
-Ant.odo,Anthoxanthum odoratum,Poaceae,graminoid,perennial,NA,0.6116,0.748126,0.62875,22.8215
-Arc.alp,Arctous alpinus,Ericaceae,woody,perennial,NA,0.255609,1.00944,2.404,10.0761
-Arc.uva,Arctostaphylos uva-ursi,Ericaceae,woody,perennial,NA,NA,NA,NA,NA
-Ast.alp,Astragalus alpinus,Fabaceae,forb,perennial,NA,0.219169,3.27302,2.15,25.2878
-Ave.fle,Avenella flexuosa,Poaceae,graminoid,perennial,NA,0.716867,3.2081,0.6704,15.2162
-Ave.pra,Avenula pratensis,Poaceae,graminoid,perennial,NA,1.02244,6.82084,2.68072,8.66605
-Ave.pub,Avenula pubescens,Poaceae,graminoid,perennial,NA,0.943788,6.25732,1.92416,18.0184
-Bar.alp,Bartsia alpina,Orobanchaceae,forb,perennial,NA,NA,NA,NA,NA
-Bet.nan,Betula nana,Betulaceae,woody,perennial,NA,1.33703,0.363425,0.3184,11.234
-Bet.pub,Betula pubescens,Betulaceae,woody,perennial,NA,NA,NA,NA,NA
-Bis.viv,Bistorta vivipara,Polygonaceae,forb,perennial,NA,0.3426,2.17577,1.82846,15.9598
-Bot.lun,Botrychium lunaria,Ophioglossaceae,pteridophyte,perennial,NA,0.275272,3.08109,NA,NA
-Cal.vul,Calluna vulgaris,Ericaceae,woody,perennial,NA,1.80893,0.12331399999999999,0.0196,7.72192
-Cam.rot,Campanula rotundifolia,Campanulaceae,forb,perennial,NA,0.4438,0.437706,0.0528,17.435
-Cap.bur,Capsella bursa-pastoris,Brassicaceae,forb,annual,NA,0.199244,13.4856,0.0985155,23.7773
-Car.atr,Carex atrata,Cyperaceae,graminoid,perennial,NA,0.141568,3.4819,0.621571,18.0688
-Car.big,Carex bigelowii,Cyperaceae,graminoid,perennial,NA,0.43925,2.6574,0.6215,16.5482
-Car.cap,Carex capillaris,Cyperaceae,graminoid,perennial,NA,0.147,0.908723,0.63,20.8075
-Car.car,Carum carvi,Apiaceae,forb,perennial,NA,0.141568,2.83592,1.6468,17.8241
-Car.dio,Carex dioica,Cyperaceae,graminoid,perennial,NA,0.157298,0.25039,0.7692,10.847
-Car.ech,Carex echinata,Cyperaceae,graminoid,perennial,NA,0.2872,1.30204,0.8026,15.1332
-Car.fla,Carex flava,Cyperaceae,graminoid,perennial,NA,NA,2.37697,1.052,27.9065
-Car.lep,Carex leporina,Cyperaceae,graminoid,perennial,NA,0.462501,2.56106,0.6748,18.4409
-Car.nig,Carex nigra,Cyperaceae,graminoid,perennial,NA,0.4595,1.16493,0.8024,15.4528
-Car.nor,Carex norvegica,Cyperaceae,graminoid,perennial,NA,0.267,1.79127,0.350769,18.4533
-Car.pal,Carex pallescens,Cyperaceae,graminoid,perennial,NA,0.654333,2.73649,1.25258,24.7993
-Car.pan,Carex panicea,Cyperaceae,graminoid,perennial,NA,0.29,2.41053,2.8224,13.2261
-Car.pil,Carex pilulifera,Cyperaceae,graminoid,perennial,NA,0.414,2.51476,1.15,24.4547
-Car.pul,Carex pulicaris,Cyperaceae,graminoid,perennial,NA,0.157298,1.00629,1.6614,8.09619
-Car.rup,Carex rupestris,Cyperaceae,graminoid,perennial,NA,0.117973,0.227239,NA,NA
-Car.sax,Carex saxatilis,Cyperaceae,graminoid,perennial,NA,0.196623,2.60559,0.8196,10.3279
-Car.ser,Carex serotina,Cyperaceae,graminoid,perennial,Synonym:  Carex viridula viridula,NA,NA,NA,NA
-Car.sp,Carex sp.,Cyperaceae,graminoid,perennial,NA,0.29284,2.14057,1.08473,17.6914
-Car.vag,Carex vaginata,Cyperaceae,graminoid,perennial,NA,0.331667,3.2926,2.088,18.571
-Caru.car,Carum carvi,Apiaceae,forb,perennial,NA,0.707841,9.18421,1.92427,22.2233
-Cer.alp,Cerastium alpinum,Caryophyllaceae,forb,perennial,NA,0.196623,0.298009,0.2828,20.9094
-Cer.cer,Cerastium cerastoides,Caryophyllaceae,forb,perennial,NA,0.12846,0.103721,0.188133,21.5652
-Cer.fon,Cerastium fontanum,Caryophyllaceae,forb,perennial,NA,0.173028,1.33629,0.144,23.7897
-Cer.gla,Cerastium glabratum,Caryophyllaceae,forb,perennial,NA,NA,NA,NA,NA
-Cer.sp,Cerastium sp,Caryophyllaceae,forb,NA,NA,NA,NA,NA,NA
-Cha.alp,Chamorchis alpina,Orchidaceae,forb,NA,NA,NA,NA,NA,NA
-Cir.pal,Cirsium palustre,Asteraceae,forb,perennial,NA,1.33703,NA,1.57,NA
-Coe.vir,Coeloglossum viride,Orchidaceae,forb,perennial,NA,0.173028,3.08841,NA,NA
-Com.ten,Comastoma tenellum,Gentianaceae,forb,annual,NA,NA,NA,NA,NA
-Dac.glo,Dactylis glomerata,Poaceae,graminoid,perennial,NA,1.118,10.6045,1.08707,21.514
-Dan.dec,Danthonia decumbens,Poaceae,graminoid,perennial,NA,0.157298,2.76639,1.4583,14.7178
-Des.alp,Deschampsia alpina,Poaceae,graminoid,perennial,NA,NA,NA,NA,NA
-Des.ces,Deschampsia cespitosa,Poaceae,graminoid,perennial,NA,1.1798,2.16146,0.2098,15.2005
-Dia.del,Dianthus deltoides,Caryophyllaceae,forb,perennial,NA,0.227,0.175644,0.2246,13.9425
-Dro.rot,Drosera rotundifolia,Droseraceae,forb,perennial,NA,0.152055,0.63488,0.0236,40.0817
-Dry.oct,Dryas octopetala,Rosaceae,woody,perennial,NA,0.0445678,1.59909,0.6288,8.86246
-Dry.sp,Dryopteris sp.,Dryopteridaceae,pteridophyte,perennial,NA,NA,NA,NA,NA
-Emp.her,Empetrum hermaphroditum,Ericaceae,woody,perennial,NA,0.235947,0.0507669,0.9844,5.85772
-Epi.ana,Epilobium anagallidifolium,Onagraceae,forb,perennial,NA,0.129,0.80562,0.066,22.8437
-Epi.sp,Epilobium sp.,Onagraceae,forb,perennial,NA,0.129,0.80562,0.066,22.8437
-Equ.arv,Equisetum arvense,Equisetaceae,pteridophyte,NA,NA,NA,NA,NA,NA
-Eri.uni,Erigeron uniflorus,Asteraceae,forb,perennial,NA,0.0865139,NA,0.232,NA
-Eup.sp,Euphrasia sp.,Orobanchaceae,forb,annual,NA,0.158583,0.429953,NA,26.9487
-Fes.ovi,Festuca ovina,Poaceae,graminoid,perennial,NA,0.412,0.413983,0.435721,14.0684
-Fes.rub,Festuca rubra,Poaceae,graminoid,perennial,NA,0.803,1.15139,1.108,18.412
-Fes.viv,Festuca vivipara,Poaceae,graminoid,perennial,NA,0.267,0.307608,NA,NA
-Fil.ulm,Filipendula ulmaria,Rosaceae,graminoid,perennial,NA,1.24528,59.5287,0.749786,16.8234
-Fra.ves,Fragaria vesca,Rosaceae,forb,perennial,NA,NA,NA,NA,NA
-Gal.bor,Galium boreale,Rubiaceae,forb,perennial,NA,0.23,0.358643,0.854,16.8625
-Gal.sax,Galium saxatile,Rubiaceae,forb,perennial,NA,0.213,0.0365925,0.7336,21.0223
-Gal.uli,Galium uliginosum,Rubiaceae,forb,perennial,NA,0.419461,0.0951405,0.3532,25.7979
-Gal.ver,Galium verum,Rubiaceae,forb,perennial,NA,0.398,0.142602,0.5888,14.4719
-Gen.ama,Gentianella amarella,Gentianaceae,forb,perennial,NA,0.249055,25.5928,0.1662,24.3233
-Gen.cam,Gentianella campestris,Gentianaceae,forb,perennial,NA,0.30778,NA,0.21,NA
-Gen.niv,Gentiana nivalis,Gentianaceae,forb,perennial,NA,0.0953333,0.0728191,0.029760000000000002,34.4262
-Gen.pur,Gentiana purpurea,Gentianaceae,forb,perennial,NA,0.668517,NA,0.48,NA
-Gent.sp,Gentiana sp,Gentianaceae,forb,perennial,NA,0.346056,NA,0.48,NA
-Ger.syl,Geranium sylvaticum,Geraniaceae,forb,perennial,NA,0.709667,18.0238,6.01978,17.1538
-Geu.riv,Geum rivale,Rosaceae,forb,perennial,NA,0.49811,47.0433,0.7448,17.9122
-Geu.urb,Geum urbanum,Rosaceae,forb,perennial,NA,0.576759,25.183,2.04738,33.4135
-Geum,Geum sp,Rosaceae,forb,perennial,NA,0.485002,38.8512,2.04738,33.4135
-Gym.dry,Gymnocarpium dryopteris,Woodsiaceae,pteridophyte,perennial,NA,0.393245,52.5194,NA,NA
-Hie.alp,Hieracium alpinum,Asteraceae,forb,perennial,NA,0.157298,NA,1.014,NA
-Hie.pil,Hieracium pilosella,Asteraceae,forb,perennial,NA,0.365333,3.01168,0.244667,22.279
-Hie.sp,Hieracium sp.,Asteraceae,forb,perennial,NA,0.397049,12.7623,0.500776,20.1717
-Hie.umb,Hieracium umbellatum,Asteraceae,forb,perennial,NA,0.668517,8.38334,0.392038,18.0644
-Hie.vul,Hieracium vulgatum,Asteraceae,forb,perennial,NA,NA,26.8918,0.3524,NA
-Hup.sel,Huperzia selago,Lycopodiaceae,pteridophyte,perennial,NA,0.196623,0.0519614,0,12.0314
-Hype.mac,Hypericum maculatum,Hypericaceae,forb,perennial,NA,0.481,2.40273,0.170071,22.1439
-Hypo.mac,Hypochaeris maculata,Asteraceae,forb,perennial,NA,0.180893,15.9116,2.1192,17.2609
-Hypo.rad,Hypochaeris radicata,Asteraceae,forb,perennial,NA,0.102244,19.1037,0.632267,19.2994
-Jun.alp,Juncus alpinoarticulatus,Juncaceae,graminoid,perennial,NA,NA,NA,NA,NA
-Jun.arc,Juncus arcticus,Juncaceae,graminoid,perennial,NA,NA,NA,NA,NA
-Jun.com,Juniperus communis,Cupressaceae,woody,perennial,NA,NA,NA,NA,NA
-Jun.fil,Juncus filiformis,Juncaceae,graminoid,NA,NA,NA,NA,NA,NA
-Jun.tri,Juncus trifidus,Juncaceae,graminoid,perennial,NA,0.233325,1.10497,0.1756,13.875
-Kna.arv,Knautia arvensis,Dipsacaceae,forb,perennial,NA,0.516667,17.8601,6.6844,16.7686
-Kob.sim,Kobresia simpliciuscula,Cyperaceae,graminoid,perennial,NA,0.141568,NA,0.483067,NA
-Leo.aut,Leontodon autumnalis,Asteraceae,forb,perennial,NA,0.407333,2.73774,0.800855,24.3419
-Leu.vul,Leucanthemum vulgare,Asteraceae,forb,perennial,NA,0.48,4.90096,0.4132,16.7425
-Lin.vul,Linaria vulgaris,Scrophulariaceae,forb,perennial,NA,NA,NA,NA,NA
-Loi.pro,Loiseleuria procumbens,Ericaceae,woody,perennial,Synonym:  Kalmia procumbens,0.264785,0.0653259,0.02024,3.9071
-Lot.cor,Lotus corniculatus,Fabaceae,forb,perennial,NA,0.314,1.41033,1.40344,18.0091
-Luz.mul,Luzula multiflora,Juncaceae,graminoid,perennial,NA,0.435067,1.68249,0.6524,21.5901
-Luz.pil,Luzula pilosa,Juncaceae,graminoid,perennial,NA,0.235947,4.85948,1.0536,21.8041
-Luz.sp,Luzula sp.,Juncaceae,graminoid,perennial,NA,0.28659,2.34712,0.66,18.7304
-Luz.spi,Luzula spicata,Juncaceae,graminoid,perennial,NA,0.188758,0.499398,0.274,12.7969
-Mel.pra,Melampyrum pratense,Orobanchaceae,forb,annual,NA,0.328,2.39526,4.7016,22.0876
-Mel.sp,Melampyrum sp.,Orobanchaceae,forb,annual,NA,0.390116,2.78849,5.544,24.849
-Mel.syl,Melampyrum sylvaticum,Orobanchaceae,forb,annual,NA,0.452232,3.18172,6.3864,27.6104
-Min.bif,Minuartia biflora,Caryophyllaceae,forb,perennial,NA,NA,NA,NA,NA
-Mol.cae,Molinia caerulea,Poaceae,graminoid,perennial,NA,1.23872,9.41617,0.7366,17.0585
-Myo.dec,Myosotis decumbens,Boraginaceae,forb,perennial,NA,0.35392,NA,NA,NA
-Nar.str,Nardus stricta,Poaceae,graminoid,perennial,NA,0.427667,0.835538,0.357236,8.52903
-NID.gram,NA,NA,graminoid,NA,NA,NA,NA,NA,NA
-NID.herb,NA,NA,forb,NA,NA,NA,NA,NA,NA
-NID.rosett,NA,NA,forb,NA,NA,NA,NA,NA,NA
-NID.seedling,NA,NA,forb,NA,NA,NA,NA,NA,NA
-Noc.cae,Noccaea caerulescens,Brassicaceae,forb,annual,NA,NA,0.893011,NA,13.6854
-Oma.nor,Omalotheca norvegica,Asteraceae,forb,perennial,NA,0.145,2.52389,0.092,18.1035
-Oma.sup,Omalotheca supina,Asteraceae,forb,perennial,NA,0.094,0.3773,0.0833333,27.0221
-Oma.syl,Omalotheca sylvatica,Asteraceae,forb,perennial,NA,0.511218,NA,0.0502,NA
-Ort sec,Orthilia secunda,Pyrolaceae,forb,perennial,NA,NA,NA,NA,NA
-Oxa.ace,Oxalis acetosella,Oxalidaceae,forb,perennial,NA,0.061,3.95343,0.961,35.3559
-Oxy.dig,Oxyria digyna,Polygonaceae,forb,perennial,NA,0.157298,8.0484000000000009,0.6464,29.7568
-Oxy.lap,Oxytropis lapponica,Fabaceae,forb,NA,NA,NA,NA,NA,NA
-Par.pal,Parnassia palustris,Parnassiaceae,forb,perennial,NA,0.196623,1.9361,0.0366267,25.3937
-Phl.alp,Phleum alpinum,Poaceae,graminoid,perennial,NA,0.475667,2.3048,0.3849,20.353
-Phl.pra,Phleum pratense,Poaceae,graminoid,perennial,NA,0.583576,2.78103,0.58775,21.9607
-Phl.sp,Phleum sp.,NA,NA,NA,NA,NA,NA,NA,NA
-Phy.cae,Phyllodoce caerulea,Ericaceae,woody,perennial,NA,0.204487,0.0616096,0.0208571,8.89507
-Pic.abi,Picea abies,Picea abies,woody,perennial,NA,NA,NA,NA,NA
-Pim.sax,Pimpinella saxifraga,Apiaceae,forb,perennial,NA,0.541,19.0976,1.6444,13.7228
-Pin.syl,Pinus sylvestris,Pinaceae,woody,perennial,NA,NA,NA,NA,NA
-Pin.vul,Pinguicula vulgaris,Lentibulariaceae,forb,perennial,NA,0.0885,2.81913,0.02314,31.7588
-Pla.lan,Plantago lanceolata,Plantaginaceae,forb,perennial,NA,0.43,19.8568,1.61675,19.3305
-Pla.maj,Plantago major,Plantaginaceae,forb,perennial,NA,0.582003,NA,0.267838,19.5038
-Pla.med,Plantago media,Plantaginaceae,forb,perennial,NA,0.458,35.3313,0.385075,16.7321
-Poa.alp,Poa alpina,Poaceae,graminoid,perennial,NA,0.332333,0.904546,0.431111,18.4332
-Poa.ann,Poa annua,Poaceae,graminoid,annual,NA,0.133703,1.01239,0.2135,31.6499
-Poa.pra,Poa pratensis,Poaceae,graminoid,perennial,NA,0.763333,1.72045,0.272595,22.5045
-Pot.arg,Potentilla argentea,Rosaceae,forb,perennial,NA,0.534813,3.85685,0.094,14.5071
-Pot.cra,Potentilla crantzii,Rosaceae,forb,perennial,NA,0.271667,1.25344,0.8565,14.8098
-Pot.ere,Potentilla erecta,Rosaceae,forb,perennial,NA,0.429067,2.72972,0.7556,20.3907
-Pru.vul,Prunella vulgaris,Lamiaceae,forb,perennial,NA,0.12,1.85846,0.5768,20.3797
-Pyr.min,Pyrola minor,Ericaceae,forb,perennial,NA,0.178271,5.14387,0.00208,11.2915
-Pyr.rot,Pyrola rotundifolia,Ericaceae,forb,perennial,NA,0.204487,7.50878,NA,15.535
-Pyr.sp,Pyrola sp.,Ericaceae,forb,perennial,NA,0.511277,5.43184,1.896,17.5395
-Ran.acr,Ranunculus acris,Ranunculaceae,forb,perennial,NA,0.818067,4.03594,1.896,22.1078
-Ran.aur,Ranunculus auricomus,Ranunculaceae,forb,perennial,NA,0.275272,9.34206,2.3692,27.7402
-Ran.rep,Ranunculus repens,Ranunculaceae,forb,perennial,NA,0.380137,8.11413,2.8924,21.4786
-Rhi.min,Rhinanthus minor,Orobanchaceae,forb,annual,NA,0.141,2.6371000000000002,2.7855,17.2008
-Rho.ros,Rhodiola rosea,Crassulaceae,forb,perennial,NA,0.314596,0.834236,0.316,20.6603
-Rub.ida,Rubus idaeus,Rosaceae,woody,perennial,NA,0.36,13.1167,2.1156,17.2488
-Rum.ace,Rumex acetosa,Polygonaceae,forb,perennial,NA,0.9672,7.61333,0.944642,24.5095
-Rum.acl,Rumex acetosella,Polygonaceae,forb,perennial,NA,0.331,1.45153,0.4388,20.6015
-Sag.sp,Sagina sp.,Caryophyllaceae,forb,perennial,NA,NA,NA,NA,13.8449
-Sal.her,Salix herbacea,Salicaceae,woody,perennial,NA,0.017,1.74109,0.197462,14.4827
-Sal.phy,Salix phylicifolia,Salicaceae,woody,NA,NA,NA,NA,NA,NA
-Sal.ret,Salix reticulata,Salicaceae,woody,perennial,NA,0.157298,1.54003,0.1525,8.34523
-Sal.sp,Salix sp.,Salicaceae,woody,perennial,NA,0.087149,1.64056,0.174981,11.414
-Sau.alp,Saussurea alpina,Asteraceae,forb,perennial,NA,0.183514,9.21183,1.7524,19.9692
-Sax.aiz,Saxifraga aizoides,Saxifragaceae,forb,perennial,NA,0.149433,0.252372,0.054,10.3243
-Sax.ces,Saxifraga cespitosa,Saxifragaceae,forb,perennial,NA,0.0865139,NA,0.05776,NA
-Sax.opp,Saxifraga oppositifolia,Saxifragaceae,forb,perennial,NA,0.220217,NA,0.119333,NA
-Sed.acr,Sedum acre,Crassulaceae,forb,perennial,NA,0.0891355,NA,0.04,NA
-Sel.sel,Selaginella selaginoides,Selaginellaceae,pteridophyte,perennial,NA,0.063,0.00892857,NA,NA
-Sib.pro,Sibbaldia procumbens,Rosaceae,forb,perennial,NA,0.037,2.53166,0.4588,15.417
-Sil.aca,Silene acaulis,Caryophyllaceae,forb,perennial,NA,0.0683333,0.118931,0.3402,20.9479
-Sil.rup,Silene rupestris,Caryophyllaceae,forb,NA,NA,NA,NA,NA,NA
-Sil.vul,Silene vulgaris,Caryophyllaceae,forb,perennial,NA,0.424705,8.63217,0.7336,17.2609
-Sol.vir,Solidago virgaurea,Asteraceae,forb,perennial,NA,0.78649,16.8508,0.3696,18.8378
-Sor.auc,Sorbus aucuparia,Rosaceae,woody,perennial,NA,NA,NA,NA,NA
-Ste.gra,Stellaria graminea,Caryophyllaceae,forb,perennial,NA,0.4047,0.818079,0.335673,18.4103
-Ste.med,Stellaria media,Caryophyllaceae,forb,annual,NA,0.134,3.57143,0.4176,40.8816
-Suc.pra,Succisa pratensis,Succisa pratensis,forb,perennial,NA,0.537435,35.5728,1.244,15.5814
-Tar.sp,Taraxacum sp.,Asteraceae,forb,perennial,NA,0.557933,7.00855,NA,28.4466
-Tha.alp,Thalictrum alpinum,Ranunculaceae,forb,perennial,NA,0.209333,2.22272,0.857,16.6193
-Thl.arv,Thlaspi arvense,Brassicaceae,forb,annual,NA,0.234,8.8871,0.9624,21.3396
-Tof.cal,Tofieldia calyculata,Tofieldiaceae,forb,NA,NA,NA,NA,NA,NA
-Tof.pus,Tofieldia pusilla,Tofieldia pusilla,forb,perennial,NA,0.0511218,0.39944,0.038,14.3591
-Tri.ces,Trichophorum cespitosum,Cyperaceae,graminoid,perennial,NA,NA,NA,NA,NA
-Tri.eur,Trientalis europaea,Myrsinaceae,forb,perennial,NA,0.209731,2.16464,0.64225,29.359
-Tri.med,Trifolium medium,Fabaceae,forb,perennial,NA,0.629192,10.5167,1.8332,17.9037
-Tri.mon,Trifolium montanum,Fabaceae,forb,perennial,NA,0.43257,11.7645,0.990214,17.1545
-Tri.pra,Trifolium pratense,Fabaceae,forb,perennial,NA,0.426,5.09531,1.58056,12.7599
-Tri.rep,Trifolium repens,Fabaceae,forb,perennial,NA,0.296333,2.73147,0.4966,21.303
-Tri.sp,Trifolium sp,Fabaceae,forb,perennial,NA,NA,NA,NA,NA
-Vac.myr,Vaccinium myrtillus,Ericaceae,woody,perennial,NA,0.1775,1.47517,0.2704,17.3491
-Vac.sp,Vaccinium sp.,Ericaceae,woody,perennial,NA,0.32133,0.932579,0.25636,12.1941
-Vac.uli,Vaccinium uliginosum,Ericaceae,woody,perennial,NA,0.456164,0.857967,0.212933,12.5822
-Vac.vit,Vaccinium vitis-idaea,Ericaceae,woody,perennial,NA,0.330326,0.464604,0.285745,6.65093
-Val.sam,Valeriana sambucifolia,Valerianaceae,forb,perennial,NA,NA,NA,NA,NA
-Ver.alp,Veronica alpina,Plantaginaceae,forb,perennial,NA,0.174667,0.712124,0.052,21.8101
-Ver.arv,Veronica arvensis,Plantaginaceae,forb,annual,NA,0.178271,1.10997,0.1252,22.3644
-Ver.cha,Veronica chamaedrys,Plantaginaceae,forb,perennial,NA,0.298,2.59329,0.206429,19.8835
-Ver.fru,Veronica fruticans,Plantaginaceae,forb,perennial,NA,0.133703,0.479674,0.1258,17.7312
-Ver.off,Veronica officinalis,Plantaginaceae,forb,perennial,NA,0.174267,2.03722,0.1428,15.0027
-Ver.ser,Veronica serpyllifolia,Plantaginaceae,forb,perennial,NA,0.222839,0.797959,0.04602,28.1488
-Ver.sp,Veronica sp.,Plantaginaceae,forb,perennial,NA,0.196958,1.28837,0.116375,20.8234
-Vic.cra,Vicia cracca,Fabaceae,forb,perennial,NA,1.38947,7.10992,14.4988,22.0936
-Vic.sep,Vicia sepium,Fabaceae,forb,perennial,NA,0.734057,9.08958,20.9348,33.6284
-Vio.bif,Viola biflora,Violaceae,forb,perennial,NA,0.114333,3.98055,0.74,32.5736
-Vio.can,Viola canina,Violaceae,forb,NA,NA,NA,NA,NA,NA
-Vio.pal,Viola palustris,Violaceae,forb,perennial,NA,0.0796667,5.30543,0.685667,24.8359
-Vio.riv,Viola riviniana,Violaceae,forb,perennial,NA,0.187667,4.51639,1.2112,22.3289
-Vio.sp,Viola sp.,Violaceae,forb,perennial,NA,0.193728,4.25654,0.809567,25.8129
-Vio.tri,Viola tricolor,Violaceae,forb,perennial,NA,0.393245,3.2238,0.6014,23.5133
-Vis alp,Viscaria alpina,Caryophyllaceae,forb,NA,NA,NA,NA,NA,NA
-Vis.vul,Viscaria vulgaris,Caryophyllaceae,forb,perennial,NA,0.589867,3.48727,0.0818,12.0227
+species,speciesName,family,authority,functionalGroup,lifeSpan,comment,height,leafSize,seedMass,SLA,comment
+Ach.mil,Achillea millefolium,Asteraceae,L.,forb,perennial,NA,0.402,5.04598,0.1692,15.0353,
+Aco.sep,Aconitum septentrionale,Ranunculaceae,(Koelle) Korsh.,forb,perennial,New name?,NA,NA,NA,NA,
+Agr.cap,Agrostis capillaris,Poaceae,L.,graminoid,perennial,NA,0.708667,1.41808,0.0641,20.5394,
+Agr.mer,Agrostis mertensii,Poaceae,Trin.,graminoid,perennial,NA,0.0943788,0.436865,0.125938,16.3922,
+Aju.pyr,Ajuga pyramidalis,Lamiaceae,L.,forb,perennial,NA,0.259542,5.51083,jan.7032,15.0457,
+Alc.alp,Alchemilla alpina,Rosaceae,L.,forb,perennial,NA,0.2282,4.23399,0.4404,12.893,
+Alc.sp,Alchemilla sp,Rosaceae,L.,forb,perennial,NA,0.2282,14.2278,0.4404,17.0033,
+Ane.nem,Anemone nemorosa,Ranunculaceae,L.,forb,perennial,NA,0.217596,5.74928,jan.7796,19.1464,
+Ant.alp,Antennaria alpina,Asteraceae,(L.) Gaertn.,forb,perennial,NA,NA,NA,NA,NA,
+Ant.dio,Antennaria dioica,Asteraceae,(L.) Gaertn.,forb,perennial,NA,0.157298,0.544585,0.0535,17.482,
+Ant.odo,Anthoxanthum odoratum,Poaceae,L.,graminoid,perennial,NA,0.6116,0.748126,0.62875,22.8215,
+Arc.alp,Arctous alpinus,Ericaceae,(L.) Nied,woody,perennial,NA,0.255609,1.00944,2.404,10.0761,
+Arc.uva,Arctostaphylos uva-ursi,Ericaceae,(L.) Spreng,woody,perennial,NA,NA,NA,NA,NA,
+Ast.alp,Astragalus alpinus,Fabaceae,L.,forb,perennial,NA,0.219169,3.27302,feb.15,25.2878,
+Ave.fle,Avenella flexuosa,Poaceae,(L.) Drejer,graminoid,perennial,NA,0.716867,mar.2081,0.6704,15.2162,
+Ave.pra,Avenula pratensis,Poaceae,(L.) Dumort,graminoid,perennial,NA,1.02244,6.82084,2.68072,8.66605,
+Ave.pub,Avenula pubescens,Poaceae,(Huds.) Dumort,graminoid,perennial,NA,0.943788,6.25732,1.92416,18.0184,
+Bar.alp,Bartsia alpina,Orobanchaceae,L.,forb,perennial,NA,NA,NA,NA,NA,
+Bet.nan,Betula nana,Betulaceae,L.,woody,perennial,NA,1.33703,0.363425,0.3184,11.234,
+Bet.pub,Betula pubescens,Betulaceae,Ehrh.,woody,perennial,NA,NA,NA,NA,NA,
+Bis.viv,Bistorta vivipara,Polygonaceae,(L.) Delarbre,forb,perennial,NA,0.3426,2.17577,1.82846,15.9598,
+Bot.lun,Botrychium lunaria,Ophioglossaceae,(L.) Sw.,pteridophyte,perennial,NA,0.275272,3.08109,NA,NA,
+Cal.vul,Calluna vulgaris,Ericaceae,(L.) Hull,woody,perennial,NA,1.80893,0.12331399999999999,0.0196,7.72192,
+Cam.rot,Campanula rotundifolia,Campanulaceae,L.,forb,perennial,NA,0.4438,0.437706,0.0528,17.435,
+Cap.bur,Capsella bursa-pastoris,Brassicaceae,(L.) Medik.,forb,annual,NA,0.199244,13.4856,0.0985155,23.7773,
+Car.atr,Carex atrata,Cyperaceae,L.,graminoid,perennial,NA,0.141568,mar.4819,0.621571,18.0688,
+Car.big,Carex bigelowii,Cyperaceae,Torr. Ex Schwein,graminoid,perennial,NA,0.43925,feb.6574,0.6215,16.5482,
+Car.cap,Carex capillaris,Cyperaceae,L.,graminoid,perennial,NA,0.147,0.908723,0.63,20.8075,
+Car.car,Carum carvi,Apiaceae,L.,forb,perennial,NA,0.141568,2.83592,jan.6468,17.8241,
+Car.dio,Carex dioica,Cyperaceae,L.,graminoid,perennial,NA,0.157298,0.25039,0.7692,10.847,
+Car.ech,Carex echinata,Cyperaceae,Murray,graminoid,perennial,NA,0.2872,1.30204,0.8026,15.1332,
+Car.fla,Carex flava,Cyperaceae,L.,graminoid,perennial,NA,NA,2.37697,1.052,27.9065,
+Car.lep,Carex leporina,Cyperaceae,L.,graminoid,perennial,NA,0.462501,2.56106,0.6748,18.4409,
+Car.nig,Carex nigra,Cyperaceae,(L.) Reichard,graminoid,perennial,NA,0.4595,1.16493,0.8024,15.4528,
+Car.nor,Carex norvegica,Cyperaceae,Retz.,graminoid,perennial,NA,0.267,1.79127,0.350769,18.4533,
+Car.pal,Carex pallescens,Cyperaceae,L.,graminoid,perennial,NA,0.654333,2.73649,1.25258,24.7993,
+Car.pan,Carex panicea,Cyperaceae,L.,graminoid,perennial,NA,0.29,2.41053,feb.8224,13.2261,
+Car.pil,Carex pilulifera,Cyperaceae,L.,graminoid,perennial,NA,0.414,2.51476,jan.15,24.4547,
+Car.pul,Carex pulicaris,Cyperaceae,L.,graminoid,perennial,NA,0.157298,1.00629,jan.6614,8.09619,
+Car.rup,Carex rupestris,Cyperaceae,All.,graminoid,perennial,NA,0.117973,0.227239,NA,NA,
+Car.sax,Carex saxatilis,Cyperaceae,L.,graminoid,perennial,NA,0.196623,2.60559,0.8196,okt.3279,
+Car.ser,Carex serotina,Cyperaceae,MÈrat,graminoid,perennial,Synonym:  Carex viridula viridula,NA,NA,NA,NA,
+Car.sp,Carex sp.,Cyperaceae,L.,graminoid,perennial,NA,0.29284,2.14057,1.08473,17.6914,
+Car.vag,Carex vaginata,Cyperaceae,Tausch,graminoid,perennial,NA,0.331667,mar.2926,2.088,18.571,
+Caru.car,Carum carvi,Apiaceae,L.,forb,perennial,NA,0.707841,9.18421,1.92427,22.2233,
+Cer.alp,Cerastium alpinum,Caryophyllaceae,L.,forb,perennial,NA,0.196623,0.298009,0.2828,20.9094,
+Cer.cer,Cerastium cerastoides,Caryophyllaceae,(L.) Britton,forb,perennial,NA,0.12846,0.103721,0.188133,21.5652,
+Cer.fon,Cerastium fontanum,Caryophyllaceae,Baumg.,forb,perennial,NA,0.173028,1.33629,0.144,23.7897,
+Cer.gla,Cerastium glabratum,Caryophyllaceae,(Hartm.) ¡ & D.Lˆve,forb,perennial,NA,NA,NA,NA,NA,
+Cer.sp,Cerastium sp,Caryophyllaceae,L.,forb,NA,NA,NA,NA,NA,NA,
+Cha.alp,Chamorchis alpina,Orchidaceae,(L.) Rich.,forb,NA,NA,NA,NA,NA,NA,
+Cir.pal,Cirsium palustre,Asteraceae,(L.) Scop.,forb,perennial,NA,1.33703,NA,jan.57,NA,
+Coe.vir,Coeloglossum viride,Orchidaceae,(L.) Hartm.,forb,perennial,NA,0.173028,3.08841,NA,NA,
+Com.ten,Comastoma tenellum,Gentianaceae,(Rottb.) Toyok.,forb,annual,NA,NA,NA,NA,NA,
+Dac.glo,Dactylis glomerata,Poaceae,L.,graminoid,perennial,NA,1.118,okt.6045,1.08707,21.514,
+Dan.dec,Danthonia decumbens,Poaceae,(L.) DC.,graminoid,perennial,NA,0.157298,2.76639,jan.4583,14.7178,
+Des.alp,Deschampsia alpina,Poaceae,(L.) Roem. & Schult.,graminoid,perennial,NA,NA,NA,NA,NA,
+Des.ces,Deschampsia cespitosa,Poaceae,(L.) P.Beauv.,graminoid,perennial,NA,1.1798,2.16146,0.2098,15.2005,
+Dia.del,Dianthus deltoides,Caryophyllaceae,L.,forb,perennial,NA,0.227,0.175644,0.2246,13.9425,
+Dro.rot,Drosera rotundifolia,Droseraceae,L.,forb,perennial,NA,0.152055,0.63488,0.0236,40.0817,
+Dry.oct,Dryas octopetala,Rosaceae,L.,woody,perennial,NA,0.0445678,1.59909,0.6288,8.86246,
+Dry.sp,Dryopteris sp.,Dryopteridaceae,Adans.,pteridophyte,perennial,NA,NA,NA,NA,NA,
+Emp.her,Empetrum hermaphroditum,Ericaceae,Lange ex. Hagerup,woody,perennial,NA,0.235947,0.0507669,0.9844,5.85772,
+Epi.ana,Epilobium anagallidifolium,Onagraceae,Lam.,forb,perennial,NA,0.129,0.80562,0.066,22.8437,
+Epi.sp,Epilobium sp.,Onagraceae,L.,forb,perennial,NA,0.129,0.80562,0.066,22.8437,
+Equ.arv,Equisetum arvense,Equisetaceae,L.,pteridophyte,NA,NA,NA,NA,NA,NA,
+Eri.uni,Erigeron uniflorus,Asteraceae,L.,forb,perennial,NA,0.0865139,NA,0.232,NA,
+Eup.sp,Euphrasia sp.,Orobanchaceae,L.,forb,annual,NA,0.158583,0.429953,NA,26.9487,
+Fes.ovi,Festuca ovina,Poaceae,L.,graminoid,perennial,NA,0.412,0.413983,0.435721,14.0684,
+Fes.rub,Festuca rubra,Poaceae,L.,graminoid,perennial,NA,0.803,1.15139,1.108,18.412,
+Fes.viv,Festuca vivipara,Poaceae,(L.) Sm,graminoid,perennial,NA,0.267,0.307608,NA,NA,
+Fil.ulm,Filipendula ulmaria,Rosaceae,(L.) Maxim,graminoid,perennial,NA,1.24528,59.5287,0.749786,16.8234,
+Fra.ves,Fragaria vesca,Rosaceae,L.,forb,perennial,NA,NA,NA,NA,NA,
+Gal.bor,Galium boreale,Rubiaceae,L.,forb,perennial,NA,0.23,0.358643,0.854,16.8625,
+Gal.sax,Galium saxatile,Rubiaceae,L.,forb,perennial,NA,0.213,0.0365925,0.7336,21.0223,
+Gal.uli,Galium uliginosum,Rubiaceae,L.,forb,perennial,NA,0.419461,0.0951405,0.3532,25.7979,
+Gal.ver,Galium verum,Rubiaceae,L.,forb,perennial,NA,0.398,0.142602,0.5888,14.4719,
+Gen.ama,Gentianella amarella,Gentianaceae,(L.) Bˆrner,forb,perennial,NA,0.249055,25.5928,0.1662,24.3233,
+Gen.cam,Gentianella campestris,Gentianaceae,(L.) Bˆrner,forb,perennial,NA,0.30778,NA,0.21,NA,
+Gen.niv,Gentiana nivalis,Gentianaceae,L.,forb,perennial,NA,0.0953333,0.0728191,0.029760000000000002,34.4262,
+Gen.pur,Gentiana purpurea,Gentianaceae,L.,forb,perennial,NA,0.668517,NA,0.48,NA,
+Gent.sp,Gentiana sp,Gentianaceae,L.,forb,perennial,NA,0.346056,NA,0.48,NA,
+Ger.syl,Geranium sylvaticum,Geraniaceae,L.,forb,perennial,NA,0.709667,18.0238,6.01978,17.1538,
+Geu.riv,Geum rivale,Rosaceae,L.,forb,perennial,NA,0.49811,47.0433,0.7448,17.9122,
+Geu.urb,Geum urbanum,Rosaceae,L.,forb,perennial,NA,0.576759,25.183,2.04738,33.4135,
+Geum,Geum sp,Rosaceae,L.,forb,perennial,NA,0.485002,38.8512,2.04738,33.4135,
+Gym.dry,Gymnocarpium dryopteris,Woodsiaceae,(L.) Newman,pteridophyte,perennial,NA,0.393245,52.5194,NA,NA,
+Hie.alp,Hieracium alpinum,Asteraceae,L.,forb,perennial,NA,0.157298,NA,1.014,NA,
+Hie.pil,Hieracium pilosella,Asteraceae,L.,forb,perennial,NA,0.365333,3.01168,0.244667,22.279,
+Hie.sp,Hieracium sp.,Asteraceae,L.,forb,perennial,NA,0.397049,des.7623,0.500776,20.1717,
+Hie.umb,Hieracium umbellatum,Asteraceae,L.,forb,perennial,NA,0.668517,8.38334,0.392038,18.0644,
+Hie.vul,Hieracium vulgatum,Asteraceae,L.,forb,perennial,NA,NA,26.8918,0.3524,NA,
+Hup.sel,Huperzia selago,Lycopodiaceae,(L.) Bernh. Ex Schrank & Mart,pteridophyte,perennial,NA,0.196623,0.0519614,0,12.0314,
+Hype.mac,Hypericum maculatum,Hypericaceae,Crantz,forb,perennial,NA,0.481,2.40273,0.170071,22.1439,
+Hypo.mac,Hypochaeris maculata,Asteraceae,L.,forb,perennial,NA,0.180893,15.9116,2.1192,17.2609,
+Hypo.rad,Hypochaeris radicata,Asteraceae,L.,forb,perennial,NA,0.102244,19.1037,0.632267,19.2994,
+Jun.alp,Juncus alpinoarticulatus,Juncaceae,Chaix,graminoid,perennial,NA,NA,NA,NA,NA,
+Jun.arc,Juncus arcticus,Juncaceae,Willd.,graminoid,perennial,NA,NA,NA,NA,NA,
+Jun.com,Juniperus communis,Cupressaceae,L.,woody,perennial,NA,NA,NA,NA,NA,
+Jun.fil,Juncus filiformis,Juncaceae,L.,graminoid,NA,NA,NA,NA,NA,NA,
+Jun.tri,Juncus trifidus,Juncaceae,L.,graminoid,perennial,NA,0.233325,1.10497,0.1756,13.875,
+Kna.arv,Knautia arvensis,Dipsacaceae,(L.) Coult.,forb,perennial,NA,0.516667,17.8601,jun.6844,16.7686,
+Kob.sim,Kobresia simpliciuscula,Cyperaceae,(Wahlenb.) Mack.,graminoid,perennial,NA,0.141568,NA,0.483067,NA,
+Leo.aut,Leontodon autumnalis,Asteraceae,L.,forb,perennial,NA,0.407333,2.73774,0.800855,24.3419,
+Leu.vul,Leucanthemum vulgare,Asteraceae,Lam.,forb,perennial,NA,0.48,4.90096,0.4132,16.7425,
+Lin.vul,Linaria vulgaris,Scrophulariaceae,Mill.,forb,perennial,NA,NA,NA,NA,NA,
+Loi.pro,Loiseleuria procumbens,Ericaceae,(L.) Desv.,woody,perennial,Synonym:  Kalmia procumbens,0.264785,0.0653259,0.02024,mar.9071,
+Lot.cor,Lotus corniculatus,Fabaceae,L.,forb,perennial,NA,0.314,1.41033,1.40344,18.0091,
+Luz.mul,Luzula multiflora,Juncaceae,(Ehrh.) Lej.,graminoid,perennial,NA,0.435067,1.68249,0.6524,21.5901,
+Luz.pil,Luzula pilosa,Juncaceae,(L.) Willd.,graminoid,perennial,NA,0.235947,4.85948,1.0536,21.8041,
+Luz.sp,Luzula sp.,Juncaceae,DC.,graminoid,perennial,NA,0.28659,2.34712,0.66,18.7304,
+Luz.spi,Luzula spicata,Juncaceae,(L.) DC.,graminoid,perennial,NA,0.188758,0.499398,0.274,des.7969,
+Mel.pra,Melampyrum pratense,Orobanchaceae,L.,forb,annual,NA,0.328,2.39526,apr.7016,22.0876,
+Mel.sp,Melampyrum sp.,Orobanchaceae,L.,forb,annual,NA,0.390116,2.78849,5.544,24.849,
+Mel.syl,Melampyrum sylvaticum,Orobanchaceae,L.,forb,annual,NA,0.452232,3.18172,jun.3864,27.6104,
+Min.bif,Minuartia biflora,Caryophyllaceae,(L.) Schinz & Thell.,forb,perennial,NA,NA,NA,NA,NA,
+Mol.cae,Molinia caerulea,Poaceae,(L.) Moench,graminoid,perennial,NA,1.23872,9.41617,0.7366,17.0585,
+Myo.dec,Myosotis decumbens,Boraginaceae,Host,forb,perennial,NA,0.35392,NA,NA,NA,
+Nar.str,Nardus stricta,Poaceae,L.,graminoid,perennial,NA,0.427667,0.835538,0.357236,8.52903,
+NID.gram,NA,NA,,graminoid,NA,NA,NA,NA,NA,NA,
+NID.herb,NA,NA,,forb,NA,NA,NA,NA,NA,NA,
+NID.rosett,NA,NA,,forb,NA,NA,NA,NA,NA,NA,
+NID.seedling,NA,NA,,forb,NA,NA,NA,NA,NA,NA,
+Noc.cae,Noccaea caerulescens,Brassicaceae,(J. & C.Presl) F.K.Mey.,forb,annual,NA,NA,0.893011,NA,13.6854,
+Oma.nor,Omalotheca norvegica,Asteraceae,(Gunnerus) Sch. Bip. & F.W. Schultz,forb,perennial,NA,0.145,2.52389,0.092,18.1035,
+Oma.sup,Omalotheca supina,Asteraceae,(L.) DC.,forb,perennial,NA,0.094,0.3773,0.0833333,27.0221,
+Oma.syl,Omalotheca sylvatica,Asteraceae,(Gunnerus) Sch. Bip. & F.W. Schultz,forb,perennial,NA,0.511218,NA,0.0502,NA,
+Ort sec,Orthilia secunda,Pyrolaceae,(L.) House,forb,perennial,NA,NA,NA,NA,NA,
+Oxa.ace,Oxalis acetosella,Oxalidaceae,L.,forb,perennial,NA,0.061,3.95343,0.961,35.3559,
+Oxy.dig,Oxyria digyna,Polygonaceae,(L.) Hill,forb,perennial,NA,0.157298,8.0484000000000009,0.6464,29.7568,
+Oxy.lap,Oxytropis lapponica,Fabaceae,(Wahlenb.) Gay,forb,NA,NA,NA,NA,NA,NA,
+Par.pal,Parnassia palustris,Parnassiaceae,L.,forb,perennial,NA,0.196623,jan.9361,0.0366267,25.3937,
+Phl.alp,Phleum alpinum,Poaceae,L.,graminoid,perennial,NA,0.475667,feb.3048,0.3849,20.353,
+Phl.pra,Phleum pratense,Poaceae,L.,graminoid,perennial,NA,0.583576,2.78103,0.58775,21.9607,
+Phl.sp,Phleum sp.,NA,L.,NA,NA,NA,NA,NA,NA,NA,
+Phy.cae,Phyllodoce caerulea,Ericaceae,(L.) Bab,woody,perennial,NA,0.204487,0.0616096,0.0208571,8.89507,
+Pic.abi,Picea abies,Picea abies,(L.) H.Karst.,woody,perennial,NA,NA,NA,NA,NA,
+Pim.sax,Pimpinella saxifraga,Apiaceae,L.,forb,perennial,NA,0.541,19.0976,jan.6444,13.7228,
+Pin.syl,Pinus sylvestris,Pinaceae,L.,woody,perennial,NA,NA,NA,NA,NA,
+Pin.vul,Pinguicula vulgaris,Lentibulariaceae,L.,forb,perennial,NA,0.0885,2.81913,0.02314,31.7588,
+Pla.lan,Plantago lanceolata,Plantaginaceae,L.,forb,perennial,NA,0.43,19.8568,1.61675,19.3305,
+Pla.maj,Plantago major,Plantaginaceae,L.,forb,perennial,NA,0.582003,NA,0.267838,19.5038,
+Pla.med,Plantago media,Plantaginaceae,L.,forb,perennial,NA,0.458,35.3313,0.385075,16.7321,
+Poa.alp,Poa alpina,Poaceae,L.,graminoid,perennial,NA,0.332333,0.904546,0.431111,18.4332,
+Poa.ann,Poa annua,Poaceae,L.,graminoid,annual,NA,0.133703,1.01239,0.2135,31.6499,
+Poa.pra,Poa pratensis,Poaceae,L.,graminoid,perennial,NA,0.763333,1.72045,0.272595,22.5045,
+Pot.arg,Potentilla argentea,Rosaceae,L.,forb,perennial,NA,0.534813,3.85685,0.094,14.5071,
+Pot.cra,Potentilla crantzii,Rosaceae,(Crantz) Beck ex Fritsch,forb,perennial,NA,0.271667,1.25344,0.8565,14.8098,
+Pot.ere,Potentilla erecta,Rosaceae,(L.) Raeusch.,forb,perennial,NA,0.429067,2.72972,0.7556,20.3907,
+Pru.vul,Prunella vulgaris,Lamiaceae,L.,forb,perennial,NA,0.12,1.85846,0.5768,20.3797,
+Pyr.min,Pyrola minor,Ericaceae,L.,forb,perennial,NA,0.178271,5.14387,0.00208,nov.2915,
+Pyr.rot,Pyrola rotundifolia,Ericaceae,L.,forb,perennial,NA,0.204487,7.50878,NA,15.535,
+Pyr.sp,Pyrola sp.,Ericaceae,L.,forb,perennial,NA,0.511277,5.43184,1.896,17.5395,
+Ran.acr,Ranunculus acris,Ranunculaceae,L.,forb,perennial,NA,0.818067,4.03594,1.896,22.1078,
+Ran.aur,Ranunculus auricomus,Ranunculaceae,L. agg.,forb,perennial,NA,0.275272,9.34206,feb.3692,27.7402,
+Ran.rep,Ranunculus repens,Ranunculaceae,L.,forb,perennial,NA,0.380137,8.11413,feb.8924,21.4786,
+Rhi.min,Rhinanthus minor,Orobanchaceae,L.,forb,annual,NA,0.141,2.6371000000000002,feb.7855,17.2008,
+Rho.ros,Rhodiola rosea,Crassulaceae,L.,forb,perennial,NA,0.314596,0.834236,0.316,20.6603,
+Rub.ida,Rubus idaeus,Rosaceae,L.,woody,perennial,NA,0.36,13.1167,2.1156,17.2488,
+Rum.ace,Rumex acetosa,Polygonaceae,L.,forb,perennial,NA,0.9672,7.61333,0.944642,24.5095,
+Rum.acl,Rumex acetosella,Polygonaceae,L.,forb,perennial,NA,0.331,1.45153,0.4388,20.6015,
+Sag.sp,Sagina sp.,Caryophyllaceae,L.,forb,perennial,NA,NA,NA,NA,13.8449,
+Sal.her,Salix herbacea,Salicaceae,L.,woody,perennial,NA,0.017,1.74109,0.197462,14.4827,
+Sal.phy,Salix phylicifolia,Salicaceae,L.,woody,NA,NA,NA,NA,NA,NA,
+Sal.ret,Salix reticulata,Salicaceae,L.,woody,perennial,NA,0.157298,1.54003,0.1525,8.34523,
+Sal.sp,Salix sp.,Salicaceae,L.,woody,perennial,NA,0.087149,1.64056,0.174981,11.414,
+Sau.alp,Saussurea alpina,Asteraceae,(L.) DC.,forb,perennial,NA,0.183514,9.21183,jan.7524,19.9692,
+Sax.aiz,Saxifraga aizoides,Saxifragaceae,L.,forb,perennial,NA,0.149433,0.252372,0.054,okt.3243,
+Sax.ces,Saxifraga cespitosa,Saxifragaceae,L.,forb,perennial,NA,0.0865139,NA,0.05776,NA,
+Sax.opp,Saxifraga oppositifolia,Saxifragaceae,L.,forb,perennial,NA,0.220217,NA,0.119333,NA,
+Sed.acr,Sedum acre,Crassulaceae,L.,forb,perennial,NA,0.0891355,NA,0.04,NA,
+Sel.sel,Selaginella selaginoides,Selaginellaceae,(L.) P.Beauv.,pteridophyte,perennial,NA,0.063,0.00892857,NA,NA,
+Sib.pro,Sibbaldia procumbens,Rosaceae,L.,forb,perennial,NA,0.037,2.53166,0.4588,15.417,
+Sil.aca,Silene acaulis,Caryophyllaceae,(L.) Jacq.,forb,perennial,NA,0.0683333,0.118931,0.3402,20.9479,
+Sil.rup,Silene rupestris,Caryophyllaceae,L.,forb,NA,NA,NA,NA,NA,NA,New name: Atocion rupestre (L.) Oxelman
+Sil.vul,Silene vulgaris,Caryophyllaceae,(Moench) Garcke,forb,perennial,NA,0.424705,8.63217,0.7336,17.2609,
+Sol.vir,Solidago virgaurea,Asteraceae,L.,forb,perennial,NA,0.78649,16.8508,0.3696,18.8378,
+Sor.auc,Sorbus aucuparia,Rosaceae,L.,woody,perennial,NA,NA,NA,NA,NA,
+Ste.gra,Stellaria graminea,Caryophyllaceae,L.,forb,perennial,NA,0.4047,0.818079,0.335673,18.4103,
+Ste.med,Stellaria media,Caryophyllaceae,(L.) Vill.,forb,annual,NA,0.134,3.57143,0.4176,40.8816,
+Suc.pra,Succisa pratensis,Succisa pratensis,Moench†,forb,perennial,NA,0.537435,35.5728,1.244,15.5814,
+Tar.sp,Taraxacum sp.,Asteraceae,F.H. Wigg.,forb,perennial,NA,0.557933,7.00855,NA,28.4466,
+Tha.alp,Thalictrum alpinum,Ranunculaceae,L.,forb,perennial,NA,0.209333,2.22272,0.857,16.6193,
+Thl.arv,Thlaspi arvense,Brassicaceae,L.,forb,annual,NA,0.234,aug.8871,0.9624,21.3396,
+Tof.cal,Tofieldia calyculata,Tofieldiaceae,Wahlenb.,forb,NA,NA,NA,NA,NA,NA,Not in Lids? Got info from TNRS
+Tof.pus,Tofieldia pusilla,Tofieldiaceae,(Michx.) Pers.,forb,perennial,NA,0.0511218,0.39944,0.038,14.3591,
+Tri.ces,Trichophorum cespitosum,Cyperaceae,(L.) Hartm.,graminoid,perennial,NA,NA,NA,NA,NA,
+Tri.eur,Trientalis europaea,Myrsinaceae,L.,forb,perennial,NA,0.209731,2.16464,0.64225,29.359,
+Tri.med,Trifolium medium,Fabaceae,L.,forb,perennial,NA,0.629192,okt.5167,jan.8332,17.9037,
+Tri.mon,Trifolium montanum,Fabaceae,L.,forb,perennial,NA,0.43257,nov.7645,0.990214,17.1545,
+Tri.pra,Trifolium pratense,Fabaceae,L.,forb,perennial,NA,0.426,5.09531,1.58056,des.7599,
+Tri.rep,Trifolium repens,Fabaceae,L.,forb,perennial,NA,0.296333,2.73147,0.4966,21.303,
+Tri.sp,Trifolium sp,Fabaceae,L.,forb,perennial,NA,NA,NA,NA,NA,
+Vac.myr,Vaccinium myrtillus,Ericaceae,L.,woody,perennial,NA,0.1775,1.47517,0.2704,17.3491,
+Vac.sp,Vaccinium sp.,Ericaceae,L.,woody,perennial,NA,0.32133,0.932579,0.25636,des.1941,
+Vac.uli,Vaccinium uliginosum,Ericaceae,L.,woody,perennial,NA,0.456164,0.857967,0.212933,des.5822,
+Vac.vit,Vaccinium vitis-idaea,Ericaceae,L.,woody,perennial,NA,0.330326,0.464604,0.285745,6.65093,
+Val.sam,Valeriana sambucifolia,Valerianaceae,J.C. Mikan ex. Pohl,forb,perennial,NA,NA,NA,NA,NA,
+Ver.alp,Veronica alpina,Plantaginaceae,L.,forb,perennial,NA,0.174667,0.712124,0.052,21.8101,
+Ver.arv,Veronica arvensis,Plantaginaceae,L.,forb,annual,NA,0.178271,1.10997,0.1252,22.3644,
+Ver.cha,Veronica chamaedrys,Plantaginaceae,L.,forb,perennial,NA,0.298,2.59329,0.206429,19.8835,
+Ver.fru,Veronica fruticans,Plantaginaceae,Jacq.,forb,perennial,NA,0.133703,0.479674,0.1258,17.7312,
+Ver.off,Veronica officinalis,Plantaginaceae,L.,forb,perennial,NA,0.174267,2.03722,0.1428,15.0027,
+Ver.ser,Veronica serpyllifolia,Plantaginaceae,L.,forb,perennial,NA,0.222839,0.797959,0.04602,28.1488,
+Ver.sp,Veronica sp.,Plantaginaceae,L.,forb,perennial,NA,0.196958,1.28837,0.116375,20.8234,
+Vic.cra,Vicia cracca,Fabaceae,L.,forb,perennial,NA,1.38947,7.10992,14.4988,22.0936,
+Vic.sep,Vicia sepium,Fabaceae,L.,forb,perennial,NA,0.734057,9.08958,20.9348,33.6284,
+Vio.bif,Viola biflora,Violaceae,L.,forb,perennial,NA,0.114333,3.98055,0.74,32.5736,
+Vio.can,Viola canina,Violaceae,L.,forb,NA,NA,NA,NA,NA,NA,
+Vio.pal,Viola palustris,Violaceae,L.,forb,perennial,NA,0.0796667,5.30543,0.685667,24.8359,
+Vio.riv,Viola riviniana,Violaceae,Rchb.,forb,perennial,NA,0.187667,4.51639,jan.2112,22.3289,
+Vio.sp,Viola sp.,Violaceae,L.,forb,perennial,NA,0.193728,4.25654,0.809567,25.8129,
+Vio.tri,Viola tricolor,Violaceae,L.,forb,perennial,NA,0.393245,mar.2238,0.6014,23.5133,
+Vis alp,Viscaria alpina,Caryophyllaceae,(L.) G. Don,forb,NA,NA,NA,NA,NA,NA,
+Vis.vul,Viscaria vulgaris,Caryophyllaceae,Bernh.,forb,perennial,NA,0.589867,3.48727,0.0818,12.0227,
