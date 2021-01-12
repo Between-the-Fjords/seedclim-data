@@ -47,7 +47,7 @@ phenology_2014 <- pheno14_raw %>%
   # CALCULATE SUM OF BUD, FLOWER, SEED AND RIPE SEED ####
 pivot_longer(cols = Bis.viv.v:Tha.alp.r, names_to = "stage", values_to = "value") %>% 
   filter(!is.na(value)) %>% 
-  group_by(originSiteID, destinationSiteID, temperature_level, precipitation_level, year, date, weather, name, destinationBlockID, turfID, TTtreat, stage) %>%
+  group_by(originSiteID, destinationSiteID, temperature_level, precipitation_level, year, date, week, weather, name, destinationBlockID, turfID, TTtreat, stage) %>%
   summarise(value = sum(value, na.rm=TRUE)) %>% 
   # separate species and phenological stage (bud, flower, seed and ripe seed)
   ungroup()  %>% 
@@ -62,6 +62,20 @@ pivot_longer(cols = Bis.viv.v:Tha.alp.r, names_to = "stage", values_to = "value"
 
 
 ## Phenology 2015 data
+#Head
+dath1 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Hog.csv", "Hogsete") %>% as_tibble()
+dath2 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Ram.csv", "Rambaera")  %>% as_tibble()
+dath3 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Ves.csv", "Veskre")  %>% as_tibble()
+dath4 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Lav.csv", "Lavisdalen")  %>% as_tibble()
+dath5 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Gud.csv", "Gudmedalen")  %>% as_tibble()
+dath6 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Skj.csv", "Skjellingahaugen")  %>% as_tibble()
+meta.pheno <- rbind(dath1, dath2, dath3, dath4, dath5, dath6) %>% 
+  mutate(date = as.Date(date, format="%d.%m.%Y"),
+         doy = as.numeric(doy)) %>% 
+  rename(destinationSiteID = Site) %>% 
+  filter(!is.na(date))
+
+#Body
 dat1 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Hog.csv", "Hogsete")
 dat2 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Ram.csv", "Rambaera")
 dat3 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Ves.csv", "Veskre")
@@ -81,13 +95,13 @@ turfs.15 <- read_delim(file = "phenology/data/2015/turfs.csv", delim = ";", col_
 
 #### CALCULATE SUM OF BUD, FLOWER, SEED AND RIPE SEEDS PER TURFID AND SPECIES ####
 phenology_2015 <- CalcSums(pheno15_raw) %>% 
-  select(Site, turfID, species, doy, nr.b, nr.f, nr.s, nr.r) %>% 
+  select(Site, turfID, species, doy, week, nr.b, nr.f, nr.s, nr.r) %>% 
   rename(destinationSiteID = Site, bud = nr.b, flower = nr.f, seed = nr.s, ripe_seed = nr.r) %>% 
   pivot_longer(cols = c("bud", "flower", "seed", "ripe_seed"), names_to = "pheno_stage", values_to = "value") %>% 
   filter(!is.na(value)) %>% 
   mutate(year = 2015) %>% 
   left_join(turfs.15, by = c("turfID", "destinationSiteID")) %>% 
-  select(originBlockID, originSiteID, turfID, destinationBlockID, destinationSiteID, year, doy, TTtreat, treatment, species, pheno_stage, value, temperature_level, precipitation_level, snowmelt_date)
+  left_join(meta.pheno, by = c("week", "doy", "destinationSiteID"))
 
 # community data
 # get all species that were in each turf in 2009, no invaders wanted
@@ -104,18 +118,10 @@ originial_taxa <- tbl(con, "turf_community") %>%
 # Combine the two datasets
 phenology <- phenology_2014 %>% 
   bind_rows(phenology_2015) %>% 
+  select(originBlockID, originSiteID, turfID, destinationBlockID, destinationSiteID, year, date, doy, week, TTtreat, treatment, species, pheno_stage, value, temperature_level, precipitation_level, snowmelt_date, weather, name) %>% 
+  # flag status of species
   left_join(originial_taxa, by = c("turfID", "species")) %>% 
   mutate(status = if_else(is.na(status), "invader", status))
-
-# remove species that do not exist in original turf data
-originial_taxa %>% anti_join(phenology, by = c("turfID", "species"))
-  
   
 write_csv(phenology, path = "phenology/data/Community_phenology_2014-2015.csv")
-    
-
-
-
-
-
 

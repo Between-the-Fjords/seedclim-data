@@ -1,3 +1,20 @@
+#### READ IN HEAD OF PHENOLOGY DATA 2015 ####
+ReadInHeadPhenology15 <- function(datasheet, site){
+  # import head of data set
+  dat.h <- read.csv(datasheet, sep=";", header=FALSE, nrow=3, stringsAsFactors=FALSE)
+  dat.h2 <- do.call(rbind, 
+                    lapply(seq(3,ncol(dat.h),20),function(i){
+                      x <- dat.h[ ,c(i)]
+                      names(x) <- c("date", "weather", "name")
+                      x <- c(x,week=dat.h[ 1,i+18])
+                      x <- c(x,Site=site)
+                      x <- c(x,doy=yday(dmy(dat.h[ 1,i])))
+                      x
+                    })
+  )
+  return(dat.h2)
+}
+
 #### READ IN PHENOLOGY DATA 2015 ####
 ReadInBodyPhenology15 <- function(datasheet, site){
   # import body of data
