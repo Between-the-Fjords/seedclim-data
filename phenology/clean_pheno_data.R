@@ -20,6 +20,8 @@ source("phenology/pheno_functions.R")
 #          path = "phenology/data",
 #          remote_path = "Phenology_data/Raw_data")
 
+#unzip("phenology/data/Community_phenology_raw_2014-2015.zip")
+
 # community data
 # get_file(node = "npfa9",
 #          file = "seedclim.sqlite",
@@ -123,5 +125,6 @@ phenology <- phenology_2014 %>%
   left_join(originial_taxa, by = c("turfID", "species")) %>% 
   mutate(status = if_else(is.na(status), "invader", status))
   
-write_csv(phenology, path = "phenology/data/Community_phenology_2014-2015.csv")
+dir.create("phenology/clean_data")
+write_csv(phenology, path = "phenology/clean_data/Community_phenology_2014-2015.csv")
 
