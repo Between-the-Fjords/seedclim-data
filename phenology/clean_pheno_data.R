@@ -70,7 +70,7 @@ dath4 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Lav.csv", "Lavi
 dath5 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Gud.csv", "Gudmedalen")  %>% as_tibble()
 dath6 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Skj.csv", "Skjellingahaugen")  %>% as_tibble()
 meta.pheno <- rbind(dath1, dath2, dath3, dath4, dath5, dath6) %>% 
-  mutate(date = as.Date(date, format="%d.%m.%Y"),
+  mutate(date = dmy(date),
          doy = as.numeric(doy)) %>% 
   rename(destinationSiteID = Site) %>% 
   filter(!is.na(date))
