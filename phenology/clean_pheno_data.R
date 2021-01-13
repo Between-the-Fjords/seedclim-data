@@ -92,12 +92,14 @@ turfs.15 <- read_delim(file = "phenology/data/2015/turfs.csv", delim = ";", col_
   select(siteID, TTtreat, blockID, turfID, destBlockID, Temperature_level, Precipitation_level, destBlockID, destSiteID, newTT, d.date.osm) %>% 
   rename(originSiteID = siteID, originBlockID = blockID, destinationBlockID = destBlockID, temperature_level = Temperature_level, precipitation_level = Precipitation_level, destinationSiteID = destSiteID, treatment = newTT, snowmelt_date = d.date.osm) %>% 
   mutate(treatment = recode(treatment, "TT2" = "warm", "TT3" = "wet", "TT4" = "warm_wet"),
-         snowmelt_date = dmy(snowmelt_date))
+         snowmelt_date = dmy(snowmelt_date)) %>% 
+  filter(!is.na(snowmelt_date))
   
 
 #### CALCULATE SUM OF BUD, FLOWER, SEED AND RIPE SEEDS PER TURFID AND SPECIES ####
 phenology_2015 <- CalcSums(pheno15_raw) %>% 
   select(Site, turfID, species, doy, week, nr.b, nr.f, nr.s, nr.r) %>% 
+  mutate(Site = recode(Site, "Rambaera" = "Rambera")) %>% 
   rename(destinationSiteID = Site, bud = nr.b, flower = nr.f, seed = nr.s, ripe_seed = nr.r) %>% 
   pivot_longer(cols = c("bud", "flower", "seed", "ripe_seed"), names_to = "pheno_stage", values_to = "value") %>% 
   filter(!is.na(value)) %>% 
