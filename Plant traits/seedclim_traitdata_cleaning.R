@@ -9,10 +9,9 @@ library(lubridate)
 
 ## Read in data ##
 
-my_sla         <- read.csv('Data/Johns_trait_data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
-my_leaf_chem   <- read.csv('Data/Johns_trait_data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
-norflor_height <- read.csv('Data/Johns_trait_data/norflorheight.csv', header=TRUE, stringsAsFactors = FALSE)
-my_height <- read.csv('Data/Johns_trait_data/RawTraitData_height.csv', header=TRUE, stringsAsFactors = FALSE)
+my_sla         <- read.csv('Plant traits/Data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
+my_leaf_chem   <- read.csv('Plant traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
+my_height <- read.csv('Plant traits/Data/RawTraitData_height.csv', header=TRUE, stringsAsFactors = FALSE)
 
 
 ## Site name dictionary ##
@@ -20,7 +19,7 @@ my_height <- read.csv('Data/Johns_trait_data/RawTraitData_height.csv', header=TR
 dict_Site_2012 <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                           "old new
   Arh Arhelleren
-  Øvs Ovstedal
+  Øvs Ovstedalen
   Ves Veskre
   Skj Skjelingahaugen
   Låv Lavisdalen
@@ -34,6 +33,7 @@ dict_Site_2012 <- read.table(header = TRUE, stringsAsFactors = FALSE, text =
 
 dict_Site_mistakes <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                           "old new
+  Ovstedal Ovstedalen
   Skjellingahaugen Skjelingahaugen
   Ulvhaugen Ulvehaugen")
 
@@ -87,18 +87,18 @@ my_height <- my_height %>%
  
 #### Load trait data ####
  
- traits <- read.csv("Data/LeafTraits_SeedClim.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
- LA <- read.csv2("Data/Leaf_area_total.csv", stringsAsFactors = FALSE)
- CN <- read.csv2("Data/CNratio.csv", dec=".", sep=";")
+ traits <- read.csv("Plant traits/Data/LeafTraits_SeedClim.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+ LA <- read.csv2("Plant traits/Data/Leaf_area_total.csv", stringsAsFactors = FALSE)
+ CN <- read.csv2("Plant traits/Data/CNratio.csv", dec=".", sep=";")
  
 #### Dictionaries ####
  
-dict_CN <- read.csv2("Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
+dict_CN <- read.csv2("Plant traits/Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
 dict_Site_CN_2016 <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                            "old new
   AR Arhelleren
-  OV Ovstedal
+  OV Ovstedalen
   VE Veskre
   SK Skjelingahaugen
   LA Lavisdalen
@@ -113,7 +113,7 @@ dict_Site_CN_2016 <- read.table(header = TRUE, stringsAsFactors = FALSE, text =
 dict_Site_2016 <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                                   "old new
 Arh Arhelleren
-Ovs Ovstedal
+Ovs Ovstedalen
 Ves Veskre
 Skj Skjelingahaugen
 Lav Lavisdalen
@@ -218,7 +218,7 @@ Ram Rambera")
    bind_rows(my_leaf_chem) %>% 
    bind_rows(my_height)
 
- traitdata_full %>% filter(!year == "2017") %>% ggplot(aes(x = siteID, y = SLA_cm2_g, fill = year)) + geom_boxplot() 
+  # traitdata_full %>% filter(!year == "2017") %>% ggplot(aes(x = siteID, y = height_mm, fill = year)) + geom_boxplot() 
  
 #### Making table of the content of the dataset ####
  
