@@ -155,6 +155,7 @@ Ram Rambera")
    mutate(Species = plyr::mapvalues(Species, from = dict_CN$CN_ab, to = dict_CN$Species)) %>%
    mutate(Site = plyr::mapvalues(Site, from = dict_Site_CN_2016$old, to = dict_Site_CN_2016$new)) %>%
    mutate(ID = paste0(Site, "_", Species, "_", Individual, ".jpg")) %>%
+   mutate(Species = gsub("_", "\\.", Species)) %>% 
    filter(!(Name=="VECAR101")) %>%  #Because it was a to small sample to get good data from it
    select(-Humidity.., -Name, -Weight, -Method, -N.Factor, -C.Factor, -N.Blank, -C.Blank, -Memo, -Info, -Date..Time, -N.Area, -C.Area) %>% 
    rename(C_percent=C.., N_percent = N.., CN_ratio = CN.ratio)
