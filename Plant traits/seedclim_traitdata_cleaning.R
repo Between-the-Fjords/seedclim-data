@@ -204,7 +204,7 @@ Ram Rambera")
    bind_rows(my_sla) %>% 
    bind_rows(my_leaf_chem)
 
-  # traitdata_full %>% filter(!year == "2017") %>% ggplot(aes(x = siteID, y = height_mm, fill = year)) + geom_boxplot() 
+write.csv(traitdata_full, file = "SeedClim_Trait_data_2012_2016.csv")
  
 #### Making table of the content of the dataset ####
  
