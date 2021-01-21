@@ -3,7 +3,7 @@
 #### Load libraries ####
 library(tidyverse)
 library(lubridate)
-
+library("dataDownloader")
 
 #### Trait data from 2012 ####
 
@@ -11,7 +11,6 @@ library(lubridate)
 
 my_sla         <- read.csv('Plant traits/Data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
 my_leaf_chem   <- read.csv('Plant traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
-my_height <- read.csv('Plant traits/Data/RawTraitData_height.csv', header=TRUE, stringsAsFactors = FALSE)
 
 
 ## Site name dictionary ##
@@ -67,20 +66,7 @@ my_leaf_chem <- my_leaf_chem %>%
   mutate(Site = plyr::mapvalues(Site, from = dict_Site_2012$old, to = dict_Site_2012$new)) %>% 
   rename(siteID = Site, species = Species) %>% 
   mutate(year = "2012")
- 
-my_height <- my_height %>%
-  select(SPECIES, SITE, IND.NUM, DATE, HEIGHT) %>% 
-  separate(SPECIES, c("Genus","species"), sep = ' ') %>% 
-  mutate(Genus = substr(Genus, 1,3)) %>% 
-  mutate(species = substr(species, 1,3)) %>% 
-  mutate(species = ifelse(is.na(species), "sp", species)) %>% 
-  mutate(species = paste0(Genus,".", species)) %>% 
-  select(-Genus) %>% 
-  rename(siteID = SITE, individual = IND.NUM, date = DATE, height_mm = HEIGHT) %>% 
-  mutate(year = "2011") %>% 
-  mutate(date = mdy(date)) %>% 
-  mutate(individual = as.character(individual)) %>% 
-  mutate(siteID = plyr::mapvalues(siteID, from = dict_Site_mistakes$old, to = dict_Site_mistakes$new))
+
 
 
 #### Trait data from 2016 & 2017 ####
@@ -215,8 +201,7 @@ Ram Rambera")
  
  traitdata_full <- traitdata %>% 
    bind_rows(my_sla) %>% 
-   bind_rows(my_leaf_chem) %>% 
-   bind_rows(my_height)
+   bind_rows(my_leaf_chem)
 
   # traitdata_full %>% filter(!year == "2017") %>% ggplot(aes(x = siteID, y = height_mm, fill = year)) + geom_boxplot() 
  
