@@ -2,7 +2,7 @@ library("tidyverse")
 #Clean 2019 data - species codes and turfID codes
 
 #### load 2019 data ####
-data2019_0 <- list.files("rawdata/2019_data/", full.names = TRUE) %>%   
+data2019_0 <- list.files("rawdata/2019_data/", full.names = TRUE, pattern = "csv$") %>%   
   set_names(str_remove(basename(.), coll("2019.csv"))) %>% 
   map(read_csv2, col_types = cols(.default = col_character())) %>% 
   #delete blank columns (hopefully simplifies code later)
@@ -51,7 +51,7 @@ corrections_2019 <- tribble(~current, ~correct,
                             "Thlaspi arv", "Thl.arv", 
                             "Tarax", "Tar.sp", 
                             "Salix sp" , "Sal.sp",
-                            "Aco lyc", "Aco.sep",
+                            "Aco lyc", "Aco sep",#space to avoid clash later
                             "Hyp per", "Hype.mac",
                             "Jun alp art", "Jun.alp",
                             "Myosotis cf", "Myo.dec",
@@ -59,16 +59,16 @@ corrections_2019 <- tribble(~current, ~correct,
                             "Valeriana", "Val.sam", 
                             "Fes pra", "Sch.pra",
                             "NID graminoid", "NID.gram",
-                            "#Seedling", "NID.seedling",
-                            ## HYP MAC problem
-                            "Hyp mac", "Hype.mac"## temporary fix (90% wrong) so can be assigned 
+                            "#Seedlings", "NID.seedling"
 )
+
+
 
 
 #corrected taxon list
 corrected_sp19 <- sp19 %>%   
   mutate(value = str_replace(value, "  ", " "),
-         value = str_replace(value, "^Nid ", "NID ")) %>% 
+) %>% #         value = str_replace(value, "^Nid ", "NID ")) %>% 
   left_join(corrections_2019, by = c("value" = "current")) %>% 
   mutate(value2 = coalesce(correct, value)) %>%
   mutate(value2 = str_replace(value2, " ", ".")) %>% 
@@ -111,6 +111,9 @@ data2019_1 <- data2019_0 %>%
   #fix Alc.sp Alc sp problem
   mutate(Alc.sp = coalesce(Alc.sp, `Alc sp`)) %>% 
   select(-`Alc sp`) %>%
+  #fix NID[\\.\\s]seedling problem
+  mutate(Alc.sp = coalesce(`NID seedling`, NID.seedling)) %>% 
+  select(-`NID seedling`) %>%
   #replace space with "."
   rename_with( ~ str_replace(.x, " ", "."))
 
@@ -241,6 +244,13 @@ data2019 <- data2019 %>%
        str_detect(subPlot, "^\\d{1,2}$") ~ "Presence"
      )) %>% 
    select(-Measurer) 
+
+
+## Add hyp mac to taxon table so it can be fixed - otherwise it is dropped. delete after fix
+db_pad_write_table(conn = con,  table = "taxon",append = TRUE, value  = tibble(species = "Hyp.mac", species_name = "Field confusion - Hyp[eo].mac"))
+
+taxa <- tbl(con, "taxon") %>% collect()
+### end delete after fix
 
 #### save data for ingestion ####
 data2019 %>% 
