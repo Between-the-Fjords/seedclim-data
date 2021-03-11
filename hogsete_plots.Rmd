@@ -1,11 +1,22 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output: html_document
 ---
+```{r importChunk, echo = FALSE, include = FALSE}
+#load packages
+library("tidyverse")
+library("DBI")# also needs RMySQL installed
+theme_set(theme_bw())
+```
+
+
+```{r importData, results='hide', fig.keep='none', warning=FALSE, echo = FALSE}
+source("start_here.R")
+```
 
 
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, echo = FALSE}
 hogsete_plot <- function(target, comm = cover.thin, trace = 0){
   treat_colour <- c("black", "grey50", "red", "blue", "purple") 
   comm <- cover.thin %>% 
@@ -13,8 +24,10 @@ hogsete_plot <- function(target, comm = cover.thin, trace = 0){
     spread(key = species, value = cover, fill = 0)
   ord <- vegan::metaMDS(select(comm, -(siteID:destSiteID)), trace = trace)
   ford <- ggvegan:::fortify.cca(ord, display = "sites")
-  dat <- ford %>% bind_cols(select(comm, siteID:destSiteID)) %>% 
+  dat <- ford %>%
+    bind_cols(select(comm, siteID:destSiteID)) %>% 
     arrange(year)
+  
   ggplot(dat, aes(x = NMDS1, y = NMDS2, group = turfID, colour = TTtreat)) + 
     geom_path() +
     geom_point(aes(size = if_else(year == 2009, 1, NA_real_)), show.legend = FALSE) +
@@ -23,7 +36,10 @@ hogsete_plot <- function(target, comm = cover.thin, trace = 0){
     ggtitle(target) 
     
 }
-cover.thin %>% distinct(destSiteID) %>% pull(destSiteID) %>% 
-  map(hogsete_plot) %>% walk(print)
+cover.thin %>% 
+  distinct(destSiteID) %>% 
+  pull(destSiteID) %>% 
+  map(hogsete_plot) %>% 
+  walk(print)
 ```
 
