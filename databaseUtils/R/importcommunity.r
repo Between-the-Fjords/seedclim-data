@@ -136,12 +136,12 @@ import_data <- function(file, con, merge_dictionary){
   spp <- spp %>% 
     left_join(merge_dictionary, by = c("species" = "oldID")) %>% 
     mutate(newID = coalesce(newID, species)) %>% 
-    select(turfID, year, species = newID, cover, cf) %>% 
-    group_by(year, turfID, species) %>% 
+    select(turfID, year, species = newID, cover, cf) %>%
     mutate(cover = as.numeric(cover)) %>% 
-    summarise(cover = sum(cover)) %>% #aggregate taxa
-    filter(cover > 0) %>% 
-    ungroup()
+    filter(!is.na(cover)) %>% 
+    group_by(year, turfID, species) %>% 
+    summarise(cover = sum(cover), .groups = "drop") %>% #aggregate taxa
+    filter(cover > 0)
   
   #check_new_taxa
   spp_list <- dbGetQuery(conn = con, statement = "select species from taxon")
