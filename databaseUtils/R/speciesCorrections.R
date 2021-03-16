@@ -102,7 +102,9 @@ turfCom2 <- turfCom2 %>%
 
 #subturf
 subturfCom2 <- subturfCom2 %>% 
-  left_join(local, by = c("species" = "old", "year" = "Year", "turfID" = "turfID"), suffix = c("", "_new")) %>% 
+  left_join(local, 
+            by = c("species" = "old", "year" = "Year", "turfID" = "turfID"),
+            suffix = c("", "_new")) %>% 
   mutate(
     species = coalesce(new, species)
   ) %>% 
@@ -119,7 +121,9 @@ local_abun <- local_abun %>%
   mutate(cover = as.numeric(cover))
 
 turfCom2 <- turfCom2 %>%
-  left_join(local_abun, by = c("species" = "old", "year" = "Year", "turfID" = "turfID"), suffix = c("", "_new")) %>% 
+  left_join(local_abun, 
+            by = c("species" = "old", "year" = "Year", "turfID" = "turfID"),
+            suffix = c("", "_new")) %>% 
   mutate(cover = coalesce(cover_new, cover)) %>% 
   select(-cover_new)
 
@@ -157,7 +161,7 @@ turfCom2 <- subturfCom2 %>%
 turfCom2 <- subturfCom2 %>% 
   filter(species %in% c("Sag.sp", "Eup.sp")) %>% 
   group_by(turfID, year, species, cf, flag) %>% 
-  summarise(n = n()) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
   anti_join(turfCom2, by = c("turfID", "year", "species")) %>% #taxa/year/turf not in turfCom2
   mutate(
     cover = case_when(
@@ -179,29 +183,31 @@ sampling_year <- turfCom %>%
 
 turfCom2 <- subturfCom2 %>% 
   group_by(turfID, year, species, cf, flag) %>% 
-  summarise(n = n()) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
   anti_join(turfCom2, by = c("turfID", "year", "species")) %>%  #taxa/year/turf not in turfCom2
-  left_join(sampling_year) %>% 
+  left_join(sampling_year, by = c("turfID", "year")) %>% 
   left_join(
-    left_join(turfCom2, sampling_year),
+    left_join(turfCom2, sampling_year, by = c("turfID", "year")),
     by = c("turfID", "species"), 
     suffix = c("", "_cover")) %>% #join to other years
   filter(abs(sampling - sampling_cover) == 1) %>% #next/previous year
   group_by(turfID, species, year, cf) %>% 
   filter(n() == 2) %>% #need before and after year
-  summarise(cover = mean(cover), flag = "Subturf w/o cover. Imputed as mean of adjacent years") %>% 
+  summarise(cover = mean(cover), 
+            flag = "Subturf w/o cover. Imputed as mean of adjacent years", 
+            .groups = "drop_last") %>% 
   bind_rows(turfCom2)
 
 #other subturf w/o cover
 subturfCom2 %>% 
   group_by(turfID, year, species, cf, flag) %>% 
-  summarise(n = n()) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
   anti_join(turfCom2, by = c("turfID", "year", "species"))
 
 #### merge any duplicates up####
 turfCom2 <- turfCom2 %>% 
   group_by(turfID, year, species, cf, flag) %>%
-  summarise(cover = sum(cover))
+  summarise(cover = sum(cover), .groups = "drop_last")
   
 subturfCom2 <- subturfCom2 %>% 
   group_by(turfID, subturf, year, species, flag) %>% 
@@ -213,7 +219,8 @@ subturfCom2 <- subturfCom2 %>%
     fertile = as.integer(any(fertile == 1)),
     vegetative = as.integer(any(vegetative == 1)),
     dominant = as.integer(any(dominant == 1)),
-    cf = as.integer(any(cf == 1))
+    cf = as.integer(any(cf == 1)), 
+    .groups = "drop_last"
   )
 
 # what got merged
