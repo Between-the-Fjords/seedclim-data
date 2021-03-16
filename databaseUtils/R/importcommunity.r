@@ -105,6 +105,20 @@ import_data <- function(file, con, merge_dictionary){
              moss_height = mossHeight, 
              comment, recorder, date)
   
+#  harmonise recorder names (supposed to be botanist but sometimes scribe)
+  turfEnv <-  turfEnv %>% 
+    mutate(
+      recorder = case_when(
+        recorder %in% c("", "not noted") | is.na(recorder) ~ "Not noted",
+        recorder %in% c("VV", "vv", "W") ~ "Vigdis",
+        recorder %in% c("KK") ~ "Kari",
+        recorder %in% c("SO") ~ "Siri",
+        TRUE ~ recorder
+      ),
+      recorder = str_replace(recorder,  "W(?![:alpha:])", "Vigdis"), 
+      recorder = str_replace(recorder,  "KK(?![:alpha:])", "Kari")       
+    )
+  
   if(mode(turfEnv$moss_height) == "character"){
     turfEnv <- turfEnv %>% 
       mutate(moss_height = gsub(",", ".", moss_height),

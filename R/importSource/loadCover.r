@@ -67,7 +67,6 @@ sort(cover.thin$cover, decreasing = TRUE)[1:10]
 cover.thin$cover[cover.thin$cover > 80] <- 80#stop doubtfully high values                                 
 
 #correct for botanist effects
-cover.thin$recorder[is.na(cover.thin$recorder)] <- "unknown botanist"
 #PM
 cover.thin$cover[cover.thin$recorder == "PM"] <- cover.thin$cover[cover.thin$recorder=="PM"] * 1.20
 #Siri
