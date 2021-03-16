@@ -190,8 +190,7 @@ import_data <- function(file, con, merge_dictionary){
        mutate(newID = coalesce(newID, species)) %>% 
        select(turfID, subturf, year, species = newID, presence) %>% 
        group_by(year, turfID, subturf, species) %>% 
-       summarise(presence = paste0(presence, collapse = "")) %>% #aggregate taxa
-       ungroup()
+       summarise(presence = paste0(presence, collapse = ""), .groups = "drop") #aggregate taxa
      
      #check_new_taxa
      subspp %>% anti_join(spp_list) %>% verify(nrow(.) == 0)
