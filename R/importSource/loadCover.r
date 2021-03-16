@@ -66,37 +66,6 @@ cover.thin$cover <- cover.thin$cover*25/cover.thin$notbad
 sort(cover.thin$cover, decreasing = TRUE)[1:10]      
 cover.thin$cover[cover.thin$cover > 80] <- 80#stop doubtfully high values                                 
 
-#correct for botanist effects
-#PM
-cover.thin$cover[cover.thin$recorder == "PM"] <- cover.thin$cover[cover.thin$recorder=="PM"] * 1.20
-#Siri
-siri <- tbl(con, "sites") %>% 
-  inner_join(tbl(con, "blocks"), by  = "siteID") %>% 
-  inner_join(tbl(con, "plots"), by = "blockID") %>% 
-  inner_join(tbl(con, "turfs"), by = c("plotID" = "destinationPlotID")) %>% 
-  inner_join(tbl(con, "turf_environment"), by = "turfID") %>% 
-  inner_join(tbl(con, "Turf_community"), by = c("turfID", "year")) %>% 
-  filter(recorder == "Siri") %>% 
-  group_by(turfID, year, date, total_vascular, TTtreat, temperature_level) %>% 
-  summarise(SumOfCover = sum(cover)) %>% 
-  collect()  
-  
-
-
-# tbl(con, sql("SELECT turfs.turfID, Turf_community.Year, turf_environment.date, Sum(TurfCommunity.cover) AS SumOfcover, turf_environment.totalVascular, turfs.TTtreat, sites.Temperature_level
-# FROM ((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) INNER JOIN ((turfs INNER JOIN turfEnvironment ON turfs.turfID = turfEnvironment.turfID) INNER JOIN TurfCommunity ON (TurfCommunity.Year = turfEnvironment.year) AND (turfs.turfID = TurfCommunity.turfID)) ON plots.plotID = turfs.destinationPlotID
-# WHERE (((turfEnvironment.recorder)='Siri'))
-# GROUP BY turfs.turfID, TurfCommunity.Year, turfEnvironment.date, turfEnvironment.totalVascular, turfs.TTtreat, sites.Temperature_level
-# HAVING ((Not (turfs.TTtreat)=''))
-# ORDER BY TurfCommunity.Year, turfEnvironment.date, Sum(TurfCommunity.cover) DESC")) 
-
-siriLOW <- siri[siri$SumOfCover/siri$total_vascular < 1.35,]
-
-siri.fix <- paste(cover.thin$turfID, cover.thin$year) %in% paste(siriLOW$turfID, siriLOW$year)
-
-table(siri.fix,cover.thin$recorder)
-
-cover.thin$cover[siri.fix] <- cover.thin$cover[siri.fix] * 1.3
 
 #John's corrections
 cover.thin <- cover.thin %>% 

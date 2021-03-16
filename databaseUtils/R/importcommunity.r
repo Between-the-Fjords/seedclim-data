@@ -111,8 +111,8 @@ import_data <- function(file, con, merge_dictionary){
       recorder = case_when(
         recorder %in% c("", "not noted") | is.na(recorder) ~ "Not noted",
         recorder %in% c("VV", "vv", "W") ~ "Vigdis",
-        recorder %in% c("KK") ~ "Kari",
-        recorder %in% c("SO") ~ "Siri",
+        recorder == "KK" ~ "Kari",
+        recorder == "SO" ~ "Siri",
         TRUE ~ recorder
       ),
       recorder = str_replace(recorder,  "W(?![:alpha:])", "Vigdis"), 

@@ -219,12 +219,42 @@ subturfCom2 <- subturfCom2 %>%
 # what got merged
 subturfCom2 %>% ungroup() %>% filter(grepl("&", presence)) 
 
-# delete contents of tables
+
+
+
+#### correct covers for botanist effects ####
+turf_env <- tbl(con, "turf_environment") %>% 
+  select(year, turfID, recorder,  total_vascular) %>% 
+  collect()
+
+
+turfCom2 <- turfCom2 %>%
+  mutate(cover_raw = cover) %>% #keep original cover values
+  left_join(turf_env, by = c("turfID", "year")) %>%
+  
+  # PM - generally low turf covers - multiple by 1.2 to correct
+  mutate(cover = if_else(recorder == "PM", cover * 1.2, cover)) %>%
+  
+  # Siri - sometimes sum of covers is << total vascular cover
+  group_by(turfID, year) %>% 
+  mutate(sum_cover = sum(cover)) %>% 
+  mutate(cover = if_else(recorder == "Siri" & (sum_cover / total_vascular < 1.35), 
+                         true = cover * 1.3,
+                         false = cover)) %>% 
+  
+  # remove columns from turf_env
+  select(-recorder, -total_vascular, -sum_cover)
+
+
+#### delete contents of tables ####
 dbExecute(conn = con, "DELETE FROM turf_community")
 dbExecute(conn = con, "DELETE FROM subturf_community")
 
+## add column for cover_raw
+dbExecute(conn = con, "ALTER TABLE turf_community
+                       ADD COLUMN cover_raw float;")
 
-# add revised contents
+#### add revised contents ####
 db_pad_write_table(conn = con, table = "turf_community", value = turfCom2)
 
 db_pad_write_table(conn = con, table = "subturf_community", value = subturfCom2)
