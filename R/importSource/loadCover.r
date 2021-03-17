@@ -39,32 +39,36 @@ cover.thin <- tbl(con, sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,t
 FROM subturf_environment where (subturf_environment.year = turf_community.year) AND (subturf_environment.turfID = turf_community.turfID)
  AND ( (subturf_environment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded as summer_temperature, sites.annual_precipitation_gridded as annual_precipitation, sites.precipitation_level, turf_community.Year, turf_community.species, turf_community.cover, turf_environment.recorder , dest_blocks.siteID as destSiteID
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
+INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turf_community ON turfs.turfID = turf_community.turfID) INNER JOIN turf_environment ON (turf_environment.year = turf_community.year) AND (turfs.turfID = turf_environment.turfID)) %>% 
+  collect()
+
+sites_blocks_plots <- tbl(con, "sites") %>% 
+  inner_join(tbl(con, "blocks"), by = "siteID") %>% 
+  inner_join(tbl(con, "plots"), by = "blockID") 
+
+cover.thin2 <- sites_blocks_plots %>% 
+  inner_join(tbl(con, "turfs"), by = c("plotID" = "originPlotID")) %>% 
+  inner_join(sites_blocks_plots, by = c("destinationPlotID" = "plotID")) %>% 
+  inner_join(tbl(con, "turf_community"), by = "turfID") %>% 
+  filter(
+    TTtreat != "", # only TTtreat
+    !year == 2010  # no TTtreat data for 2010
+  ) %>%
+  collect()
+                   
+                   
+sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subturf_environment.bad) AS CountOfbad
+FROM subturf_environment where (subturf_environment.year = turf_community.year) AND (subturf_environment.turfID = turf_community.turfID)
+ AND ( (subturf_environment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded as summer_temperature, sites.annual_precipitation_gridded as annual_precipitation, sites.precipitation_level, turf_community.Year, turf_community.species, turf_community.cover, turf_environment.recorder , dest_blocks.siteID as destSiteID
+FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
 INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turf_community ON turfs.turfID = turf_community.turfID) INNER JOIN turf_environment ON (turf_environment.year = turf_community.year) AND (turfs.turfID = turf_environment.turfID)
 WHERE NOT turfs.TTtreat='' AND ((Not (turf_community.Year)=2010))")) %>% 
   collect()
 
-cover.thin
+
+
+cover.thin2
                                        
-#correct for stomping
-cover.thin %>% count(notbad)
-
-# stompingQ<-"SELECT blocks.siteID, blocks.blockID, turfs.turfID, subturf_Environment.year, turfs.TTtreat, Count(subturf_environment.bad) AS CountOfbad
-# FROM blocks INNER JOIN (plots INNER JOIN (turfs INNER JOIN subturf_Environment ON turfs.turfID = subturf_Environment.turfID) ON plots.plotID = turfs.destinationPlotID) ON blocks.blockID = plots.blockID
-# GROUP BY blocks.siteID, blocks.blockID, turfs.turfID, subturf_Environment.year, turfs.TTtreat, subturf_Environment.bad
-# HAVING (((subturf_Environment.bad)='x'))"
-# stomping <- tbl(con, sql(stompingQ)) %>% collect()
-# #stomping <- filter(stomping, is.na(TTtreat)|TTtreat == "TTC") %>% 
-# #  distinct()
-
-#delete turfs with too much stomping  
-cover.thin <- cover.thin %>% filter(notbad > 10)
-
-
- #correct covers for stomping
-max(cover.thin$cover)
-cover.thin$cover <- cover.thin$cover*25/cover.thin$notbad
-sort(cover.thin$cover, decreasing = TRUE)[1:10]      
-cover.thin$cover[cover.thin$cover > 80] <- 80#stop doubtfully high values                                 
 
 
 #John's corrections

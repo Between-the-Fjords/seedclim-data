@@ -252,6 +252,24 @@ turfCom2 <- turfCom2 %>%
   # remove columns from turf_env
   select(-recorder, -total_vascular, -sum_cover)
 
+#### stomping correction ####
+
+bad <- tbl(con, "subturf_environment") %>% 
+  select(turfID, subturf, year, bad) %>% 
+  group_by(turfID, year) %>% 
+  summarise(not_bad = 25 - sum(bad == "x", na.rm = TRUE)) %>% 
+  collect()
+
+
+turfCom2 <- turfCom2 %>% 
+  left_join(bad, by = c("turfID", "year")) %>% 
+  #remove turfs with many stomped subturfs
+  filter(not_bad > 10) %>% # currently removes empty set
+  # correct for stomping 
+  mutate(cover = if_else(cover < 80 & not_bad < 25, 
+                          true = cover * 25 / not_bad, 
+                          false = cover))
+  
 
 #### delete contents of tables ####
 dbExecute(conn = con, "DELETE FROM turf_community")
