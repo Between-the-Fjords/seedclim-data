@@ -265,10 +265,11 @@ turfCom2 <- turfCom2 %>%
   left_join(bad, by = c("turfID", "year")) %>% 
   #remove turfs with many stomped subturfs
   filter(not_bad > 10) %>% # currently removes empty set
-  # correct for stomping 
+  # correct for stomping unless cover is already above 80 %
   mutate(cover = if_else(cover < 80 & not_bad < 25, 
                           true = cover * 25 / not_bad, 
-                          false = cover))
+                          false = cover)) %>% 
+  select(-not_bad)
   
 
 #### delete contents of tables ####
