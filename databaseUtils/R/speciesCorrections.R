@@ -4,12 +4,8 @@ corrections <- read_csv("databaseUtils/setup-data/speciesCorrections.csv",
                         comment = "#")
 
 corrections <- corrections %>% 
-  filter(!str_detect(turfID, "#")) %>% 
-  mutate(
-    turfID = trimws(turfID),
-    old = trimws(old),
-    new = trimws(new)
-  ) %>% 
+  filter(!str_detect(turfID, "#")) %>% #removes comments
+  mutate(across(c(turfID, old, new), trimws)) %>% 
   #correct bad turfID
   mutate(turfID = if_else(turfID == "504 TT4 227", true = "504 TT4 277", false = turfID)) %>% 
   #correct bad spp id
@@ -42,18 +38,19 @@ subturfCom <- tbl(con, "subturf_community") %>% collect()
 # check turfID
 turfID_glitch <- corrections %>% 
   filter(turfID != "") %>% 
-  anti_join(turfCom, by = "turfID")
-try(assertthat::assert_that(nrow(turfID_glitch) == 0))
+  anti_join(turfCom, by = "turfID") 
+assertthat::assert_that(nrow(turfID_glitch) == 0)
 # check species
 species_glitch <- corrections %>% 
   filter(turfID != "") %>% 
   anti_join(turfCom, by = c("old" = "species"))
-try(assertthat::assert_that(nrow(species_glitch) == 0))
+assertthat::assert_that(nrow(species_glitch) == 0)
+
 #check species/turfs
 speciesturfs_glitch <- corrections %>% 
   filter(turfID != "", old != new) %>% 
   anti_join(turfCom, by = c("old" = "species", "Year" = "year", "turfID" = "turfID"))
-try(assertthat::assert_that(nrow(species_glitch) == 0))
+assertthat::assert_that(nrow(species_glitch) == 0)
 
 #Delete 521 TT1 523 from 2012 - comment "ødelagt av ku! Kopi fra 2011!" - subturfs idential to previous year
 turfCom <- turfCom %>% 
@@ -145,8 +142,8 @@ turfCom2 <- subturfCom2 %>%
   filter(n() == 1) %>% 
   anti_join(turfCom2, by = c("turfID", "year", "species")) %>% #taxa/year/turf not in turfCom2
   select(turfID, year, species, cf, flag) %>% 
-   mutate(cover = 1, flag = "imputed from single subturf") %>% 
-   bind_rows(turfCom2)
+  mutate(cover = 1, flag = "imputed from single subturf") %>% 
+  bind_rows(turfCom2)
 
 # NID seedling is always 1%
 turfCom2 <- subturfCom2 %>% 
@@ -173,7 +170,7 @@ turfCom2 <- subturfCom2 %>%
   select(turfID, year, species, cover, cf, flag) %>% 
   bind_rows(turfCom2)
 
-#mean of previous and next year
+# impute missing covers as mean of previous and next year
 sampling_year <- turfCom %>% 
   group_by(turfID) %>% 
   distinct(turfID, year) %>% 
@@ -271,6 +268,17 @@ turfCom2 <- turfCom2 %>%
                           false = cover)) %>% 
   select(-not_bad)
   
+#### John's corrections
+
+## TODO need to check these make sense as they are rather large change
+turfCom2 <- turfCom2 %>% 
+  mutate(cover = if_else(turfID == '111 TT2 137' & year == 2011 & species == 'Agr.cap', 25, cover)) %>% 
+  mutate(cover = if_else(turfID == '32 TT3 109' & year == 2009, cover/2, cover), 
+         cover = if_else(turfID == '32 TT3 109' & year == 2012, cover * 2/3, cover), 
+         cover = if_else(turfID == '33 TT2 58' & year == 2009, cover * 2/3, cover),
+         cover = if_else(turfID == '34 TT1 32' & year == 2009, cover/2, cover), 
+         cover = if_else(turfID == '40 TT2 62' & year == 2011, cover * 2/3, cover)) 
+
 
 #### delete contents of tables ####
 dbExecute(conn = con, "DELETE FROM turf_community")
