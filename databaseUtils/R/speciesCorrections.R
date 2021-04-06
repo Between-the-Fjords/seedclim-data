@@ -200,6 +200,27 @@ turfCom2 <- bind_rows(
     rename(species = old)
 )
 
+#### rotate turfs ####
+rotate_turf <- function(x){# could generalise to any rotation
+  vec <- 1:25
+  mat <- matrix(vec, nrow = 5)
+  mat
+  mat2 <- t(mat)[, 5:1]
+  vec2 <- as.vector(mat2)
+  
+  vec2 <- set_names(vec2, vec)
+  vec2[as.character(x)]
+}
+
+rotated <- corrections %>% filter(str_detect(comm, "plot is turned"))
+
+subturfCom2 <- subturfCom2 %>% 
+  mutate(subturf = if_else(turfID == rotated$turfID & year == rotated$year, 
+                           true = rotate_turf(subturf),
+                           false = subturf)
+  ) 
+
+
 ####missing cover fixes####
 ##rare taxa
 # singlesubplot occurrences always get 1%
