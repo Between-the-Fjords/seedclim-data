@@ -1,22 +1,80 @@
 # making corrections
-# load file
+# load files
 corrections <- read_csv("databaseUtils/setup-data/speciesCorrections.csv", 
-                        comment = "#")
+                        comment = "#") %>% 
+  rename(year = Year)
 
+corrections_2020 <- read_excel("databaseUtils/setup-data/Seeclim Corrections 2020.xlsx", sheet = "Sheet1") %>% 
+  rename(turfID = plot,
+         old = was, 
+         new = `should be`) %>% 
+  mutate(`type error` = replace_na(`type error`, "")) %>% 
+  filter(`type error` != "corrected by silje") %>% #corrected in proofreading
+  mutate(
+    turfID = toupper(turfID), #turfID must be upper case
+    across(c(old, new), str_replace, pattern = "[\\s-]", replacement = "."), #. not space or - as separator
+    across(c(old, new), str_replace, pattern = "\\.\\.", replacement = "."), #. not .. as separator
+    across(c(old, new), str_to_title)
+  ) %>% #species codes have capital first letter
+  mutate(cover = case_when(
+    str_detect(comm, "\\d*%") ~ str_extract(comm, "\\d*(?=%)"),
+    !is.na(...6) ~ as.character(...6 * 100), #excel has converted % to proportion
+    TRUE ~ ""
+  )) %>% 
+  mutate( # split siteID into own column
+    siteID = if_else(str_detect(turfID, " "), NA_character_, turfID),
+    turfID = if_else(str_detect(turfID, " "), turfID, NA_character_)
+    )
+
+# combine corrections
+corrections <- bind_rows(
+  corrections,
+  corrections_2020
+)
+
+#clean corrections
 corrections <- corrections %>% 
   filter(!str_detect(turfID, "#")) %>% #removes comments
   mutate(across(c(turfID, old, new), trimws)) %>% 
   #correct bad turfID
-  mutate(turfID = if_else(turfID == "504 TT4 227", true = "504 TT4 277", false = turfID)) %>% 
+  mutate(turfID = case_when(
+    turfID == "504 TT4 227" ~ "504 TT4 277",
+    turfID == "20 TT4 118" ~ "20 TT4 119", # found with agrepl
+    turfID == "537 TT2 279" ~ "237 TT2 279", # found with agrepl
+    TRUE ~ turfID
+    )) %>% 
   #correct bad spp id
   mutate(old = case_when(
     old == "Sel.sel." ~ "Sel.sel",
     old == "Car.pall" ~ "Car.pal",
     old == "X…." ~ "X...",
+    old == "X…" ~ "X...",
+    old == "Anto.odo" ~ "Ant.odo",
+    old == "Ave.flex" ~ "Ave.fle",
+    old == "Rhin.min" ~ "Rhi.min",
+    old == "Pote.ere" ~ "Pot.ere", 
+    old == "Bist.viv" ~ "Bis.viv", 
+    old == "Cer.c34" ~ "Cer.cer",
+    old == "Åkreplante" ~ "Åkerplante",
     TRUE ~ old
   )) %>% 
   #force year to numeric
-  mutate(Year = as.numeric(Year))
+  mutate(year = as.numeric(year)) %>% 
+  #fix siteID
+  mutate(
+    siteID = str_to_title(siteID),
+    siteID = case_when(
+   siteID %in% c("Ålrust") ~ "Alrust",         
+   siteID %in% c("Arh") ~ "Arhelleren",     
+   siteID %in% c("Gud")  ~ "Gudmedalen",     
+   siteID %in% c("Høgsete")  ~ "Hogsete",       
+   siteID %in% c("Ovstedal") ~ "Ovstedalen",     
+   siteID %in% c("Rambæra") ~ "Rambera",
+   siteID %in% c("Skjell", "Skjellingahaugen") ~ "Skjelingahaugen",
+   siteID %in% c("Ulv", "Ulvhaugen") ~ "Ulvehaugen",     
+   siteID %in% c("Vikelsand") ~ "Vikesland",    
+   TRUE ~ siteID
+  ))
   
 
 #check for taxon name anomalies
@@ -24,8 +82,9 @@ taxon <- tbl(con, "taxon") %>%
   collect() 
 
 missing_new <- corrections %>% 
-  filter(old != new) %>% 
-  filter(!new %in% taxon$species)
+  filter(old != new, #only check name changes
+         !new %in% taxon$species, # check not in species list
+         new != "Delete") 
 
 if(nrow(missing_new) > 0) {
   warning("unrecognised species in new")
@@ -40,6 +99,7 @@ turfID_glitch <- corrections %>%
   filter(turfID != "") %>% 
   anti_join(turfCom, by = "turfID") 
 assertthat::assert_that(nrow(turfID_glitch) == 0)
+
 # check species
 species_glitch <- corrections %>% 
   filter(turfID != "") %>% 
@@ -49,7 +109,11 @@ assertthat::assert_that(nrow(species_glitch) == 0)
 #check species/turfs
 speciesturfs_glitch <- corrections %>% 
   filter(turfID != "", old != new) %>% 
-  anti_join(turfCom, by = c("old" = "species", "Year" = "year", "turfID" = "turfID"))
+  anti_join(turfCom, by = c("old" = "species", "year" = "year", "turfID" = "turfID"))
+
+species_sub_turfs_glitch <- corrections %>% 
+  filter(turfID != "", old != new) %>% 
+  anti_join(subturfCom, by = c("old" = "species", "year" = "year", "turfID" = "turfID"))
 assertthat::assert_that(nrow(species_glitch) == 0)
 
 #Delete 521 TT1 523 from 2012 - comment "ødelagt av ku! Kopi fra 2011!" - subturfs idential to previous year
@@ -81,6 +145,9 @@ corrections %>%
   filter(siteID == "", old == new) %>% 
   select(old, new)
 
+## site level name changes 
+## TODO
+
 ##local name changes - perhaps abundance change (maybe merges)
 local <- corrections %>% 
   filter(siteID != "", old != new) %>% 
@@ -90,7 +157,7 @@ local <- corrections %>%
 
 #turf
 turfCom2 <- turfCom2 %>% 
-  left_join(local, by = c("species" = "old", "year" = "Year", "turfID" = "turfID"), suffix = c("", "_new")) %>% 
+  left_join(local, by = c("species" = "old", "year" = "year", "turfID" = "turfID"), suffix = c("", "_new")) %>% 
   mutate(
     species = coalesce(new, species),
     cover = coalesce(cover_new, cover)
@@ -100,7 +167,7 @@ turfCom2 <- turfCom2 %>%
 #subturf
 subturfCom2 <- subturfCom2 %>% 
   left_join(local, 
-            by = c("species" = "old", "year" = "Year", "turfID" = "turfID"),
+            by = c("species" = "old", "year" = "year", "turfID" = "turfID"),
             suffix = c("", "_new")) %>% 
   mutate(
     species = coalesce(new, species)
@@ -119,7 +186,7 @@ local_abun <- local_abun %>%
 
 turfCom2 <- turfCom2 %>%
   left_join(local_abun, 
-            by = c("species" = "old", "year" = "Year", "turfID" = "turfID"),
+            by = c("species" = "old", "year" = "year", "turfID" = "turfID"),
             suffix = c("", "_new")) %>% 
   mutate(cover = coalesce(cover_new, cover)) %>% 
   select(-cover_new)
@@ -128,9 +195,9 @@ turfCom2 <- turfCom2 %>%
 turfCom2 <- bind_rows(
   turfCom2, 
   local_abun %>% 
-    anti_join(turfCom2, by = c("old" = "species", "Year" = "year", "turfID" = "turfID")) %>% 
+    anti_join(turfCom2, by = c("old" = "species", "year" = "year", "turfID" = "turfID")) %>% 
     select(-siteID) %>% 
-    rename(year = Year, species = old)
+    rename(species = old)
 )
 
 ####missing cover fixes####
