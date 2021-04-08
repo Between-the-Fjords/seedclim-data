@@ -159,6 +159,13 @@ subturfCom2 <- subturfCom %>%
   mutate(species = coalesce(new, species)) %>% 
   select(-new)
 
+# remove global corrections from corrections
+corrections <- corrections %>% 
+  filter(!((siteID == "" | is.na(siteID)) & #site is blank or NA
+         (turfID == "" | is.na(turfID)) & #turf is blank or NA
+         old != new)) 
+
+
 #new taxa?
 corrections %>% 
   filter(siteID == "", old == new) %>% 
@@ -170,7 +177,7 @@ corrections %>%
 #### local (turf) name changes ####
 # - perhaps abundance change (maybe merges)
 local <- corrections %>% 
-  filter(turfID != "", old != new) %>% 
+  filter((turfID != "" | is.na(turfID)), old != new) %>% 
   mutate(cover = as.numeric(cover)) %>% 
   select(-siteID, -functionalGroup)
 
@@ -196,6 +203,12 @@ subturfCom2 <- subturfCom2 %>%
   ) %>% 
   select(-new, -cover)
 
+#remove local corrections
+corrections <- corrections %>% 
+  filter(!((turfID != "" | is.na(turfID)) & (old != new | is.na(new))))
+corrections %>% 
+  filter(((turfID != "" | is.na(turfID)) & (old != new | !is.na(new)))) %>% View()   
+         
 #### abundance changes ####
 local_abun <- corrections %>% 
   filter(siteID != "", new == old) %>% 
@@ -242,9 +255,18 @@ subturfCom2 <- subturfCom2 %>%
 
 #### deletions ####
 # Not sure why there are any of these
-delete_taxa <- corrections %>% filter(new == "Delete") 
-turfCom2 <- anti_join(turfCom2, delete_taxa, by = c("turfID", "species" = "new", "year"))
-subturfCom2 <- anti_join(subturfCom2, delete_taxa, by = c("turfID", "species" = "new", "year"))
+delete_taxa <- corrections %>% 
+  filter(new == "Delete") 
+turfCom2 <- anti_join(turfCom2, delete_taxa, by = c("turfID", "species" = "old", "year"))
+subturfCom2 <- anti_join(subturfCom2, delete_taxa, by = c("turfID", "species" = "old", "year"))
+
+# remove deletions from corrections
+corrections <- corrections %>% 
+  filter(new != "Delete" | is.na(new)) 
+
+
+#### corrections should now be empty
+corrections %>% verify(nrow(.) == 0)
 
 
 ####missing cover fixes####
