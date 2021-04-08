@@ -23,7 +23,9 @@ corrections_2020 <- read_excel("databaseUtils/setup-data/Seeclim Corrections 202
   )) %>% 
   mutate( # split siteID into own column
     siteID = if_else(str_detect(turfID, " "), NA_character_, turfID),
-    turfID = if_else(str_detect(turfID, " "), turfID, NA_character_)
+    turfID = if_else(str_detect(turfID, " "), turfID, NA_character_),
+    # put delete into correct column
+    new = if_else(str_detect(`type error`, "[Dd]elete"), "Delete", new)
     )
 
 # combine corrections
@@ -237,6 +239,12 @@ subturfCom2 <- subturfCom2 %>%
                            true = rotate_turf(subturf),
                            false = subturf)
   ) 
+
+#### deletions ####
+# Not sure why there are any of these
+delete_taxa <- corrections %>% filter(new == "Delete") 
+turfCom2 <- anti_join(turfCom2, delete_taxa, by = c("turfID", "species" = "new", "year"))
+subturfCom2 <- anti_join(subturfCom2, delete_taxa, by = c("turfID", "species" = "new", "year"))
 
 
 ####missing cover fixes####
