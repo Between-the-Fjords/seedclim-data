@@ -74,8 +74,22 @@ corrections <- corrections %>%
    siteID %in% c("Ulv", "Ulvhaugen") ~ "Ulvehaugen",     
    siteID %in% c("Vikelsand") ~ "Vikesland",    
    TRUE ~ siteID
-  ))
+  )) %>% 
+  #convert NA to avoid filter problems
+  mutate(
+    comm = replace_na(comm, ""),
+    `type error` = replace_na(`type error`, "")
+    )
   
+## pull off special cases
+#rotation - fixed below
+rotated <- corrections %>% 
+  filter(str_detect(comm, "plot is turned"))
+
+corrections <- corrections %>% 
+  filter(!str_detect(comm, "plot is turned"), 
+         !str_detect(`type error`, "all covers are missing"))# not missing now
+
 
 #check for taxon name anomalies
 taxon <- tbl(con, "taxon") %>% 
@@ -123,9 +137,12 @@ subturfCom <- subturfCom %>%
   filter(!(turfID == "521 TT1 523" & year == 2012))
 
 
-## global name changes (maybe merges) -should be in merge table
+#### global name changes (maybe merges) ####
+# -should be in merge table
 global <- corrections %>% 
-  filter(siteID == "", old != new) %>% 
+  filter(siteID == "" | is.na(siteID), #site is blank or NA
+         turfID == "" | is.na(turfID), #turf is blank or NA
+         old != new) %>% 
   select(old, new)
   
 #turf
@@ -148,16 +165,19 @@ corrections %>%
 ## site level name changes 
 ## TODO
 
-##local name changes - perhaps abundance change (maybe merges)
+#### local (turf) name changes ####
+# - perhaps abundance change (maybe merges)
 local <- corrections %>% 
-  filter(siteID != "", old != new) %>% 
+  filter(turfID != "", old != new) %>% 
   mutate(cover = as.numeric(cover)) %>% 
   select(-siteID, -functionalGroup)
 
 
 #turf
 turfCom2 <- turfCom2 %>% 
-  left_join(local, by = c("species" = "old", "year" = "year", "turfID" = "turfID"), suffix = c("", "_new")) %>% 
+  left_join(local, 
+            by = c("species" = "old", "year" = "year", "turfID" = "turfID"), 
+            suffix = c("", "_new")) %>% 
   mutate(
     species = coalesce(new, species),
     cover = coalesce(cover_new, cover)
@@ -174,7 +194,7 @@ subturfCom2 <- subturfCom2 %>%
   ) %>% 
   select(-new, -cover)
 
-## abundance changes
+#### abundance changes ####
 local_abun <- corrections %>% 
   filter(siteID != "", new == old) %>% 
   select(-functionalGroup, -new)
@@ -211,8 +231,6 @@ rotate_turf <- function(x){# could generalise to any rotation
   vec2 <- set_names(vec2, vec)
   vec2[as.character(x)]
 }
-
-rotated <- corrections %>% filter(str_detect(comm, "plot is turned"))
 
 subturfCom2 <- subturfCom2 %>% 
   mutate(subturf = if_else(turfID == rotated$turfID & year == rotated$year, 
