@@ -1,4 +1,9 @@
 # making corrections
+
+# enable tidylog
+# library(tidylog)
+# map(getNamespaceExports("tidylog"), ~ conflict_prefer(.x, "tidylog"))
+
 # load files
 corrections <- read_csv("databaseUtils/setup-data/speciesCorrections.csv", 
                         comment = "#") %>% 
@@ -203,11 +208,20 @@ corrections %>%
   select(old, new)
 
 #### site level name changes ####
-site_corr <- corrections %>% 
-  filter(type == "site") %>% 
-  mutate(cover = as.numeric(cover)) %>% 
-  select(-functionalGroup)
+turfs <- tbl(con, "turfs") %>% collect()
+plots <- tbl(con, "plots") %>% collect()
+blocks <- tbl(con, "blocks") %>% collect()
 
+site_corr <- corrections %>% 
+  filter(type == "site")
+
+site_corr <- site_corr %>% 
+  select(siteID, year, old, new) %>% 
+  left_join(blocks %>% select(blockID, siteID), by = "siteID") %>% 
+  left_join(plots %>% select(plotID, blockID), by = "blockID") %>% 
+  left_join(turfs %>% select(turfID, destinationPlotID), by = c("plotID" = "destinationPlotID")) %>% 
+  select(-blockID, -plotID)
+  
 
 #turf
 turfCom2 <- turfCom2 %>% 
@@ -215,10 +229,9 @@ turfCom2 <- turfCom2 %>%
             by = c("species" = "old", "year" = "year", "turfID" = "turfID"), 
             suffix = c("", "_new")) %>% 
   mutate(
-    species = coalesce(new, species),
-    cover = coalesce(cover_new, cover)
+    species = coalesce(new, species)
   ) %>% 
-  select(-new, -cover_new)
+  select(-new, -siteID)
 
 #subturf
 subturfCom2 <- subturfCom2 %>% 
@@ -228,7 +241,33 @@ subturfCom2 <- subturfCom2 %>%
   mutate(
     species = coalesce(new, species)
   ) %>% 
-  select(-new, -cover)
+  select(-new, -siteID)
+
+# all years
+site_corr <- site_corr %>% 
+  filter(is.na(year)) %>% 
+  select(-year) 
+  
+#turf
+turfCom2 <- turfCom2 %>% 
+  left_join(site_corr, 
+            by = c("species" = "old", "turfID" = "turfID"), 
+            suffix = c("", "_new")) %>% 
+  mutate(
+    species = coalesce(new, species)
+  ) %>% 
+  select(-new, -siteID)
+
+#subturf
+subturfCom2 <- subturfCom2 %>% 
+  left_join(site_corr, 
+            by = c("species" = "old",  "turfID" = "turfID"),
+            suffix = c("", "_new")) %>% 
+  mutate(
+    species = coalesce(new, species)
+  ) %>% 
+  select(-new, -siteID)
+
 
 
 #### local (turf) name changes ####
