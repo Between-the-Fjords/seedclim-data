@@ -147,7 +147,7 @@ subturfCom <- subturfCom %>%
 
 ## Types of corrections
 #global - YES
-#site - ??? (maybe partial, but something else has wiped them)
+#site - YES
 #local (turf) - YES
 #cover change - YES
 #subturf changes - NO
@@ -299,13 +299,7 @@ subturfCom2 <- subturfCom2 %>%
   ) %>% 
   select(-new, -cover)
 
-#remove local corrections
-corrections <- corrections %>% 
-  anti_join(local, by = c("turfID", "year", "old", "new"))
 
-
-
-         
 #### abundance changes ####
 local_abun <- corrections %>% 
   filter(type = "abundance") %>% 
