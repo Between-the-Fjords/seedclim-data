@@ -36,7 +36,7 @@ corrections <- bind_rows(
 
 #clean corrections
 corrections <- corrections %>% 
-  filter(!str_detect(turfID, "#")) %>% #removes comments
+  filter(!str_detect(turfID, "#") | is.na(turfID)) %>% #removes comments
   mutate(across(c(turfID, old, new), trimws)) %>% 
   #correct bad turfID
   mutate(turfID = case_when(
@@ -74,7 +74,8 @@ corrections <- corrections %>%
    siteID %in% c("Rambæra") ~ "Rambera",
    siteID %in% c("Skjell", "Skjellingahaugen") ~ "Skjelingahaugen",
    siteID %in% c("Ulv", "Ulvhaugen") ~ "Ulvehaugen",     
-   siteID %in% c("Vikelsand") ~ "Vikesland",    
+   siteID %in% c("Vikelsand") ~ "Vikesland",   
+   siteID %in% c("General", "All") ~ NA_character_,
    TRUE ~ siteID
   )) %>% 
   #convert NA to avoid filter problems
@@ -139,12 +140,47 @@ subturfCom <- subturfCom %>%
   filter(!(turfID == "521 TT1 523" & year == 2012))
 
 
+## Types of corrections
+#global - YES
+#site - ??? (maybe partial, but something else has wiped them)
+#local (turf) - YES
+#cover change - YES
+#subturf changes - NO
+#rotate - YES
+#delete - YES
+#cover clone from previous year -NO
+
+#### identify type of corrections ####
+
+corrections <- corrections %>% 
+  mutate(type = case_when(
+    #global
+    (siteID == "" | is.na(siteID)) & #site is blank or NA
+    (turfID == "" | is.na(turfID)) & #turf is blank or NA
+    old != new ~ "global",
+    #site
+    (turfID == "" | is.na(turfID)) & old != new ~ "site",
+    #delete
+    new == "Delete" ~ "delete",
+    #turf
+    (turfID != "" | is.na(turfID)) & old != new ~ "turf",
+    #abundance
+    str_detect(cover, "\\d+") ~ "abundance",
+    #NA old ? blank rows -
+    is.na(old) ~ "blank?",
+    #others
+    TRUE ~ "other"
+    )
+  )
+
+corrections %>% count(type)
+corrections %>% select(-functionalGroup) %>% filter(type == "other") %>% View()
+corrections %>% select(-functionalGroup) %>% filter(type == "abundance") %>% View()
+
 #### global name changes (maybe merges) ####
 # -should be in merge table
 global <- corrections %>% 
-  filter(siteID == "" | is.na(siteID), #site is blank or NA
-         turfID == "" | is.na(turfID), #turf is blank or NA
-         old != new) %>% 
+  filter(type == "global") %>% 
   select(old, new)
   
 #turf
@@ -159,11 +195,6 @@ subturfCom2 <- subturfCom %>%
   mutate(species = coalesce(new, species)) %>% 
   select(-new)
 
-# remove global corrections from corrections
-corrections <- corrections %>% 
-  filter(!((siteID == "" | is.na(siteID)) & #site is blank or NA
-         (turfID == "" | is.na(turfID)) & #turf is blank or NA
-         old != new)) 
 
 
 #new taxa?
@@ -171,13 +202,39 @@ corrections %>%
   filter(siteID == "", old == new) %>% 
   select(old, new)
 
-## site level name changes 
-## TODO
+#### site level name changes ####
+site_corr <- corrections %>% 
+  filter(type == "site") %>% 
+  mutate(cover = as.numeric(cover)) %>% 
+  select(-functionalGroup)
+
+
+#turf
+turfCom2 <- turfCom2 %>% 
+  left_join(site_corr, 
+            by = c("species" = "old", "year" = "year", "turfID" = "turfID"), 
+            suffix = c("", "_new")) %>% 
+  mutate(
+    species = coalesce(new, species),
+    cover = coalesce(cover_new, cover)
+  ) %>% 
+  select(-new, -cover_new)
+
+#subturf
+subturfCom2 <- subturfCom2 %>% 
+  left_join(site_corr, 
+            by = c("species" = "old", "year" = "year", "turfID" = "turfID"),
+            suffix = c("", "_new")) %>% 
+  mutate(
+    species = coalesce(new, species)
+  ) %>% 
+  select(-new, -cover)
+
 
 #### local (turf) name changes ####
 # - perhaps abundance change (maybe merges)
 local <- corrections %>% 
-  filter((turfID != "" | is.na(turfID)), old != new) %>% 
+  filter(type == "turf") %>% 
   mutate(cover = as.numeric(cover)) %>% 
   select(-siteID, -functionalGroup)
 
@@ -205,13 +262,14 @@ subturfCom2 <- subturfCom2 %>%
 
 #remove local corrections
 corrections <- corrections %>% 
-  filter(!((turfID != "" | is.na(turfID)) & (old != new | is.na(new))))
-corrections %>% 
-  filter(((turfID != "" | is.na(turfID)) & (old != new | !is.na(new)))) %>% View()   
+  anti_join(local, by = c("turfID", "year", "old", "new"))
+
+
+
          
 #### abundance changes ####
 local_abun <- corrections %>% 
-  filter(siteID != "", new == old) %>% 
+  filter(type = "abundance") %>% 
   select(-functionalGroup, -new)
 
 local_abun %>% filter(grepl("[a-zA-Z]", cover)) %>% print()
@@ -256,17 +314,10 @@ subturfCom2 <- subturfCom2 %>%
 #### deletions ####
 # Not sure why there are any of these
 delete_taxa <- corrections %>% 
-  filter(new == "Delete") 
+  filter(type == "delete") 
+
 turfCom2 <- anti_join(turfCom2, delete_taxa, by = c("turfID", "species" = "old", "year"))
 subturfCom2 <- anti_join(subturfCom2, delete_taxa, by = c("turfID", "species" = "old", "year"))
-
-# remove deletions from corrections
-corrections <- corrections %>% 
-  filter(new != "Delete" | is.na(new)) 
-
-
-#### corrections should now be empty
-corrections %>% verify(nrow(.) == 0)
 
 
 ####missing cover fixes####
