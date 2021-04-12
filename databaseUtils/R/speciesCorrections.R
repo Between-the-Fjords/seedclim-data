@@ -153,7 +153,7 @@ subturfCom <- subturfCom %>%
 #subturf changes - NO
 #rotate - YES
 #delete - YES
-#cover clone from previous year -NO
+#cover clone from previous year -YES
 
 #### identify type of corrections ####
 
@@ -173,6 +173,7 @@ corrections <- corrections %>%
     str_detect(cover, "\\d+") ~ "abundance",
     #NA old ? blank rows -
     is.na(old) ~ "blank?",
+    str_detect(comm, "[Uu]se") ~ "clone",
     #others
     TRUE ~ "other"
     )
@@ -275,7 +276,7 @@ subturfCom2 <- subturfCom2 %>%
 local <- corrections %>% 
   filter(type == "turf") %>% 
   mutate(cover = as.numeric(cover)) %>% 
-  select(-siteID, -functionalGroup)
+  select(turfID, year, old, new, cover)
 
 
 #turf
@@ -302,12 +303,8 @@ subturfCom2 <- subturfCom2 %>%
 
 #### abundance changes ####
 local_abun <- corrections %>% 
-  filter(type = "abundance") %>% 
-  select(-functionalGroup, -new)
-
-local_abun %>% filter(grepl("[a-zA-Z]", cover)) %>% print()
-local_abun <- local_abun %>% 
-  filter(!grepl("[a-zA-Z]", cover)) %>% 
+  filter(type == "abundance") %>% 
+  select(turfID, year, old, cover) %>% 
   mutate(cover = as.numeric(cover))
 
 turfCom2 <- turfCom2 %>%
@@ -322,7 +319,6 @@ turfCom2 <- bind_rows(
   turfCom2, 
   local_abun %>% 
     anti_join(turfCom2, by = c("old" = "species", "year" = "year", "turfID" = "turfID")) %>% 
-    select(-siteID) %>% 
     rename(species = old)
 )
 
@@ -351,6 +347,35 @@ delete_taxa <- corrections %>%
 
 turfCom2 <- anti_join(turfCom2, delete_taxa, by = c("turfID", "species" = "old", "year"))
 subturfCom2 <- anti_join(subturfCom2, delete_taxa, by = c("turfID", "species" = "old", "year"))
+
+
+#### clone cover from another year
+clone <- corrections %>% 
+  filter(type == "clone") %>% 
+  mutate(clone_year = str_extract(comm, "\\d{4}"),
+         clone_year = as.numeric(clone_year),
+         operator = str_extract(comm, "[*/]"),
+         mult = if_else(!is.na(operator), str_extract(comm, "\\d$"), NA_character_),
+         mult = as.numeric(mult)) %>% 
+  select(turfID, year, old, clone_year, operator, mult)
+
+clone_with_target <- clone %>% 
+  left_join(turfCom2, by = c("turfID", "clone_year" = "year", "old" = "species")) %>% 
+  filter(!is.na(cover)) %>% 
+  mutate(cover = case_when(
+    operator == "*" ~ cover * mult,
+    operator == "/" ~ cover / mult,
+    TRUE ~ cover
+  )) %>% 
+  select(turfID, year, old, cover)
+
+turfCom2 <- turfCom2 %>% 
+  left_join(clone_with_target, 
+            by = c("species" = "old", "year" = "year", "turfID" = "turfID"), 
+            suffix = c("", "_new")) %>% 
+  mutate(cover = coalesce(cover_new, cover)) %>% 
+  select(-cover_new)
+
 
 
 ####missing cover fixes####
