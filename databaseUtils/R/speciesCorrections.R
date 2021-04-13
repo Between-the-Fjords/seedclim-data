@@ -31,7 +31,8 @@ corrections_2020 <- read_excel("databaseUtils/setup-data/Seeclim Corrections 202
     turfID = if_else(str_detect(turfID, " "), turfID, NA_character_),
     # put delete into correct column
     new = if_else(str_detect(`type error`, "[Dd]elete"), "Delete", new)
-    )
+    ) %>% 
+  filter(!(turfID == "96 TT2 122" & year == 2019))# corrected in proofreading
 
 # combine corrections
 corrections <- bind_rows(
