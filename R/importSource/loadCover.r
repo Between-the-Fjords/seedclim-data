@@ -39,9 +39,12 @@ cover.thin <- tbl(con, sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,t
 FROM subturf_environment where (subturf_environment.year = turf_community.year) AND (subturf_environment.turfID = turf_community.turfID)
  AND ( (subturf_environment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded as summer_temperature, sites.annual_precipitation_gridded as annual_precipitation, sites.precipitation_level, turf_community.Year, turf_community.species, turf_community.cover, turf_environment.recorder , dest_blocks.siteID as destSiteID
 FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
-INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turf_community ON turfs.turfID = turf_community.turfID) INNER JOIN turf_environment ON (turf_environment.year = turf_community.year) AND (turfs.turfID = turf_environment.turfID)) %>% 
+INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turf_community ON turfs.turfID = turf_community.turfID) INNER JOIN turf_environment ON (turf_environment.year = turf_community.year) AND (turfs.turfID = turf_environment.turfID) 
+WHERE NOT turfs.TTtreat='' AND ((Not (turf_community.Year)=2010))")) %>% 
   collect()
 
+
+if (FALSE){ #developing cleaner sql
 sites_blocks_plots <- tbl(con, "sites") %>% 
   inner_join(tbl(con, "blocks"), by = "siteID") %>% 
   inner_join(tbl(con, "plots"), by = "blockID") 
@@ -54,40 +57,15 @@ cover.thin2 <- sites_blocks_plots %>%
     TTtreat != "", # only TTtreat
     !year == 2010  # no TTtreat data for 2010
   ) %>%
-  collect()
-                   
-                   
-sql("SELECT sites.siteID, blocks.blockID, turfs.TTtreat,turfs.turfID, dest_blocks.blockID AS destBlockID, (SELECT Count(subturf_environment.bad) AS CountOfbad
-FROM subturf_environment where (subturf_environment.year = turf_community.year) AND (subturf_environment.turfID = turf_community.turfID)
- AND ( (subturf_environment.bad)='')) AS notbad, sites.temperature_level, sites.summer_temperature_gridded as summer_temperature, sites.annual_precipitation_gridded as annual_precipitation, sites.precipitation_level, turf_community.Year, turf_community.species, turf_community.cover, turf_environment.recorder , dest_blocks.siteID as destSiteID
-FROM (((blocks AS dest_blocks INNER JOIN plots AS dest_plots ON dest_blocks.blockID = dest_plots.blockID) INNER JOIN (((sites INNER JOIN blocks ON sites.siteID = blocks.siteID) INNER JOIN plots ON blocks.blockID = plots.blockID) 
-INNER JOIN turfs ON plots.plotID = turfs.originPlotID) ON dest_plots.plotID = turfs.destinationPlotID) INNER JOIN turf_community ON turfs.turfID = turf_community.turfID) INNER JOIN turf_environment ON (turf_environment.year = turf_community.year) AND (turfs.turfID = turf_environment.turfID)
-WHERE NOT turfs.TTtreat='' AND ((Not (turf_community.Year)=2010))")) %>% 
-  collect()
-
+  collect() 
 
 
 cover.thin2
+
+}        
+
+
                                        
-
-
-#John's corrections
-cover.thin <- cover.thin %>% 
-  mutate(cover = if_else(turfID == '111 TT2 137' & year == 2011 & species == 'Agr.cap', 25, cover)) %>% 
-  mutate(cover = if_else(turfID == '32 TT3 109' & year == 2009, cover/2, cover), 
-         cover = if_else(turfID == '32 TT3 109' & year == 2012, cover * 2/3, cover), 
-         cover = if_else(turfID == '33 TT2 58' & year == 2009, cover * 2/3, cover),
-         cover = if_else(turfID == '34 TT1 32' & year == 2009, cover/2, cover), 
-         cover = if_else(turfID == '40 TT2 62' & year == 2011, cover * 2/3, cover)) 
-  
-  
-#cover['111 TT2 137_2011', 'Agr.cap'] <- 25
-# cover['32 TT3 109_2009', ] <- cover['32 TT3 109_2009', ] / 2
-# cover['32 TT3 109_2012', ] <- cover['32 TT3 109_2012', ] * 2 / 3
-# cover['33 TT2 58_2009', ] <- cover['33 TT2 58_2009', ] * 2 / 3
-# cover['34 TT1 32_2009', ] <- cover['34 TT1 32_2009', ] / 2
-# cover['40 TT2 62_2011', ] <- cover['40 TT2 62_2011', ] * 2 / 3 
-
 
 # make fat table
 cover <- cover.thin %>% spread(key = species, value = cover)
@@ -100,11 +78,6 @@ cover.meta <- cover %>% select(siteID:destSiteID) %>%
 turfs <- cover.meta[!duplicated(cover.meta$turfID),]
 
 cover <- cover %>% select(-(siteID:destSiteID))
-
-#clear up
-rm(siri.fix, siriLOW, siri)
-         
-
 
 
 #set NID.seedling to  0/1
