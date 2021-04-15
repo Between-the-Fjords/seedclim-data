@@ -371,7 +371,7 @@ clone_with_target <- clone %>%
   select(turfID, year, old, cover)
 
 turfCom2 <- turfCom2 %>% 
-  left_join(clone_with_target, 
+  full_join(clone_with_target, 
             by = c("species" = "old", "year" = "year", "turfID" = "turfID"), 
             suffix = c("", "_new")) %>% 
   mutate(cover = coalesce(cover_new, cover)) %>% 
@@ -488,10 +488,9 @@ turfCom2 <- turfCom2 %>%
   # Siri - sometimes sum of covers is << total vascular cover
   group_by(turfID, year) %>% 
   mutate(sum_cover = sum(cover)) %>% 
-  mutate(cover = if_else(recorder == "Siri" & (sum_cover / total_vascular < 1.35), 
-                         true = cover * 1.3,
-                         false = cover)) %>% 
-  
+  mutate(cover = case_when(
+    recorder == "Siri" & (sum_cover / total_vascular < 1.35) ~ cover * 1.3,
+    TRUE ~ cover)) %>% 
   # remove columns from turf_env
   select(-recorder, -total_vascular, -sum_cover)
 
