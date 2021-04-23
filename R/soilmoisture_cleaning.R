@@ -2,6 +2,7 @@
 library("dataDownloader")
 library(tidyverse)
 library(lubridate)
+library(beepr)
 # import the data
 
 get_file(node = "npfa9",
@@ -171,6 +172,7 @@ soilmoisture_raw  <- bind_rows(
   pivot_longer(cols = c("1":"4"), names_to = "replicate", values_to = "soil_moisture")
 
 write_csv(soilmoisture_raw, "seedclim_soilmoisture_plotlevel.csv")
+beep(sound = 3)
 
 # soilmoisture_raw <- read_csv("SeedClim_Plot_SoilMoisture.csv", col_types = "ffDffd") %>% 
 #   rename(
