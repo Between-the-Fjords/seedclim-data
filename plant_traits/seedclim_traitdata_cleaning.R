@@ -222,11 +222,10 @@ Ram Rambera")
 traitdata_full <- traitdata %>% 
    bind_rows(my_sla) %>% 
    bind_rows(my_leaf_chem) %>% 
-   rename(genus = Genus) %>% 
    # make a long table
    pivot_longer(cols = c(height_mm:dry_mass_g, leaf_area_cm2:leaf_thickness, d13C, d15N), names_to = "trait", values_to = "value") %>% 
    filter(!is.na(value)) %>% 
-   select(year, date, siteID, genus, species, individual, trait, value, flag)
+   select(year, date, siteID, species, individual, trait, value, flag)
 
 write_csv(traitdata_full, file = "SeedClim_Trait_data_2012_2016.csv")
  
