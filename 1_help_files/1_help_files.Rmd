@@ -1,0 +1,97 @@
+---
+title: "Working with the seedclim community database"
+author: "Richard Telford"
+date: "4/28/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## SQLite
+
+The seedclim community database is an SQLite database. 
+You can connect to the database with `DBI::dbConnect`
+
+```{r connect, message = FALSE}
+#load packages
+library("tidyverse")
+library("DBI")# also needs RSQLite installed
+library("here")
+
+#make database connection
+con <- dbConnect(RSQLite::SQLite(), here("database/seedclim.sqlite"))
+```
+
+
+## Database tables
+
+```{r tables}
+tables <- dbListTables(conn = con)
+tables
+```
+
+## Importing data
+
+Data can be imported with `dplyr::tbl`. 
+The first argument is the database connection, the second is the name of the table 
+Then the data can be manipulated with the full range of tidyverse functions.
+Remember to use `dplyr::collect` to collect all the data rather than just the first few rows.
+
+```{r importing}
+taxa <- tbl(src = con, "taxon") %>% 
+  collect
+
+```
+
+You can also use a SQL statement in wrapped in `sql()`, should you really want to.
+
+```{r importing-sql}
+tbl(src = con, sql("SELECT * FROM taxon"))
+```
+
+## Importing cover data
+
+To import the cover data, we need to import data from several tables and join them.
+The transplanted turfs have an origin site and a destination site (connected via the plots and blocks), so we need to join site_block_plot to the turf data twice, once with `originPlotID` and once with `destinationPlotID`.
+
+
+```{r cover}
+sites_blocks_plots <- tbl(con, "sites") %>% 
+  inner_join(tbl(con, "blocks"), by = "siteID") %>% 
+  inner_join(tbl(con, "plots"), by = "blockID") %>% 
+  select(siteID, norwegian_name, annual_precipitation_gridded, summer_temperature_gridded,
+         temperature_level, precipitation_level, blockID, plotID)
+
+cover_thin <- sites_blocks_plots %>% 
+  inner_join(tbl(con, "turfs"), by = c("plotID" = "originPlotID")) %>% 
+  inner_join(sites_blocks_plots, by = c("destinationPlotID" = "plotID"), 
+             suffix = c("_origin", "_dest")) %>% 
+  inner_join(tbl(con, "turf_community"), by = "turfID") %>% 
+  select(-plotID, -destinationPlotID, -cover_raw) %>%
+  collect()
+
+cover_thin
+```
+
+Now we need to filter the data used for each experiment.
+
+- The turf transplant experiment turfs have an entry in the `TTtreat` field.
+
+The other experiments are weird - will be fixed
+
+<!-- - The grass removal experiment turfs have an entry in the `GRtreat` field. -->
+<!-- - The recruit tag experiment turfs have an entry in the `RTtreat` field. -->
+
+Control turfs can be the control for multiple experiments.
+
+```{r filter-TTtreat}
+cover_thin_ttreat <- cover_thin %>% 
+  filter(
+    TTtreat != "", # only TTtreat
+    year != 2010  # no TTtreat data for 2010, just other experiments
+  )
+```
+
+

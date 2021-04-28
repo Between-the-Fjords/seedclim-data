@@ -44,15 +44,18 @@ WHERE NOT turfs.TTtreat='' AND ((Not (turf_community.Year)=2010))")) %>%
   collect()
 
 
-if (FALSE){ #developing cleaner sql
+if (FALSE){ #cleaner sql
 sites_blocks_plots <- tbl(con, "sites") %>% 
   inner_join(tbl(con, "blocks"), by = "siteID") %>% 
-  inner_join(tbl(con, "plots"), by = "blockID") 
+  inner_join(tbl(con, "plots"), by = "blockID") %>% 
+  select(siteID, norwegian_name, annual_precipitation_gridded, summer_temperature_gridded,
+         temperature_level, precipitation_level, blockID, plotID)
 
-cover.thin2 <- sites_blocks_plots %>% 
+cover.thin <- sites_blocks_plots %>% 
   inner_join(tbl(con, "turfs"), by = c("plotID" = "originPlotID")) %>% 
-  inner_join(sites_blocks_plots, by = c("destinationPlotID" = "plotID")) %>% 
+  inner_join(sites_blocks_plots, by = c("destinationPlotID" = "plotID"), suffix = c("_origin", "_dest")) %>% 
   inner_join(tbl(con, "turf_community"), by = "turfID") %>% 
+  select(-plotID, -destinationPlotID, -cover_raw) %>% 
   filter(
     TTtreat != "", # only TTtreat
     !year == 2010  # no TTtreat data for 2010
@@ -60,7 +63,7 @@ cover.thin2 <- sites_blocks_plots %>%
   collect() 
 
 
-cover.thin2
+cover.thin
 
 }        
 
