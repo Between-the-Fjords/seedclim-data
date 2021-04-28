@@ -22,9 +22,11 @@ library("dataDownloader")
 predation_raw <- read_delim(file = "seed_predation/data/SeedPredation_2018_SG_18.csv", delim = ",")
 
 predation <- predation_raw %>% 
-  rename(siteID = site, temperature_level = temp, precipitation_level = precipitation, treatment = treat) %>% 
+  rename(siteID = site, 
+         biogeographic_zone = temp, 
+         annual_precipitation_gridded = precipitation, 
+         treatment = treat) %>% 
   mutate(siteID = recode(siteID, "ulv" = "Ulvehaugen",
-                         "ulv" = "Ulvehaugen",
                          "lav" = "Lavisdalen",
                          "gud" = "Gudmedalen",
                          "skj" = "Skjelingahaugen",
@@ -35,6 +37,10 @@ predation <- predation_raw %>%
                          "fau" = "Fauske",
                          "vik" = "Vikesland",
                          "arn" = "Arhelleren",
-                         "ovs" = "Ovstedalen"))
+                         "ovs" = "Ovstedalen"),
+         biogeographic_zone = recode(biogeographic_zone, "Low-alpine" = "alpine",
+                                     "Sub-alpine" = "sub.alpine",
+                                     "North-boreal" = "boreal"))
+        
 
-write_csv(predation, path = "seed_predation/data/Seed_predation_2018.csv")
+write_csv(predation, file = "seed_predation/data/Seed_predation_2018.csv")
