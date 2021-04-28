@@ -9,7 +9,7 @@ p.caption {
 }
 </style>
 
-````{r InitialSettings, out.width='100%', include = FALSE}
+```{r InitialSettings, out.width='100%', include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -27,7 +27,7 @@ library("patchwork")
 
 theme_set(theme_bw(base_size = 12))
 
-source("data_dic.R")
+source("data_dictionary/data_dic.R")
 
 ```
 
@@ -55,68 +55,37 @@ Describe relationships of the data sets...
 knitr::include_graphics("ChinaDatabase.png")
 ```
 
-### SITES
+### 1 Seed data
 
-```{r site-dic, echo=FALSE}
-knitr::kable(site_dic)
+#### Seed predation
+
+```{r seed-pred-dic, echo=FALSE}
+knitr::kable(seed_pred_dic)
 ```
 
-### BLOCK
+### 3 Community data
 
-```{r block-dic, echo=FALSE}
-knitr::kable(block_dic)
+#### Plant community 
+
+```{r sp-comm-dic, echo=FALSE}
+knitr::kable(community_dic)
 ```
 
-### PLOT
 
-```{r plot-dic, echo=FALSE}
-knitr::kable(plot_dic)
+### 4 Phenology data
+
+#### Plant phenology 
+
+```{r pheno-dic, echo=FALSE}
+knitr::kable(phenology_dic)
 ```
 
-### TURF
 
-```{r turf-dic, echo=FALSE}
-knitr::kable(turf_dic)
+### 5 Trait data
+
+#### Leaf traits
+
+```{r leaf-trait-dic, eval=FALSE, echo=FALSE}
+knitr::kable(leaf_trait_dic)
 ```
 
-### TAXON
-
-```{r taxon-dic, echo=FALSE}
-knitr::kable(taxon_dic)
-```
-
-### TURF COMMUNITY
-
-```{r turf-comm-dic, echo=FALSE}
-knitr::kable(turf_community_dic)
-```
-
-### SUBTURF COMMUNITY
-
-```{r subturf-comm-dic, echo=FALSE}
-knitr::kable(subturf_community_dic)
-```
-
-### TURF ENVIRONMENT
-
-```{r turf-env-dic, echo=FALSE}
-knitr::kable(turf_environment_dic)
-```
-
-### SUBTURF ENVIRONMENT
-
-```{r subturf-env-dic, echo=FALSE}
-knitr::kable(subturf_environment_dic)
-```
-
-### SITE ATTRIBUTES
-
-```{r site-attr-dic, echo=FALSE}
-knitr::kable(site_attributes_dic)
-```
-
-### SPECIES ATTRIBUTES
-
-```{r sp-attr-dic, echo=FALSE}
-knitr::kable(species_attributes_dic)
-```

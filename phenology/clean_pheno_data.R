@@ -125,7 +125,8 @@ phenology <- phenology_2014 %>%
   select(originBlockID, originSiteID, turfID, destinationBlockID, destinationSiteID, year, date, doy, week, TTtreat, treatment, species, pheno_stage, value, temperature_level, precipitation_level, snowmelt_date, weather, name) %>% 
   # flag status of species
   left_join(originial_taxa, by = c("turfID", "species")) %>% 
-  mutate(status = if_else(is.na(status), "invader", status))
+  mutate(status = if_else(is.na(status), "invader", status)) %>% 
+  rename(blockID_origin = originBlockID, SiteID_origin = originSiteID, blockID_dest = destinationBlockID, siteID_dest = destinationSiteID, temperature_level_origin = temperature_level, precipitation_level_origin = precipitation_level)
   
 dir.create("phenology/clean_data")
 write_csv(phenology, path = "phenology/clean_data/Community_phenology_2014-2015.csv")
