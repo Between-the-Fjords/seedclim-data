@@ -6,7 +6,7 @@ library("tidyverse")
 library("readxl")
 
 # load clean data
-source("data_dictionary/download_clean_data.R")
+#source("data_dictionary/download_clean_data.R")
 
 # data dictionary function
 source("data_dictionary/make_data_dictionary.R")

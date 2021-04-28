@@ -9,7 +9,7 @@ p.caption {
 }
 </style>
 
-````{r InitialSettings, out.width='100%', include = FALSE}
+```{r InitialSettings, out.width='100%', include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -55,8 +55,37 @@ Describe relationships of the data sets...
 knitr::include_graphics("ChinaDatabase.png")
 ```
 
+### 1 Seed data
+
+#### Seed predation
+
+```{r seed-pred-dic, echo=FALSE}
+knitr::kable(seed_pred_dic)
+```
+
 ### 3 Community data
 
-```{r site-dic, echo=FALSE}
+#### Plant community 
+
+```{r sp-comm-dic, echo=FALSE}
 knitr::kable(community_dic)
 ```
+
+
+### 4 Phenology data
+
+#### Plant phenology 
+
+```{r pheno-dic, echo=FALSE}
+knitr::kable(phenology_dic)
+```
+
+
+### 5 Trait data
+
+#### Leaf traits
+
+```{r leaf-trait-dic, eval=FALSE, echo=FALSE}
+knitr::kable(leaf_trait_dic)
+```
+
