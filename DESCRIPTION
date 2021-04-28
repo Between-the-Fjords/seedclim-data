@@ -1,12 +1,29 @@
-Package: seedclimComm
-Type: Package
-Title: Community Data Analyses for the SeedClim Project
-Version: 1.02
-Date: 2015-02-11
-Author: Richard J. Telford <richard.telford@uib.no>
-Maintainer: Richard J. Telford <richard.telford@uib.no>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
-Imports: RODBC
-Depends: vegan
-Licence: GPL-3
+Package: seedclim-data
+Title: Code for Cleaning SeedClim data
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Richard",
+           family = "Telford",
+           role = c("aut", "cre"),
+           email = "richard.telford@uib,no",
+           comment = c(ORCID = "0000-0001-9826-3076"))
+Description: Code for cleaning SeedClim data
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    tidyverse
+Imports: 
+    DBI,
+    RSQLite,
+    readxl,
+    assertr,
+    conflicted,
+    patchwork,
+    dataDownloader (>= 0.0.0.9002),
+    vegan,
+    knitr
+Remotes: 
+    Between-the-Fjords/dataDownloader
