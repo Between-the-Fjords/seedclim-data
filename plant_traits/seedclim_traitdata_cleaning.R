@@ -29,7 +29,7 @@ unzip(zipFile, exdir = outDir)
 ## Read in data ##
 
 my_sla <- read.csv('plant_traits/data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
-my_leaf_chem <- read_csv('plant_traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
+my_leaf_chem <- read.csv('plant_traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
 
 
 ## Site name dictionary ##
