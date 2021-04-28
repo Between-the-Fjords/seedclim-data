@@ -5,12 +5,31 @@ library(tidyverse)
 library(lubridate)
 library("dataDownloader")
 
+### Download data from OSF
+get_file(node = node,
+         file = "Trait_data_2011-2012.zip",
+         path = "plant_traits/data/",
+         remote_path = "4_Trait_data/Raw_data")
+
+zipFile <- "plant_traits/data/Trait_data_2011-2012.zip"
+outDir <- "plant_traits/data/"
+unzip(zipFile, exdir = outDir)
+
+get_file(node = node,
+         file = "Trait_data_2016-2017.zip",
+         path = "plant_traits/data/",
+         remote_path = "4_Trait_data/Raw_data")
+
+zipFile <- "plant_traits/data/Trait_data_2016-2017.zip"
+outDir <- "plant_traits/data/"
+unzip(zipFile, exdir = outDir)
+
 #### Trait data from 2012 ####
 
 ## Read in data ##
 
-my_sla         <- read.csv('Plant traits/Data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
-my_leaf_chem   <- read.csv('Plant traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
+my_sla <- read.csv('plant_traits/data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
+my_leaf_chem <- read_csv('plant_traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
 
 
 ## Site name dictionary ##
@@ -73,13 +92,13 @@ my_leaf_chem <- my_leaf_chem %>%
  
 #### Load trait data ####
  
- traits <- read.csv("Plant traits/Data/LeafTraits_SeedClim.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
- LA <- read.csv2("Plant traits/Data/Leaf_area_total.csv", stringsAsFactors = FALSE)
- CN <- read.csv2("Plant traits/Data/CNratio.csv", dec=".", sep=";")
+traits <- read.csv("plant_traits/Data/LeafTraits_SeedClim.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+ LA <- read.csv2("plant_traits/Data/Leaf_area_total.csv", stringsAsFactors = FALSE)
+ CN <- read.csv2("plant_traits/Data/CNratio.csv", dec=".", sep=";")
  
 #### Dictionaries ####
  
-dict_CN <- read.csv2("Plant traits/Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
+dict_CN <- read.csv2("plant_traits/Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
 dict_Site_CN_2016 <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                            "old new
@@ -148,7 +167,7 @@ Ram Rambera")
  
  #### Changes to the CN data before merging ####
  
- CN <- CN %>%
+ CN <- CN %>% 
    mutate(Site= substr(Name, 1,2)) %>%
    mutate(Species = substr(Name, 3,6)) %>%
    mutate(Individual = substr(Name, 7,8)) %>%
@@ -200,20 +219,15 @@ Ram Rambera")
  
  #### Merging the 2012, 2016&2017 data together ####
  
- traitdata_full <- traitdata %>% 
+traitdata_full <- traitdata %>% 
    bind_rows(my_sla) %>% 
-   bind_rows(my_leaf_chem)
+   bind_rows(my_leaf_chem) %>% 
+   rename(genus = Genus) %>% 
+   # make a long table
+   pivot_longer(cols = c(height_mm:dry_mass_g, leaf_area_cm2:leaf_thickness, d13C, d15N), names_to = "trait", values_to = "value") %>% 
+   filter(!is.na(value)) %>% 
+   select(year, date, siteID, genus, species, individual, trait, value, flag)
 
-write.csv(traitdata_full, file = "SeedClim_Trait_data_2012_2016.csv")
- 
-#### Making table of the content of the dataset ####
- 
-range_table <- traitdata_full %>% 
-   as_tibble() %>% 
-   summarise(
-     across(where(is.character), ~ paste(min(.), max(.), sep = " - ")),
-     across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
-   ) %>% 
-   pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels")
+write_csv(traitdata_full, file = "SeedClim_Trait_data_2012_2016.csv")
  
  
