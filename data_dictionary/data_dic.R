@@ -1,16 +1,17 @@
-# install.packages("devtools")
-#devtools::install_github("Between-the-Fjords/dataDownloader")
-library("dataDownloader")
+# Make data dictionaries
+
+# load libraries
 library("RSQLite")
 library("tidyverse")
 
-#download database
-#Download community data from OSF
-# get_file(node = "npfa9",
-#          file = "seedclim.sqlite",
-#          path = "database",
-#          remote_path = "Community_data")
+# load clean data
+source("data_dictionary/download_clean_data.R")
 
+# read in data attribute table
+
+
+
+### 3_Community data
 
 con <- dbConnect(SQLite(), dbname = "database/seedclim.sqlite")
 
@@ -27,13 +28,13 @@ database <- dbListTables(con) %>%
   map(tbl, src = con)
 
 
-#***********************************************************************************************
+#************************************************************************
 ### SITE
 range_site <- database$sites %>% 
   as_tibble() %>% 
   summarise(
-    across(where(is.character), ~ paste(min(.), max(.), sep = " - ")),
-    across(where(is.numeric), ~paste(min(.), max(.), sep = " - "))
+    across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
+    across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
     ) %>% 
   pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels")
 
@@ -43,15 +44,16 @@ site_dic <- map_df(database$sites %>% as_tibble, class) %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>% 
   left_join(range_site, by = "Variable name") %>% 
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "site")
 
-#***********************************************************************************************
+#************************************************************************
 ### BLOCK
 range_block <- database$blocks %>%
   as_tibble() %>% 
   summarise(
-    across(where(is.character), ~ paste(min(.), max(.), sep = " - ")),
-    across(where(is.numeric), ~paste(min(.), max(.), sep = " - "))
+    across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
+    across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
   ) %>%
   pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels")
 
@@ -60,7 +62,8 @@ block_dic <- map_df(database$blocks %>% as_tibble, class) %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_block, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "block")
 
 
 #***********************************************************************************************
@@ -68,8 +71,8 @@ block_dic <- map_df(database$blocks %>% as_tibble, class) %>%
 range_plots <- database$plots %>%
   as_tibble() %>% 
   summarise(
-    across(where(is.character), ~ paste(min(.), max(.), sep = " - ")),
-    across(where(is.numeric), ~paste(min(.), max(.), sep = " - "))
+    across(where(is.character), ~ paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - ")),
+    across(where(is.numeric), ~paste(min(., na.rm = TRUE), max(., na.rm = TRUE), sep = " - "))
   ) %>%
   pivot_longer(cols = everything(), names_to = "Variable name", values_to = "Variable range or levels")
 
@@ -78,7 +81,8 @@ plot_dic <- map_df(database$plots %>% as_tibble, class) %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_plots, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "plots")
 
 
 #***********************************************************************************************
@@ -96,7 +100,8 @@ turf_dic <- map_df(database$turfs %>% as_tibble, class) %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_turf, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "turfs")
 
 
 #***********************************************************************************************
@@ -116,7 +121,8 @@ taxon_dic <- map_df(database$taxon %>% as_tibble, class) %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_taxon, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "taxon")
 
 
 #***********************************************************************************************
@@ -135,7 +141,8 @@ turf_community_dic <- map_df(database$turf_community %>% as_tibble, class) %>%
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_turf_community, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "turf_community")
 
 
 #***********************************************************************************************
@@ -154,7 +161,8 @@ subturf_community_dic <- map_df(database$subturf_community %>% as_tibble, class)
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_subturf_community, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "subturf_community")
 
 
 #***********************************************************************************************
@@ -172,7 +180,8 @@ turf_environment_dic <- map_df(database$turf_environment %>% as_tibble, class) %
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_turf_environment, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "turf_environment")
 
 
 #***********************************************************************************************
@@ -190,7 +199,8 @@ subturf_environment_dic <- map_df(database$subturf_environment %>% as_tibble, cl
   mutate(`Variable type` = case_when(`Variable type` == "character" ~ "categorical",
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   left_join(range_subturf_environment, by = "Variable name") %>%
-  left_join(attribute_table, by = "Variable name")
+  left_join(attribute_table, by = "Variable name") %>% 
+  mutate(Table = "subturf_environment")
 
 
 #***********************************************************************************************
@@ -225,9 +235,10 @@ site_attributes_dic <- map_df(database$site_attributes %>% as_tibble, class) %>%
                                      `Variable type` %in% c("integer", "numeric") ~ "numeric")) %>%
   full_join(range_site_attributes, by = "Variable name") %>%
   left_join(attribute_table, by = "Variable name") %>% 
-  mutate(`Variable type` = if_else(`Variable name` %in% c("aspect", "slope", "solar_radiation", "total_N_red_oxi"), "numeric", "categorical"))
+  mutate(`Variable type` = if_else(`Variable name` %in% c("aspect", "slope", "solar_radiation", "total_N_red_oxi"), "numeric", "categorical")) %>% 
+  mutate(Table = "site_attributes")
 
-#***********************************************************************************************
+#****************************************************************************
 ### SPECIES ATTRIBUTES
 sp_range <- database$species_attributes %>% 
   as_tibble() %>% 
@@ -262,4 +273,22 @@ species_attributes_dic <- map_df(database$species_attributes %>% as_tibble, clas
   left_join(attribute_table, by = "Variable name") %>% 
   mutate(`Variable type` = case_when(`Variable name` == "comment" ~ NA_character_,
                                      `Variable name` %in% c("flowering_finish", "flowering_start", "functional_group", "habitat", "lifespan", "lowervegetation_zone", "norwegian_name", "rarity", "soil_type", "uppervegetation_zone") ~ "categorical",
-                                     TRUE ~ "numeric"))
+                                     TRUE ~ "numeric")) %>% 
+  mutate(Table = "species_attributes")
+
+#****************************************************************************
+# Merge all dics
+community_dic <- bind_rows(site_dic,
+                           block_dic,
+                           plot_dic,
+                           turf_dic,
+                           taxon_dic,
+                           turf_community_dic,
+                           subturf_community_dic,
+                           turf_environment_dic,
+                           subturf_environment_dic,
+                           site_attributes_dic,
+                           species_attributes_dic) %>% 
+  select(Table, "Variable name", Description, "Variable type", "Variable range or levels", "Units/treatment level")
+
+
