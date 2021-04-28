@@ -89,9 +89,14 @@ Control turfs can be the control for multiple experiments.
 ```{r filter-TTtreat}
 cover_thin_ttreat <- cover_thin %>% 
   filter(
-    TTtreat != "", # only TTtreat
-    year != 2010  # no TTtreat data for 2010, just other experiments
+    TTtreat != "", # only TTtreat. Also remove NA values from this field
+    year != 2010  # no TTtreat data for 2010, just other experiments sharing the turfs
   )
 ```
 
+## Importing subturf data
 
+
+
+
+Turf and subturf environment data can be imported in a similar way, or joined to, e.g., `cover_thin`.
