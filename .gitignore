@@ -41,6 +41,7 @@ vignettes/*.pdf
 
 #tmpfiles
 *~
+*#
 # compressed files
 *.zip
 *.rar
