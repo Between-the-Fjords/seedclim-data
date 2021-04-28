@@ -85,7 +85,7 @@ Ver.ver,Veronica verna,Plantaginaceae,forb,annual
   
 
 taxa %>% 
-  select(species, species_name = speciesName, family, comment) %>% 
+  select(species, species_name = speciesName, authority, family, comment) %>% 
   db_pad_write_table(conn = con, table = "taxon", value = .)
 
 ## load traits
