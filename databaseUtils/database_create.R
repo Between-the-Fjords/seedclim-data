@@ -291,6 +291,11 @@ meta_cols <- c("DestinationSite", "DestinationBlock", "originPlotID", "TTtreat",
 ## process 2019 data
 source("databaseUtils/R/2019_temp.R")
 
+## process 2017 data
+if (!file.exists("rawdata/2017_data/processed_2017.csv")){
+  source("databaseUtils/R/process_2017.R")
+}
+
 
 datafiles %>% #grep("2017", ., value = TRUE) %>%
   set_names %>%

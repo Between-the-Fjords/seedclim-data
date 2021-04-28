@@ -1,5 +1,6 @@
 Package: seedclim-data
 Title: Code for Cleaning SeedClim data
+Type: project
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Richard",
