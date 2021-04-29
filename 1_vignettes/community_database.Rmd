@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 This vignette demonstrates how to use the seedclim community database.
 This is useful for analysing the community data, but also for accessing the taxon or site tables used by other data types.
 
-The code in the vignette can be copied and modified to form the data importing section of your own code.
+The code in this vignette can be copied and modified to form the data importing section of your own code.
 
 ## Downloading the database
 
@@ -21,15 +21,19 @@ You only need to do this once, unless you want to check for an updated version o
 
 ```{r download, eval = TRUE}
 library("dataDownloader")
+library("here")
 
 # get_file will only download the file if it is missing or it needs updating
+node <- "npfa9"
+path <- "community/data/"
+file <- "seedclim.2020.4.15.zip"
 get_file(node = node, 
-         file = "seedclim.2020.4.15.zip",
-         path = here("community/data/"),
+         file = file,
+         path = here(path),
          remote_path = "3_Community_data")
 
 #unzip
-unzip(here("community/data/", "seedclim.2020.4.15.zip"))
+unzip(here(path, file), exdir = here(path))
 ```
 
 ## Connecting to the database
@@ -41,10 +45,10 @@ You can connect to the database with `DBI::dbConnect`
 #load packages
 library("tidyverse")
 library("DBI")# also needs RSQLite installed
-library("here")
-
+#devtools::install_github("cynkra/dm") need dev version
+library("dm")
 #make database connection
-con <- dbConnect(RSQLite::SQLite(), here("community/seedclim.sqlite"))
+con <- dbConnect(RSQLite::SQLite(), here(path, "seedclim.sqlite"))
 ```
 
 
@@ -54,6 +58,47 @@ con <- dbConnect(RSQLite::SQLite(), here("community/seedclim.sqlite"))
 tables <- dbListTables(conn = con)
 tables
 ```
+
+## Data model
+
+```{r dm, fig.cap = "Relationship between tables in the database, showing primary and foreign", echo = FALSE}
+
+dm_from_src(con, learn_keys = FALSE) %>%
+  dm_add_pk(sites, siteID) %>% 
+  dm_add_fk(blocks, siteID, sites) %>% 
+  dm_add_fk(site_attributes, siteID, sites) %>% 
+  dm_add_pk(site_attributes, c(siteID, attribute)) %>% 
+  dm_add_pk(blocks, blockID) %>% 
+  dm_add_fk(plots, blockID, blocks) %>% 
+  dm_add_pk(plots, plotID) %>% 
+  dm_add_fk(turfs, originPlotID, plots) %>% 
+  dm_add_fk(turfs, destinationPlotID, plots) %>% 
+  
+  dm_add_pk(turfs, turfID) %>% 
+  dm_add_fk(turf_community, turfID, turfs) %>% 
+  dm_add_fk(subturf_community, turfID, turfs) %>% 
+  dm_add_fk(turf_environment, turfID, turfs) %>% 
+  dm_add_fk(subturf_environment, turfID, turfs) %>%
+    
+  dm_add_pk(taxon, species) %>% 
+  dm_add_fk(turf_community, species, taxon) %>% 
+  dm_add_fk(subturf_community, species, taxon) %>%
+  dm_add_pk(turf_community, c("turfID", "species", "year")) %>%  
+  dm_add_pk(turf_environment, c("turfID", "year")) %>% 
+  dm_add_pk(subturf_community, c("turfID", "subturf", "species", "year")) %>%  
+  dm_add_pk(subturf_environment, c("turfID", "subturf", "year")) %>% 
+  
+  dm_add_fk(species_attributes, species, taxon) %>% 
+  dm_add_pk(species_attributes, c(species, attribute)) %>% 
+  dm_add_pk(attributes, attribute) %>% 
+  dm_add_fk(site_attributes, attribute, attributes) %>% 
+  dm_add_fk(species_attributes, attribute, attributes) %>% 
+  
+  dm_draw(view_type = "keys_only")
+  
+
+```
+
 
 ## Importing data
 
@@ -121,7 +166,7 @@ cover_thin_ttreat <- cover_thin %>%
 
 
 ```{r subturf}
-
+#TODO
 ```
 
 
