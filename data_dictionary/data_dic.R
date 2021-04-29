@@ -243,3 +243,43 @@ leaf_trait <- read_csv("plant_traits/data/SeedClim_Trait_data_2012_2016.csv")
 leaf_trait_dic <- make_data_dictionary(data = leaf_trait,
                                        description_table = description_table,
                                        table_ID = "leaf_traits")
+
+#************************************************************************
+#************************************************************************
+#### 8 ENVIRONMENTAL DATA #### 
+# Temperature
+temperature <- read_csv("climate/data/Temperature.csv")
+
+temperature_dic <- make_data_dictionary(data = temperature,
+                                       description_table = description_table,
+                                       table_ID = "temperature")
+
+
+# Precipitation
+precipitation <- read_csv("climate/data/Precipitation.csv")
+
+precipitation_dic <- make_data_dictionary(data = precipitation,
+                                       description_table = description_table,
+                                       table_ID = "precipitation")
+
+# Soilmoisture
+soilmoisture <- read_csv("climate/data/SoilMoisture.csv")
+
+soilmoisture_dic <- make_data_dictionary(data = soilmoisture,
+                                       description_table = description_table,
+                                       table_ID = "soilmoisture")
+
+# Soilmoisture
+soilmoisture_plot <- read_csv("climate/data/seedclim_soilmoisture_plotlevel.csv")
+
+soilmoisture_plot_dic <- make_data_dictionary(data = soilmoisture_plot,
+                                       description_table = description_table,
+                                       table_ID = "soilmoisture_plot")
+
+
+# Gridded climate data
+climate <- read_csv("climate/data/GriddedDailyClimateData2009-2019.csv")
+
+climate_plot_dic <- make_data_dictionary(data = climate,
+                                              description_table = description_table,
+                                              table_ID = "climate")
