@@ -167,7 +167,8 @@ soilmoisture_raw  <- bind_rows(
     "1" = "M1",
     "2" = "M2",
     "3" = "M3",
-    "4" = "M4"
+    "4" = "M4",
+    "transcriber_comment" = "transcriber's comments"
   ) %>% 
   pivot_longer(cols = c("1":"4"), names_to = "replicate", values_to = "soil_moisture")
 
