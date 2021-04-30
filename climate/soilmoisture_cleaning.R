@@ -65,7 +65,7 @@ soilmoisture_2015_2016 <- read_csv("data/SeedClim_Plot_SoilMoisture/soilMoisture
   ) %>% 
   select(!Moisture)
 # line 2175: manually changed "24,6" into 24.6 in colum M1
-# It might be that soilmoisture_2015_2016 is similar to soilmoisture1516, I'll check later
+# It might be that soilmoisture_2015_2016 is similar to soilmoisture1516, I'll do a distinct() later
 
 
 
@@ -75,8 +75,8 @@ soilmoisture2017 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.c
     "site" = "Site",
     "turfID" = "Turf ID",
     "treatment" = "Treatment",
-    "blockSC" = "SCBlock", #I will need to figure out why there is a second a priori identical column
-    # "blockSC2" = "SCBlock",
+    "blockSC" = "SCBlock",
+    # "blockSC2" = "SCBlock", #There are two SCBlock columns in the raw file, but it seems there are identical
     "M1" = "Measurement1",
     "M2" = "Measurement2",
     "M3" = "Measurement3",
@@ -120,7 +120,7 @@ soilmoisture2018 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.c
       mdy(date) # if false, date is mdy
     )
   )
-# dates were missing and added manually based on the fieldwork plan: 2018-07-02 (ARH), 2018-07-01 (OVS)
+# dates were missing (only the year was written) and added manually based on the fieldwork plan: 2018-07-02 (ARH), 2018-07-01 (OVS)
 
 
 
@@ -143,7 +143,7 @@ soilmoisture_raw  <- bind_rows(
 ) %>% 
   select(!c(treatment, removal)) %>% #those treatments and removal are confusing and using various labelling. TurfId and site name is enough to add the treatment later if needed.
   mutate(
-    site = str_replace_all(site, c(
+    site = str_replace_all(site, c( #need to replace site name with full names
       "ULV" = "Ulvhaugen",
       "LAV" = "Lavisdalen",
       "HOG" = "Hogsete",
@@ -156,30 +156,32 @@ soilmoisture_raw  <- bind_rows(
       "ALR" = "Alrust",
       "OVS" = "Ovstedal",
       "FAU" = "Fauske"
-    )), #need to replace site name with full names
+    )), 
+  blockID = str_c(str_sub(site, 1, 3), blockSC, sep = "", collapse = NULL), #blockID needs to be in the format [first 3 letters of site][block number]
   turfID = str_replace_all(turfID, c(" " = ""))
     ) %>% 
-  distinct(date, site, blockSC, M1, M2, M3, M4, .keep_all = TRUE) %>% 
+  distinct(date, site, blockID, M1, M2, M3, M4, .keep_all = TRUE) %>% 
   rename(
     "1" = "M1",
     "2" = "M2",
     "3" = "M3",
     "4" = "M4",
-    "transcriber_comment" = "transcriber's comments"
+    "transcriber_comment" = "transcriber's comments",
+    "siteID" = "site",
+    # "blockID" = "blockSC",
+    "blockID_FC" = "blockFC"
   ) %>% 
-  pivot_longer(cols = c("1":"4"), names_to = "replicate", values_to = "soil_moisture")
+  pivot_longer(cols = c("1":"4"), names_to = "replicate") %>% 
+  select(date, siteID, turfID, blockID, blockID_FC, replicate, value, weather, recorder, comments, transcriber_comment)
 
-write_csv(soilmoisture_raw, "seedclim_soilmoisture_plotlevel.csv")
+write_csv(soilmoisture_raw, "data/seedclim_soilmoisture_plotlevel.csv")
 beep(sound = 3)
 
-# soilmoisture_raw <- read_csv("SeedClim_Plot_SoilMoisture.csv", col_types = "ffDffd") %>% 
-#   rename(
-#     "ID" = "X1" # unique ID for each measurement
-#   ) 
+# making a graph to have an overview of the campaigns and see if something is missing
 
-soilmoisture_avg <- group_by(soilmoisture_raw, date, site, turfID) %>% 
+soilmoisture_avg <- group_by(soilmoisture_raw, date, siteID, turfID) %>% 
   summarise(
-    avg = mean(soil_moisture)
+    avg = mean(value)
   )
 
 # graph soil moisture vs date with site as fill and plotID as point label
@@ -187,11 +189,7 @@ soilmoisture_avg <- group_by(soilmoisture_raw, date, site, turfID) %>%
 ggplot(soilmoisture_avg, aes(x = date, y = avg)) + #, fill = site, colour = site
   # geom_bar()
   geom_point(size = 0.001) +
-  facet_wrap(vars(site))
+  facet_wrap(vars(siteID))
 
 
-# found in the archieves and need to be entered: 2009(nothing)
-# 2010(soil moisture data to enter, weird vegetation analysis stuff)
-# 2011 (nothing), 2012(nothing), 2013(nothing)
-# 2015 (nothing), 2016 (nothing)
-# 2017(Vikesland, Alrust, ARH, GUD, FAU, HOG, RAM, ULV, VES)
+
