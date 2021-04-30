@@ -11,7 +11,6 @@
 library("dataDownloader")
 library("lubridate")
 library("tidyverse")
-library("ggplot2")
 
 
 # download data from OSF
