@@ -1,13 +1,6 @@
 ### READ IN GRIDDED CLIMATE DATA 2009 - XXX
 
-# Explanation for variables
-# TAM er temperatur (døgnmiddel)
-# UUM - rel.luftfuktighet
-# FFM - middelvind
-# NNM - midlere skydekke (i 8-deler)
-# RR - døgnnedbør
-
-# LIBRARIES
+# packagage
 library("dataDownloader")
 library("lubridate")
 library("tidyverse")
@@ -33,7 +26,7 @@ ReadInFiles <- function(textfile){
   return(dd)
 }
 
-# Connect to data on P drive
+# list files
 myfiles <- list.files(path ="climate/data/AH2019/", pattern='\\.dat$', recursive = TRUE, full.names = TRUE)
 
 # make a list of textfiles
