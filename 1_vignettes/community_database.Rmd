@@ -1,7 +1,7 @@
 ---
 title: "Working with the seedclim community database"
 author: "Richard Telford"
-date: "4/28/2021"
+date: "`r format(Sys.Date())`"
 output: html_document
 ---
 
@@ -137,10 +137,10 @@ cover_thin <- sites_blocks_plots %>%
   inner_join(sites_blocks_plots, by = c("destinationPlotID" = "plotID"), 
              suffix = c("_origin", "_dest")) %>% 
   inner_join(tbl(con, "turf_community"), by = "turfID") %>% 
-  select(-plotID, -destinationPlotID, -cover_raw) %>%
-  collect()
+  select(-plotID, -destinationPlotID, -cover_raw) 
 
-cover_thin
+cover_thin %>%
+  collect()
 ```
 
 Now we need to filter the data used for each experiment.
@@ -159,15 +159,18 @@ cover_thin_ttreat <- cover_thin %>%
   filter(
     TTtreat != "", # only TTtreat. Also remove NA values from this field
     year != 2010  # no TTtreat data for 2010, just other experiments sharing the turfs
-  )
+  ) %>%
+  collect()
 ```
 
-## Importing subturf data
+## Importing turf environment or subturf data
 
+Subturf community data and environment data at turf or subturf scales can be imported in a either by substituting their table name for `turf_community` in the above code, or using a join to add them.
 
-```{r subturf}
-#TODO
+```{r}
+cover_thin %>% 
+  left_join(tbl(con, "subturf_community"), 
+            by = c("turfID", "year", "species")) %>%
+  collect()
 ```
 
-
-Turf and subturf environment data can be imported in a similar way, or joined to, e.g., `cover_thin`.
