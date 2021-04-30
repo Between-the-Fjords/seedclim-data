@@ -3,14 +3,23 @@ library("dataDownloader")
 library(tidyverse)
 library(lubridate)
 library(beepr)
-# import the data
 
+# import the raw data
 get_file(node = "npfa9",
-         file = "Soilmoisture_1516.csv",
-         path = "SeedClim_Plot_SoilMoisture",
-         remote_path = "Climate_data/soilmoisture_plot/raw_data")
+         file = "Plot_SoilMoisture.zip",
+         path = "data",
+         remote_path = "8_Environmental_data/Raw_data")
 
-soilmoisture1516 <- read_csv("SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
+#unziping
+zipFile <- "data/Plot_SoilMoisture.zip"
+if(file.exists(zipFile)){
+  outDir <- "data"
+  unzip(zipFile, exdir = outDir)
+}
+
+#importing the data
+
+soilmoisture1516 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
   rename( #renaming the measurements because I want to do a pivot later and I think it makes more sense to have them as replicate number
     # "1" = "M1",
     # "2" = "M2",
@@ -33,12 +42,9 @@ soilmoisture1516 <- read_csv("SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv",
 # line 2175: manually changed "24,6" into 24.6 in colum M1
 # 59 entries missing date
 
-get_file(node = "npfa9",
-         file = "soilMoisture_2015-2016.csv",
-         path = "SeedClim_Plot_SoilMoisture",
-         remote_path = "Climate_data/soilmoisture_plot/raw_data")
 
-soilmoisture_2015_2016 <- read_csv("SeedClim_Plot_SoilMoisture/soilMoisture_2015-2016.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
+
+soilmoisture_2015_2016 <- read_csv("data/SeedClim_Plot_SoilMoisture/soilMoisture_2015-2016.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
   rename(
     # "1" = "M1",
     # "2" = "M2",
@@ -61,12 +67,9 @@ soilmoisture_2015_2016 <- read_csv("SeedClim_Plot_SoilMoisture/soilMoisture_2015
 # line 2175: manually changed "24,6" into 24.6 in colum M1
 # It might be that soilmoisture_2015_2016 is similar to soilmoisture1516, I'll check later
 
-get_file(node = "npfa9",
-         file = "Soilmoisture2017.csv",
-         path = "SeedClim_Plot_SoilMoisture",
-         remote_path = "Climate_data/soilmoisture_plot/raw_data")
 
-soilmoisture2017 <- read_csv("SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", col_types = "cfffffddddff", na = c("na", "NA")) %>% 
+
+soilmoisture2017 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", col_types = "cfffffddddff", na = c("na", "NA")) %>% 
   rename(
     "date" = "Date",
     "site" = "Site",
@@ -94,12 +97,9 @@ soilmoisture2017 <- read_csv("SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", 
   ) %>% 
   select(!SCBlock_1)
 
-get_file(node = "npfa9",
-         file = "Soilmoisture2018.csv",
-         path = "SeedClim_Plot_SoilMoisture",
-         remote_path = "Climate_data/soilmoisture_plot/raw_data")
 
-soilmoisture2018 <- read_csv("SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", col_types = "cfffffddddff", na = c("na", "NA", "u")) %>% 
+
+soilmoisture2018 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", col_types = "cfffffddddff", na = c("na", "NA", "u")) %>% 
   rename(
     "date" = "Date",
     "site" = "Site",
@@ -122,12 +122,9 @@ soilmoisture2018 <- read_csv("SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", 
   )
 # dates were missing and added manually based on the fieldwork plan: 2018-07-02 (ARH), 2018-07-01 (OVS)
 
-get_file(node = "npfa9",
-         file = "SeedClim_soilmoisture_archive.csv",
-         path = "SeedClim_Plot_SoilMoisture",
-         remote_path = "Climate_data/soilmoisture_plot/raw_data")
 
-soilmoisture_extra <- read_csv("SeedClim_Plot_SoilMoisture/SeedClim_soilmoisture_archive.csv", col_types = "cfffffddddffcc", na = c("na", "NA", "u")) %>% 
+
+soilmoisture_extra <- read_csv("data/SeedClim_Plot_SoilMoisture/SeedClim_soilmoisture_archive.csv", col_types = "cfffffddddffcc", na = c("na", "NA", "u")) %>% 
   mutate(
     date = mdy(date)
   )
