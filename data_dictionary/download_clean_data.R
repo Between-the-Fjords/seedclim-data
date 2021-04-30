@@ -33,3 +33,48 @@ get_file(node = node,
          file = "SeedClim_Trait_data_2012_2016.csv",
          path = "plant_traits/data/",
          remote_path = "5_Trait_data")
+
+# 8 Environment data
+
+# Temperature
+get_file(node = node,
+         file = "Temperature.csv.zip",
+         path = "climate/data/",
+         remote_path = "8_Environmental_data")
+
+zipFile <- "climate/data/Temperature.csv.zip"
+outDir <- "climate/data/"
+unzip(zipFile, exdir = outDir)
+
+# Precipitation
+get_file(node = node,
+         file = "Precipitation.csv.zip",
+         path = "climate/data/",
+         remote_path = "8_Environmental_data")
+
+zipFile <- "climate/data/Precipitation.csv.zip"
+outDir <- "climate/data/"
+unzip(zipFile, exdir = outDir)
+
+# Soilmoisture
+get_file(node = node,
+         file = "SoilMoisture.csv.zip",
+         path = "climate/data/",
+         remote_path = "8_Environmental_data")
+
+zipFile <- "climate/data/SoilMoisture.csv.zip"
+outDir <- "climate/data/"
+unzip(zipFile, exdir = outDir)
+
+# Soilmoisture point measurement
+get_file(node = node,
+         file = "seedclim_soilmoisture_plotlevel.csv",
+         path = "climate/data/",
+         remote_path = "8_Environmental_data")
+
+
+# Gridded climate data
+get_file(node = node,
+         file = "GriddedDailyClimateData2009-2019.csv",
+         path = "climate/data/",
+         remote_path = "8_Environmental_data")
