@@ -16,7 +16,8 @@ The code in the vignette can be copied and modified to form the data importing s
 
 
 ```{r loadStuff, echo = FALSE}
-#Load libraries
+
+#Load packages
 library("tidyverse")
 library("lubridate")
 
@@ -27,7 +28,7 @@ climate <- read_csv(file = "climate/data/GriddedDailyClimateData2009-2019.csv", 
 
 ##  Overview
 
-Teh gridded climate data is provided by met.no (from Ole Einar Tveito, 25.10.2016, 17.01.2017, 16.12.2019)
+The gridded climate data was provided by met.no (Ole Einar Tveito, 25.10.2016, 17.01.2017, 16.12.2019)
 The data are daily climate data for the 12 SeedClim sites between 2009 and 2019 (will be updated).
 
 
@@ -40,7 +41,7 @@ The climate variables are
 
 ## Raw data and processing
 
-The raw data was provided in dat files and is stored on OSF (https://osf.io/npfa9/) as a zip file (Gridded_Climate_Data_2009-2019.zip) in the "8_Environmental_data/Raw_data" folder.
+The raw data is available as .dat files and is stored on OSF (https://osf.io/npfa9/) as a zip file (Gridded_Climate_Data_2009-2019.zip) in the "8_Environmental_data/Raw_data" folder.
 The code to process the raw data can be found in this GitHub repo (climate/ReadInGriddedData.R).
 
 
@@ -56,14 +57,18 @@ The data can be downloaded directly to are using the dataDownloader R package.
 #remotes::install_github("Between-the-Fjords/dataDownloader")
 library("dataDownloader")
 
-# Download data from OSF
 node <- "npfa9"
+filename <- "GriddedDailyClimateData2009-2019.csv",
+pathname <- "climate/data/"
+
+# Download data from OSF
 get_file(node = node,
-         file = "GriddedDailyClimateData2009-2019.csv",
-         path = "climate/data/",
+         file = filename,
+         path = here(pathname),
          remote_path = "8_Environmental_data")
 
 ```
+
 
 The data can be read in using the following code.
 The data are provided in a tidy format, containing date, siteID (corresponding with the rest of the SeedClim data), variable (climate variable) and value.
@@ -71,7 +76,7 @@ The data are provided in a tidy format, containing date, siteID (corresponding w
 ```{r data-import, eval=TRUE, echo=TRUE}
 
 # read in data to R
-climate <- read_csv(file = "climate/data/GriddedDailyClimateData2009-2019.csv")
+climate <- read_csv(file = here(pathname, filename))
 climate
 
 ```
@@ -113,7 +118,7 @@ p <- climate %>%
   ggplot(aes(x = date, y = temperature, color = siteID)) +
   geom_line() +
   scale_colour_brewer(palette="Paired") +
-  facet_wrap(~ siteID) + 
+  facet_wrap(~ siteID, ncol = 4) + 
   theme(legend.position = "none") +
   ggtitle("Mean daily temperature °C")
 p
