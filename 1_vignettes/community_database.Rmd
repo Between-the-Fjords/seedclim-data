@@ -45,23 +45,29 @@ You can connect to the database with `DBI::dbConnect`
 #load packages
 library("tidyverse")
 library("DBI")# also needs RSQLite installed
-#devtools::install_github("cynkra/dm") need dev version
-library("dm")
+
 #make database connection
 con <- dbConnect(RSQLite::SQLite(), here(path, "seedclim.sqlite"))
 ```
 
 
-## Database tables
+## Database structure
+
+### Database tables
 
 ```{r tables}
 tables <- dbListTables(conn = con)
 tables
 ```
 
-## Data model
+See the data dictionary for information about the contents of each table.
 
-```{r dm, fig.cap = "Relationship between tables in the database, showing primary and foreign", echo = FALSE}
+### Data model
+
+```{r dm, fig.cap = "Relationship between tables in the database, showing primary and foreign keys.", echo = FALSE}
+
+#devtools::install_github("cynkra/dm") need dev version
+library("dm")
 
 dm_from_src(con, learn_keys = FALSE) %>%
   dm_add_pk(sites, siteID) %>% 
