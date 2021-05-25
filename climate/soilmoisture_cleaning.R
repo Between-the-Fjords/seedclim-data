@@ -2,7 +2,6 @@
 library("dataDownloader")
 library(tidyverse)
 library(lubridate)
-library(beepr)
 
 # import the raw data
 get_file(node = "npfa9",
@@ -175,7 +174,7 @@ soilmoisture_raw  <- bind_rows(
   select(date, siteID, turfID, blockID, blockID_FC, replicate, value, weather, recorder, comments, transcriber_comment)
 
 write_csv(soilmoisture_raw, "data/seedclim_soilmoisture_plotlevel.csv")
-beep(sound = 3)
+
 
 # making a graph to have an overview of the campaigns and see if something is missing
 
