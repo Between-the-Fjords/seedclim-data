@@ -132,4 +132,4 @@ soil_depth <- bind_rows(SD1, SD2)
 
 soil_strucutre <- bind_rows(soil_depth, soil_texture, BD)
 
-write_csv(soil_strucutre, "soil_structure/Soil_structure_2013-2014_clean.csv")
+write_csv(soil_strucutre, "soil_structure/Soil_structure_2013-2019_clean.csv")
