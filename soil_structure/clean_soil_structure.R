@@ -56,8 +56,9 @@ BD <- BD_raw %>%
                          "VIK" = "Vikesland",
                          "ARN" = "Arhelleren",
                          "OVS" = "Ovstedalen"),
-         variable = "bulk_density") %>%
-  select(siteID, sampleID, depth, variable, value = bulk_density)
+         variable = "bulk_density",
+         year = 2019) %>%
+  select(year, siteID, sampleID, depth, variable, value = bulk_density)
 
 # check
 # ggplot(BD, aes(x = siteID, y = bulk_density)) +
