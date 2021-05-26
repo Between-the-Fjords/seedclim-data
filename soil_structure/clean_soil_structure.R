@@ -57,7 +57,7 @@ BD <- BD_raw %>%
                          "ARN" = "Arhelleren",
                          "OVS" = "Ovstedalen"),
          variable = "bulk_density",
-         year = 2019) %>%
+         year = 2018) %>%
   select(year, siteID, sampleID, depth, variable, value = bulk_density)
 
 # check
@@ -132,4 +132,4 @@ soil_depth <- bind_rows(SD1, SD2)
 
 soil_strucutre <- bind_rows(soil_depth, soil_texture, BD)
 
-write_csv(soil_strucutre, "soil_structure/Soil_structure_2013-2019_clean.csv")
+write_csv(soil_strucutre, "soil_structure/Soil_structure_2013-2018_clean.csv")
