@@ -244,6 +244,26 @@ leaf_trait_dic <- make_data_dictionary(data = leaf_trait,
                                        description_table = description_table,
                                        table_ID = "leaf_traits")
 
+
+
+#************************************************************************
+#************************************************************************
+#### 6 ECOSYSTEM #### 
+# Decomposition
+litter <- read_csv("decomposition/Decomposition_litter_2016_clean.csv")
+
+litter_dic <- make_data_dictionary(data = litter,
+                                   description_table = description_table,
+                                   table_ID = "litterbags")
+
+teabag <- read_csv("decomposition/Decomposition_teabag_2014_clean.csv")
+
+teabag_dic <- make_data_dictionary(data = teabag,
+                                   description_table = description_table,
+                                   table_ID = "teabag")
+
+
+
 #************************************************************************
 #************************************************************************
 #### 8 ENVIRONMENTAL DATA #### 
@@ -283,3 +303,11 @@ climate <- read_csv("climate/data/GriddedDailyClimateData2009-2019.csv")
 climate_plot_dic <- make_data_dictionary(data = climate,
                                               description_table = description_table,
                                               table_ID = "climate")
+
+
+# Soil structure
+soil_structure <- read_csv("soil_structure/Soil_structure_2013-2014_clean.csv")
+
+soilmoisture_plot_dic <- make_data_dictionary(data = soil_structure,
+                                              description_table = description_table,
+                                              table_ID = "soil_structure")
