@@ -21,6 +21,8 @@ TBI <- TBI_raw %>%
                          "Ves"="Veskre", 
                          "Vik"="Vikesland"),
          year = as.factor(year)) %>%
+  # remove where tea bag is missing
+  filter(!comment %in% c("missing")) %>% 
   select(year, siteID, temperature_level = Temp, precipitation_level = Prec, BagID = ID, S, k, BurialDate, InitialWeight_Gteabag = `InitialWeight Gteabag`, InitialWeight_Rteabag = `InitialWeight Rteabag`, InitialWeight_Gtea = `InitialWeight Gtea`, InitialWeight_Rtea = `InitialWeight Rtea`, RecoveryDate, FinalWeight_Gteabag = `FinalWeight Gteabag`, FinalWeight_Rteabag = `FinalWeight Rteabag`, FinalWeight_Gtea = `FinalWeight Gtea`, FinalWeight_Rtea = `FinalWeight Rtea`, Ag, Ar, Wt, Time, comment)
 
 write_csv(TBI, "decomposition/Decomposition_teabag_2014_clean.csv")
