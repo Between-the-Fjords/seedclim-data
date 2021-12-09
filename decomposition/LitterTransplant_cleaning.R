@@ -7,6 +7,24 @@ library(tidyverse)
 Litter_raw <- read.table("decomposition/data/LitterTransplant_14082017.txt", header=TRUE, dec= ",") %>% 
   as_tibble()
 
+# litter collection dates
+litter_collection_date <- tribble(
+  ~siteID_dest, ~litter_collection_date,
+  "Arhelleren", "20/05/2014",
+  "Alrust", "21/05/2014",
+  "Fauske", "21/05/2014",
+  "Gudmedalen", "08/08/2013",
+  "Hogsete", "22/05/2014",
+  "Lavisdalen", "09/08/2013",
+  "Ovstedal", "19/05/2014",
+  "Rambera", "09/08/2013",
+  "Skjelingahaugen", "18/07/2013",
+  "Ulvehaugen", "06/08/2013",
+  "Veskre", "26/06/2014",
+  "Vikesland", "22/05/2014") %>% 
+  mutate(litter_collection_date = dmy(litter_collection_date))
+
+
 #Remove faulty data, but keeping possible outliers
 Litter_clean <- Litter_raw %>% 
   filter(!DataCheck %in% c("bad")) %>% 
@@ -50,7 +68,8 @@ Litter_clean <- Litter_raw %>%
                             "WE"="wet", 
                             "WA+WE"="warm_wet"), 
          year = 2016) %>% 
-  select(year, siteID_origin = OriginSite, siteID_dest = DestinationSite, temperature_level = T_level, precipitation_level = P_level, treatment = Treatment, BagID = Bag, W_loss, L_startweight, L_endweight, Time, BurialDate, RecoveryDate, Timestep, TTtreat, DataCheck)
+  select(year, siteID_origin = OriginSite, siteID_dest = DestinationSite, temperature_level = T_level, precipitation_level = P_level, treatment = Treatment, BagID = Bag, W_loss, L_startweight, L_endweight, Time, BurialDate, RecoveryDate, Timestep, TTtreat, DataCheck) %>% 
+  left_join(litter_collection_date, by = "siteID_dest")
   # # new column with 1/0 for warmer or wetter treatment
   # mutate(warmer = ifelse(grepl("WA", Treatment, fixed = TRUE), "1", "0"),
   #        wetter = ifelse(grepl("WE", Treatment, fixed = TRUE), "1", "0"))
