@@ -1,0 +1,159 @@
+---
+title: "Gridded climate data"
+author: "Aud Halbritter"
+date: "19.12.2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This vignette demonstrates how to use the seedclim gridded climate data.
+This data is useful as covariable in many analysis.
+
+The code in the vignette can be copied and modified to form the data importing section of your own code.
+
+
+```{r loadStuff, echo = FALSE}
+
+#Load packages
+library("tidyverse")
+library("lubridate")
+
+# read in data to R
+climate <- read_csv(file = "climate/data/GriddedDailyClimateData2009-2019.csv", col_names = TRUE)
+
+```
+
+##  Overview
+
+The gridded climate data was provided by met.no (Ole Einar Tveito, 25.10.2016, 17.01.2017, 16.12.2019)
+The data are daily climate data for the 12 SeedClim sites between 2009 and 2019 (will be updated).
+
+
+The climate variables are  
+ - Mean daily temperature (°C, temperature)  
+ - Relative air moisture (%, rel_air_moisture)  
+ - Mean wind (meter / second, wind)  
+ - Mean cloud cover (in 8 parts, no dimension, cloud_cover)  
+ - Precipitation (mm, precipitation)
+
+## Raw data and processing
+
+The raw data is available as .dat files and is stored on OSF (https://osf.io/npfa9/) as a zip file (Gridded_Climate_Data_2009-2019.zip) in the "8_Environmental_data/Raw_data" folder.
+The code to process the raw data can be found in this GitHub repo (climate/ReadInGriddedData.R).
+
+
+## Importing the data
+
+The data are provided as a csv file on OSF (https://osf.io/npfa9/).
+
+The data can be downloaded directly to are using the dataDownloader R package.
+
+```{r osf-download, eval=FALSE, echo=TRUE} 
+
+# install.packages("remotes")
+#remotes::install_github("Between-the-Fjords/dataDownloader")
+library("dataDownloader")
+
+node <- "npfa9"
+filename <- "GriddedDailyClimateData2009-2019.csv",
+pathname <- "climate/data/"
+
+# Download data from OSF
+get_file(node = node,
+         file = filename,
+         path = here(pathname),
+         remote_path = "8_Environmental_data")
+
+```
+
+
+The data can be read in using the following code.
+The data are provided in a tidy format, containing date, siteID (corresponding with the rest of the SeedClim data), variable (climate variable) and value.
+
+```{r data-import, eval=TRUE, echo=TRUE}
+
+# read in data to R
+climate <- read_csv(file = here(pathname, filename))
+climate
+
+```
+
+
+## Calculate monthly and annual values
+
+To calculate monthly and annual climate data this code can be used.
+
+```{r calculations, eval=TRUE, echo=TRUE}
+# Calculate monthly climate data
+monthly_climate <- climate %>%
+  mutate(date_month = dmy(paste0("15-",format(date, "%b.%Y")))) %>%
+  group_by(date_month, variable, siteID) %>%
+  summarise(n = n(), 
+            value = mean(value), 
+            sum = sum(value)) %>% 
+  mutate(value = ifelse(variable == "precipitation", sum, value)) %>% 
+  select(-n, -sum)
+
+
+# Calculate annual climate data
+annual_climate <- monthly_climate %>% 
+  mutate(year = year(date_month)) %>%
+  group_by(year, variable, siteID) %>%
+  summarise(annual_value = mean(value))
+
+```
+
+
+## Plotting the data
+
+### Temperature
+
+```{r temp, eval=TRUE, echo=TRUE}
+p <- climate %>% 
+  pivot_wider(names_from = "variable", values_from = "value") %>% 
+  mutate(siteID = factor(siteID, levels = c("Ulvehaugen", "Lavisdalen", "Gudmedalen", "Skjelingahaugen", "Alrust", "Hogsete", "Rambera", "Veskre", "Fauske", "Vikesland", "Arhelleren", "Ovstedalen", "Joasete", "Liahovden"))) %>%
+  ggplot(aes(x = date, y = temperature, color = siteID)) +
+  geom_line() +
+  scale_colour_brewer(palette="Paired") +
+  facet_wrap(~ siteID, ncol = 4) + 
+  theme(legend.position = "none") +
+  ggtitle("Mean daily temperature °C")
+p
+```
+
+
+RelAirMoisture
+
+```{r moist, eval=TRUE, echo=TRUE}
+p + aes(y = rel_air_moisture) +
+  ggtitle("Relative air moisture %")
+```
+
+
+Wind
+```{r wind, eval=TRUE, echo=TRUE}
+p + aes(y = wind) +
+  ggtitle("Wind meter per second")
+
+```
+
+
+CloudCover
+```{r cloud, eval=TRUE, echo=TRUE}
+p + aes(y = cloud_cover) +
+  ggtitle("Cloud cover")
+```
+
+
+Precipitation
+```{r prec, eval=TRUE, echo=TRUE}
+p + aes(y = precipitation) +
+  ggtitle("precipitation mm")
+
+```
+
+
+
