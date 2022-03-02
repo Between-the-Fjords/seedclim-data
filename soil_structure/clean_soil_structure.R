@@ -6,7 +6,7 @@
 library(dataDownloader)
 library(tidyverse)
 library(readxl)
-library("lubridate")
+library(lubridate)
 
 
 ## DOWNLOAD DATA
@@ -132,4 +132,4 @@ soil_depth <- bind_rows(SD1, SD2)
 
 soil_strucutre <- bind_rows(soil_depth, soil_texture, BD)
 
-write_csv(soil_strucutre, "soil_structure/Soil_structure_2013-2018_clean.csv")
+write_csv(soil_strucutre, "soil_structure/Seedclim_clean_soil_structure_2013_2014_2018.csv")
