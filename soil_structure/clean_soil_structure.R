@@ -130,6 +130,11 @@ SD2 <- SD2_raw %>%
 soil_depth <- bind_rows(SD1, SD2)
   
 
-soil_strucutre <- bind_rows(soil_depth, soil_texture, BD)
+soil_strucutre <- bind_rows(soil_depth, soil_texture, BD) %>% 
+  mutate(unit = case_when(variable %in% c("clay_percent", "silt_percent", "sand_percent") ~ "percent",
+                          variable %in% c("bulk_density") ~ "g cm^-3",
+                          variable == "soil_depth" ~ "cm",
+                          TRUE ~ NA_character_),
+         variable = recode(variable, clay_percent = "clay", silt_percent = "silt", sand_percent = "sand"))
 
-write_csv(soil_strucutre, "soil_structure/Seedclim_clean_soil_structure_2013_2014_2018.csv")
+write_csv(soil_strucutre, "soil_structure/VCG_clean_soil_structure_2013_2014_2018.csv")
