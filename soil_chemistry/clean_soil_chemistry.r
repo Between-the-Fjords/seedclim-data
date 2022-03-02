@@ -4,7 +4,6 @@
 
 #packages
 library(tidyverse)
-library(fs)
 library(readxl)
 library(RSQLite)
 
@@ -30,7 +29,7 @@ soil_chem_2009_raw <- read_excel("soil_chemistry/data/Species and env pre-experi
 
 # Relabel variables
 soil_chem_2009 <- soil_chem_2009_raw %>% 
-  rename(LOI_percent = `LOI_(%)`, water_content_percent = `water_cont._(%)`) %>% 
+  rename(LOI = `LOI_(%)`, water_content_percent = `water_cont._(%)`) %>% 
   # Add site column
   mutate(siteID = case_when(Low1 == 1 ~ "Fauske",
                             Low2 == 1 ~ "Vikesland",
@@ -48,7 +47,7 @@ soil_chem_2009 <- soil_chem_2009_raw %>%
   # Add year column, 2009
   mutate(year = 2009) %>% 
   # select important columns
-  select(year, siteID, plot, Plot_id,  pH, LOI_percent) %>% 
+  select(year, siteID, plot, Plot_id,  pH, LOI) %>% 
   # Drop extra rows
   filter(!is.na(siteID)) %>% 
   # split Plot_id
@@ -72,7 +71,7 @@ soil_chem_2009 <- soil_chem_2009_raw %>%
          destinationPlotID = if_else(destinationPlotID == 207, 170, destinationPlotID)) %>%  
   left_join(turf_table, by = c("siteID", "originPlotID", "destinationPlotID")) %>% 
   mutate(TTtreat = if_else(is.na(TTtreat) & turfID == "507 TTC", "TTC", TTtreat)) %>% 
-  select(year, destinationSiteID = siteID, destinationBlockID = blockID, originPlotID, destinationPlotID, turfID, TTtreat, pH, LOI_percent)
+  select(year, destinationSiteID = siteID, destinationBlockID = blockID, originPlotID, destinationPlotID, turfID, TTtreat, pH, LOI)
 
 
 
@@ -108,7 +107,7 @@ soil_chem_2013_raw <- read_excel("soil_chemistry/data/Seedclim-rootgrowth-tested
     col_names = TRUE)
 
 soil_chem_2013 <- soil_chem_2013_raw %>% 
-  select(destinationSiteID = Site, soil_depth = depth2013, NO3N = NO3, NH4N = NH4, available_N = N, pH, LOI_percent = LOI) %>% 
+  select(destinationSiteID = Site, soil_depth = depth2013, NO3N = NO3, NH4N = NH4, available_N = N, pH, LOI) %>% 
   mutate(destinationSiteID = recode(destinationSiteID,
       "Ulvhaugen" = "Ulvehaugen",
       "Skjellingahaugen" = "Skjelingahaugen"),
@@ -146,10 +145,14 @@ soil_chem_2015 <- soil_chem_2015_raw %>%
 soil_chem <- bind_rows(soil_chem_2009, soil_chem_2010, soil_chem_2013, soil_chem_2015) %>% 
   select(year:TTtreat, soil_depth, everything()) %>% 
   pivot_longer(cols = c(soil_depth:CN_ratio), names_to = "variable", values_to = "value") %>% 
-  filter(!is.na(value))
+  filter(!is.na(value)) %>% 
+  mutate(unit = case_when(variable %in% c("LOI", "N_content", "C_content") ~ "percent",
+                          variable %in% c("NO3N", "NH4N", "available_N") ~ "μg per g resin/bag/day",
+                          variable == "soil_depth" ~ "cm",
+                          TRUE ~ NA_character_))
 
 # save file
-write_csv(soil_chem, "soil_chemistry/SeedClim_clean_soil_chemistry_2009_2010_2013_2015.csv")
+write_csv(soil_chem, "soil_chemistry/VCG_clean_soil_chemistry_2009_2010_2013_2015.csv")
 
 
 # Remarks
