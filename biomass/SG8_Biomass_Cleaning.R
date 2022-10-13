@@ -642,6 +642,13 @@ Biomass_Combined_long_cleaned <- Biomass_Combined_long_cleaned %>%
 Biomass_Combined_long_cleaned$year <- 2009
 Biomass_Combined_long_cleaned$month <- "July"
 
+Biomass_Combined_long_cleaned <- Biomass_Combined_long_cleaned |> 
+  mutate(siteID = recode(siteID, 
+                              'Skjellingahaugen' = "Skjelingahaugen",
+                              'Vikafjell' = "Skjelingahaugen",
+                              'Ovstedal' = "Ovstedalen"))
+
+
 # Tidy up order of columns
 SG8_Biomass <- Biomass_Combined_long_cleaned %>% 
   select(year, month, siteID, genet = IDG, ramet = IDS, mother_shoot = MS, individualID = IND, 
