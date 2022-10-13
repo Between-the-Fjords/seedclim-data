@@ -35,7 +35,7 @@ get_file(node = "npfa9",
          remote_path = "6_Biomass_data/Raw_data")
 
 zipFile <- "biomass/data/SG.9_Biomass_Raw.zip"
-outDir <- "biomass/data/"
+outDir <- "biomass/data/raw"
 unzip(zipFile, exdir = outDir)
 
 
@@ -47,7 +47,7 @@ unzip(zipFile, exdir = outDir)
 # species level data 'SFarinas-Biomass 2012.xlsx'.
 # Here for functional groups, used compiled, below for species we use the recent file
 #############################################################
-BM_2010_2012 <- read_excel("biomass/data/SFarinas_Compiled_data_for_SEEDCLIM_2010_and_2012.xlsx",sheet =1, col_names = TRUE)
+BM_2010_2012 <- read_excel("biomass/data/raw/SFarinas_Compiled_data_for_SEEDCLIM_2010_and_2012.xlsx",sheet =1, col_names = TRUE)
 
 # Drop first row with units
 BM_2010_2012 = BM_2010_2012[-1,]
@@ -123,7 +123,7 @@ BM_2010_2012 <- BM_2010_2012 %>%
 # Read in 2013 
 #################################################################
 
-BM_2013 <- read_excel("biomass/data/Biomass grassland 2013-2015.xls",
+BM_2013 <- read_excel("biomass/data/raw/Biomass grassland 2013-2015.xls",
                       sheet =1, col_names = TRUE)
 
 
@@ -154,7 +154,7 @@ BM_2013 <- BM_2013 %>%
 # 2014 work
 # No species level data for this year
 #############################################################
-BM_2014 <- read_excel("biomass/data/Biomass grassland 2013-2015.xls",
+BM_2014 <- read_excel("biomass/data/raw/Biomass grassland 2013-2015.xls",
                       sheet =2, col_names = TRUE)
 # Select by column position
 positions <- c(1:6,20:21)
@@ -179,7 +179,7 @@ BM_2014<- BM_2014 %>% rename(Litter_Lichen = Litter)
 # 2015 work
 # No species level data for this year
 ################################################################
-BM_2015 <- read_excel("biomass/data/Biomass grassland 2013-2015.xls",
+BM_2015 <- read_excel("biomass/data/raw/Biomass grassland 2013-2015.xls",
                       sheet =3, col_names = TRUE)
 # Select by column position
 positions <- c(1:7)
@@ -311,39 +311,19 @@ unique(SG.9.Biomass$turfID)
 #SG.9.Biomass <- dplyr::filter(SG.9.Biomass, !grepl('RTC', turfID))
 
 
-write_csv(SG.9.Biomass, "data/processed/seedclim_SG_9_biomass_functional_groups.csv")
+write_csv(SG.9.Biomass, "biomass/data/SG_9_clean_biomass_functional_groups_2010-2015.csv")
 
 
 
 #################################################################
 # Species Only DataFrame
-# 2012 and 2013 years
+# 2013 years
 ################################################################
-
-# Import the species-level 2012 dataset
-BM_2012_sp <- read_excel("biomass/data/SFarinas-Biomass 2012.xlsx",
-                         sheet =1, col_names = TRUE)
-# Drop first row with units
-BM_2012_sp = BM_2012_sp[-1,]
-# Add year
-BM_2012_sp$year <- 2012
-
-# Remove aggregate columns + precip/temp site characterstics
-BM_2012_sp <- BM_2012_sp %>% 
-  select(-c(Precip_level:Temp_level, Precip:Temp, Forbs_raw:`_...162`))
-
-# Change units
-BM_2012_sp[3:134] <- lapply(BM_2012_sp[3:134], as.numeric)
-
-BM_2012_sp_long <- BM_2012_sp %>% 
-  pivot_longer(cols = Ach_mil:Vio_tri,
-               names_to = "species", values_to = "Biomass_g",
-               values_drop_na = TRUE)
 
 #########################################################################
 # Import the 2013 species-level file
 # Select only site and species level info, not the repeated summaries
-BM_2013_sp <- read_excel("biomass/data/Biomasse 2013 Sigrid.xlsx",
+BM_2013_sp <- read_excel("biomass/data/raw/Biomasse 2013 Sigrid.xlsx",
                          sheet =1, col_names = TRUE)
 
 # Add year
@@ -361,10 +341,8 @@ BM_2013_sp_long <- BM_2013_sp %>%
                names_to = "species", values_to = "Biomass_g",
                values_drop_na = TRUE)
 
-# Merge 2012 and 2013 species level biomass data
-SG.9.Species_Combined <- bind_rows(BM_2012_sp_long, BM_2013_sp_long)
-
-
+# rename object
+SG.9.Species_Combined <- BM_2013_sp_long
 
 
 #################################################################
@@ -392,5 +370,13 @@ SG.9.Species_Combined <- SG.9.Species_Combined %>% select(-c(Site))
 # Reformat species, changing '_' to '.'
 SG.9.Species_Combined$species <- gsub("_","\\.", SG.9.Species_Combined$species)
 
-write_csv(SG.9.Species_Combined, "data/processed/seedclim_SG_9_biomass_species.csv")
+SG.9.Species_Combined <- SG.9.Species_Combined |> 
+  select(year, siteID, plotID = Plot, species, biomass_g = Biomass_g)
 
+write_csv(SG.9.Species_Combined, "biomass/SG_9_clean_biomass_species_2013.csv")
+
+# vizualisation
+ggplot(SG.9.Species_Combined, aes(x = as.character(year), y = biomass_g)) + 
+  geom_violin() + 
+  geom_jitter(alpha = 0.5) +
+  facet_wrap(~siteID)
