@@ -248,6 +248,24 @@ leaf_trait_dic <- make_data_dictionary(data = leaf_trait,
 
 #************************************************************************
 #************************************************************************
+#### 6 BIOMASS #### 
+# SG8 Biomass
+
+
+# SG9 Biomass FG
+
+
+# SG9 Biomass SPECIES
+biomass_sp <- read_csv("biomass/SG_9_clean_biomass_species_2013.csv")
+
+biomass_sp_dic <- make_data_dictionary(data = biomass_sp,
+                                       description_table = description_table,
+                                       table_ID = "leaf_traits")
+
+
+
+#************************************************************************
+#************************************************************************
 #### 6 ECOSYSTEM #### 
 # Decomposition
 litter <- read_csv("decomposition/Decomposition_litter_2016_clean.csv")
