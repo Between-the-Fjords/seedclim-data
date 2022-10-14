@@ -257,11 +257,11 @@ biomass_allocation_dic <- make_data_dictionary(data = biomass_allocation,
                                        table_ID = "SG8_biomass")
 
 # SG9 Biomass FG
-biomass_fg <- read_csv("biomass/SG_9_clean_biomass_species_2013.csv")
+biomass_fg <- read_csv("biomass/SG_9_clean_biomass_functional_groups_2010-2015.csv")
 
 biomass_fg_dic <- make_data_dictionary(data = biomass_fg,
                                        description_table = description_table,
-                                       table_ID = "SG9_biomass_sp")
+                                       table_ID = "SG9_biomass_fg")
 
 
 # SG9 Biomass SPECIES
