@@ -250,9 +250,18 @@ leaf_trait_dic <- make_data_dictionary(data = leaf_trait,
 #************************************************************************
 #### 6 BIOMASS #### 
 # SG8 Biomass
+biomass_allocation <- read_csv("biomass/SG8_clean_biomass_2009.csv")
 
+biomass_allocation_dic <- make_data_dictionary(data = biomass_allocation,
+                                       description_table = description_table,
+                                       table_ID = "SG8_biomass")
 
 # SG9 Biomass FG
+biomass_fg <- read_csv("biomass/SG_9_clean_biomass_species_2013.csv")
+
+biomass_fg_dic <- make_data_dictionary(data = biomass_fg,
+                                       description_table = description_table,
+                                       table_ID = "SG9_biomass_sp")
 
 
 # SG9 Biomass SPECIES
@@ -260,9 +269,15 @@ biomass_sp <- read_csv("biomass/SG_9_clean_biomass_species_2013.csv")
 
 biomass_sp_dic <- make_data_dictionary(data = biomass_sp,
                                        description_table = description_table,
-                                       table_ID = "leaf_traits")
+                                       table_ID = "SG9_biomass_sp")
 
 
+# GR BIOMASS
+biomass_gr <- read_csv("graminoid_removal/Graminoid_removal_clean_biomass_2011-2018.csv")
+
+biomass_gr_dic <- make_data_dictionary(data = biomass_gr,
+                                       description_table = description_table,
+                                       table_ID = "biomass_gr")
 
 #************************************************************************
 #************************************************************************
