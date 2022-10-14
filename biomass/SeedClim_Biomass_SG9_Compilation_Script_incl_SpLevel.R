@@ -291,27 +291,24 @@ SG.9.Biomass <- SG.9.Biomass %>%
   unite("siteID", c(siteID,Site), remove = TRUE, na.rm = TRUE)
 
 
+SG.9.Biomass <- SG.9.Biomass |> 
+  # PlotID is blockID where blockID is missing
+  mutate(blockID = if_else(is.na(blockID), paste0(substr(siteID, 1, 3), Plot), blockID)) |> 
+  select(year, siteID, blockID, plotID, turfID, biomass_attribute = Biomass_Attributes, value = Biomass_Values, sampling_date = samplingDate, sorting_date = sortingDate)
+  
+
+
 #################################################
 ## STILL TO DO???
 #################################################
-## Figure out the Plot vs plotID and is Plot really just block?
-# Check blockID names (appear ok for those with them, check if we can allocate missing)
-unique(SG.9.Biomass$blockID)
 
-# Check plotID codes (NB. One is missing (NA), cannot find data to interpret this yet)
-unique(SG.9.Biomass$plotID)
-unique(SG.9.Biomass$Plot) # Not unique among sites, so need to be resolved
-
-# Check turfID codes
-# ? If need be: Remove rows labelled with RTC, which is a different experiment. 
 # Chat with Aud 18.5.2021, all of 2010 might dissapear, are TTC meant to have been cut? For example plot 286, TTC plot from Block One 
 # And are the RTC meant to be in SG.9, or SG.7 Though that was 2011-2016.
-# Format might also need to be changed
-unique(SG.9.Biomass$turfID)
-#SG.9.Biomass <- dplyr::filter(SG.9.Biomass, !grepl('RTC', turfID))
+# root bio 1 and 2?
+# attributes are mixed! gram, grass + carex -> rename to something logical
 
 
-write_csv(SG.9.Biomass, "biomass/data/SG_9_clean_biomass_functional_groups_2010-2015.csv")
+write_csv(SG.9.Biomass, "biomass/SG_9_clean_biomass_functional_groups_2010-2015.csv")
 
 
 
@@ -371,12 +368,12 @@ SG.9.Species_Combined <- SG.9.Species_Combined %>% select(-c(Site))
 SG.9.Species_Combined$species <- gsub("_","\\.", SG.9.Species_Combined$species)
 
 SG.9.Species_Combined <- SG.9.Species_Combined |> 
-  select(year, siteID, plotID = Plot, species, biomass_g = Biomass_g)
+  select(year, siteID, plotID = Plot, species, value = Biomass_g)
 
 write_csv(SG.9.Species_Combined, "biomass/SG_9_clean_biomass_species_2013.csv")
 
 # vizualisation
-ggplot(SG.9.Species_Combined, aes(x = as.character(year), y = biomass_g)) + 
+ggplot(SG.9.Species_Combined, aes(x = as.character(year), y = value)) + 
   geom_violin() + 
   geom_jitter(alpha = 0.5) +
   facet_wrap(~siteID)
