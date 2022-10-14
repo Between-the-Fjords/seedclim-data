@@ -73,7 +73,7 @@ BM_2010_2012 <- BM_2010_2012 %>%
 # In  later files, i.e. 2013/14/15 on occasionals 'forbs' is forbs + odd woody species..
 
 # Convert type
-BM_2010_2012$Site <- as.character(BM_2010_2012$Site)
+#BM_2010_2012$Site <- as.character(BM_2010_2012$Site)
 BM_2010_2012$Root_bio_1 <- as.numeric(BM_2010_2012$Root_bio_1)
 BM_2010_2012$Root_bio_2 <- as.numeric(BM_2010_2012$Root_bio_2)
 BM_2010_2012$Forb <- as.numeric(BM_2010_2012$Forb)
@@ -82,6 +82,8 @@ BM_2010_2012$Gram <- as.numeric(BM_2010_2012$Gram)
 BM_2010_2012$Woody <- as.numeric(BM_2010_2012$Woody)
 BM_2010_2012$Lichen <- as.numeric(BM_2010_2012$Lichen)
 BM_2010_2012$Litter <- as.numeric(BM_2010_2012$Litter)
+BM_2010_2012$Grass <- as.numeric(BM_2010_2012$Grass)
+BM_2010_2012$Carex <- as.numeric(BM_2010_2012$Carex)
 
 # Back-transform to the original units (g/0.625m2 instead of g/m2) (divide by 16)
 BM_2010_2012 <- BM_2010_2012 %>% 
@@ -90,17 +92,40 @@ BM_2010_2012 <- BM_2010_2012 %>%
          Root_bio_2 = (Root_bio_2/16),
          Bryo = (Bryo/16),
          Gram = (Gram/16),
+         Grass = (Grass/16),
+         Carex = (Carex/16),
          Woody = (Woody/16),
          Lichen = (Lichen/16),
          Litter = (Litter/16))
 
-# Reformat
-BM_2010_2012$Grass <- as.numeric(BM_2010_2012$Grass)
-BM_2010_2012$Carex <- as.numeric(BM_2010_2012$Carex)
 
 # To match 2013/14/15 data
 BM_2010_2012 <- BM_2010_2012 %>% 
   mutate(Forb_Woody = as.numeric(rowSums(cbind(Forb, Woody), na.rm = T)))
+
+# add missing turfID using ugly trick
+BM_2010_2012 <- BM_2010_2012 |> 
+  mutate(newturf = rep(c("RTC", "TTC"), 90)) |>
+  mutate(turfID = if_else(year == 2010 & is.na(turfID), newturf, turfID),
+         turfID = if_else(turfID == "RTC", paste0(blockID, turfID, "x"), turfID),
+         turfID = case_when(year == 2010 & blockID == "Ram1" & turfID == "TTC" ~ "203 TTC",
+                            year == 2010 & blockID == "Ram2" & turfID == "TTC" ~ "528 TTC",
+                            year == 2010 & blockID == "Ram3" & turfID == "TTC" ~ "525 TTC",
+                            TRUE ~ turfID),
+         plotID = case_when(year == 2010 & blockID == "Ram1" & turfID == "203 TTC" ~ 203,
+                            year == 2010 & blockID == "Ram2" & turfID == "528 TTC" ~ 528,
+                            year == 2010 & blockID == "Ram3" & turfID == "525 TTC" ~ 525,
+                            year == 2010 & blockID == "Ram1" & turfID == "Ram1RTCx" ~ 20720,
+                            year == 2010 & blockID == "Ram2" & turfID == "Ram2RTCx" ~ 20700,
+                            year == 2010 & blockID == "Ram3" & turfID == "Ram3RTCx" ~ 20710,
+                            TRUE ~ plotID),
+         blockID = case_when(year == 2010 & blockID == "Ram1" & turfID == "203 TTC" ~ "Ram6",
+                             year == 2010 & blockID == "Ram2" & turfID == "528 TTC" ~ "Ram8",
+                             year == 2010 & blockID == "Ram3" & turfID == "525 TTC" ~ "Ram9",
+                            TRUE ~ blockID)) |> 
+  select(-newturf)
+
+
 
 #################################################################
 # Read in 2013, 2014 and 2015 datasets
@@ -291,21 +316,23 @@ SG.9.Biomass <- SG.9.Biomass %>%
   unite("siteID", c(siteID,Site), remove = TRUE, na.rm = TRUE)
 
 
+
 SG.9.Biomass <- SG.9.Biomass |> 
   # PlotID is blockID where blockID is missing
   mutate(blockID = if_else(is.na(blockID), paste0(substr(siteID, 1, 3), Plot), blockID)) |> 
-  select(year, siteID, blockID, plotID, turfID, biomass_attribute = Biomass_Attributes, value = Biomass_Values, sampling_date = samplingDate, sorting_date = sortingDate)
-  
-
-
-#################################################
-## STILL TO DO???
-#################################################
-
-# Chat with Aud 18.5.2021, all of 2010 might dissapear, are TTC meant to have been cut? For example plot 286, TTC plot from Block One 
-# And are the RTC meant to be in SG.9, or SG.7 Though that was 2011-2016.
-# root bio 1 and 2?
-# attributes are mixed! gram, grass + carex -> rename to something logical
+  pivot_wider(names_from = Biomass_Attributes, values_from = Biomass_Values) |> 
+  # fix Ram blockIDs
+  mutate(blockID = case_when(blockID == "Ram1" ~ "Ram6",
+                             blockID == "Ram2" ~ "Ram8",
+                             blockID == "Ram3" ~ "Ram9",
+                             TRUE ~ blockID)) |> 
+  # sort, rename and drop newturf and Plot
+  select(year, siteID, blockID, plotID, turfID,
+         forb = Forb, woody = Woody, forb_woody = Forb_Woody,
+         carex = Carex, poaceae_juncaceae = Grass, graminoid = Gram, 
+         bryophyte = Bryo, lichen = Lichen, litter = Litter, litter_lichen = Litter_Lichen, 
+         root_1 = Root_bio_1, root_2 = Root_bio_2,
+         sampling_date = samplingDate, sorting_date = sortingDate)
 
 
 write_csv(SG.9.Biomass, "biomass/SG_9_clean_biomass_functional_groups_2010-2015.csv")
