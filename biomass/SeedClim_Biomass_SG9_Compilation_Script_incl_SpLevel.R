@@ -35,7 +35,7 @@ get_file(node = "npfa9",
          remote_path = "6_Biomass_data/Raw_data")
 
 zipFile <- "biomass/data/SG.9_Biomass_Raw.zip"
-outDir <- "biomass/data/"
+outDir <- "biomass/data/raw"
 unzip(zipFile, exdir = outDir)
 
 
@@ -47,7 +47,7 @@ unzip(zipFile, exdir = outDir)
 # species level data 'SFarinas-Biomass 2012.xlsx'.
 # Here for functional groups, used compiled, below for species we use the recent file
 #############################################################
-BM_2010_2012 <- read_excel("biomass/data/SFarinas_Compiled_data_for_SEEDCLIM_2010_and_2012.xlsx",sheet =1, col_names = TRUE)
+BM_2010_2012 <- read_excel("biomass/data/raw/SFarinas_Compiled_data_for_SEEDCLIM_2010_and_2012.xlsx",sheet =1, col_names = TRUE)
 
 # Drop first row with units
 BM_2010_2012 = BM_2010_2012[-1,]
@@ -73,7 +73,7 @@ BM_2010_2012 <- BM_2010_2012 %>%
 # In  later files, i.e. 2013/14/15 on occasionals 'forbs' is forbs + odd woody species..
 
 # Convert type
-BM_2010_2012$Site <- as.character(BM_2010_2012$Site)
+#BM_2010_2012$Site <- as.character(BM_2010_2012$Site)
 BM_2010_2012$Root_bio_1 <- as.numeric(BM_2010_2012$Root_bio_1)
 BM_2010_2012$Root_bio_2 <- as.numeric(BM_2010_2012$Root_bio_2)
 BM_2010_2012$Forb <- as.numeric(BM_2010_2012$Forb)
@@ -82,6 +82,8 @@ BM_2010_2012$Gram <- as.numeric(BM_2010_2012$Gram)
 BM_2010_2012$Woody <- as.numeric(BM_2010_2012$Woody)
 BM_2010_2012$Lichen <- as.numeric(BM_2010_2012$Lichen)
 BM_2010_2012$Litter <- as.numeric(BM_2010_2012$Litter)
+BM_2010_2012$Grass <- as.numeric(BM_2010_2012$Grass)
+BM_2010_2012$Carex <- as.numeric(BM_2010_2012$Carex)
 
 # Back-transform to the original units (g/0.625m2 instead of g/m2) (divide by 16)
 BM_2010_2012 <- BM_2010_2012 %>% 
@@ -90,17 +92,40 @@ BM_2010_2012 <- BM_2010_2012 %>%
          Root_bio_2 = (Root_bio_2/16),
          Bryo = (Bryo/16),
          Gram = (Gram/16),
+         Grass = (Grass/16),
+         Carex = (Carex/16),
          Woody = (Woody/16),
          Lichen = (Lichen/16),
          Litter = (Litter/16))
 
-# Reformat
-BM_2010_2012$Grass <- as.numeric(BM_2010_2012$Grass)
-BM_2010_2012$Carex <- as.numeric(BM_2010_2012$Carex)
 
 # To match 2013/14/15 data
 BM_2010_2012 <- BM_2010_2012 %>% 
   mutate(Forb_Woody = as.numeric(rowSums(cbind(Forb, Woody), na.rm = T)))
+
+# add missing turfID using ugly trick
+BM_2010_2012 <- BM_2010_2012 |> 
+  mutate(newturf = rep(c("RTC", "TTC"), 90)) |>
+  mutate(turfID = if_else(year == 2010 & is.na(turfID), newturf, turfID),
+         turfID = if_else(turfID == "RTC", paste0(blockID, turfID, "x"), turfID),
+         turfID = case_when(year == 2010 & blockID == "Ram1" & turfID == "TTC" ~ "203 TTC",
+                            year == 2010 & blockID == "Ram2" & turfID == "TTC" ~ "528 TTC",
+                            year == 2010 & blockID == "Ram3" & turfID == "TTC" ~ "525 TTC",
+                            TRUE ~ turfID),
+         plotID = case_when(year == 2010 & blockID == "Ram1" & turfID == "203 TTC" ~ 203,
+                            year == 2010 & blockID == "Ram2" & turfID == "528 TTC" ~ 528,
+                            year == 2010 & blockID == "Ram3" & turfID == "525 TTC" ~ 525,
+                            year == 2010 & blockID == "Ram1" & turfID == "Ram1RTCx" ~ 20720,
+                            year == 2010 & blockID == "Ram2" & turfID == "Ram2RTCx" ~ 20700,
+                            year == 2010 & blockID == "Ram3" & turfID == "Ram3RTCx" ~ 20710,
+                            TRUE ~ plotID),
+         blockID = case_when(year == 2010 & blockID == "Ram1" & turfID == "203 TTC" ~ "Ram6",
+                             year == 2010 & blockID == "Ram2" & turfID == "528 TTC" ~ "Ram8",
+                             year == 2010 & blockID == "Ram3" & turfID == "525 TTC" ~ "Ram9",
+                            TRUE ~ blockID)) |> 
+  select(-newturf)
+
+
 
 #################################################################
 # Read in 2013, 2014 and 2015 datasets
@@ -123,7 +148,7 @@ BM_2010_2012 <- BM_2010_2012 %>%
 # Read in 2013 
 #################################################################
 
-BM_2013 <- read_excel("biomass/data/Biomass grassland 2013-2015.xls",
+BM_2013 <- read_excel("biomass/data/raw/Biomass grassland 2013-2015.xls",
                       sheet =1, col_names = TRUE)
 
 
@@ -154,7 +179,7 @@ BM_2013 <- BM_2013 %>%
 # 2014 work
 # No species level data for this year
 #############################################################
-BM_2014 <- read_excel("biomass/data/Biomass grassland 2013-2015.xls",
+BM_2014 <- read_excel("biomass/data/raw/Biomass grassland 2013-2015.xls",
                       sheet =2, col_names = TRUE)
 # Select by column position
 positions <- c(1:6,20:21)
@@ -179,7 +204,7 @@ BM_2014<- BM_2014 %>% rename(Litter_Lichen = Litter)
 # 2015 work
 # No species level data for this year
 ################################################################
-BM_2015 <- read_excel("biomass/data/Biomass grassland 2013-2015.xls",
+BM_2015 <- read_excel("biomass/data/raw/Biomass grassland 2013-2015.xls",
                       sheet =3, col_names = TRUE)
 # Select by column position
 positions <- c(1:7)
@@ -291,59 +316,38 @@ SG.9.Biomass <- SG.9.Biomass %>%
   unite("siteID", c(siteID,Site), remove = TRUE, na.rm = TRUE)
 
 
-#################################################
-## STILL TO DO???
-#################################################
-## Figure out the Plot vs plotID and is Plot really just block?
-# Check blockID names (appear ok for those with them, check if we can allocate missing)
-unique(SG.9.Biomass$blockID)
 
-# Check plotID codes (NB. One is missing (NA), cannot find data to interpret this yet)
-unique(SG.9.Biomass$plotID)
-unique(SG.9.Biomass$Plot) # Not unique among sites, so need to be resolved
+SG.9.Biomass <- SG.9.Biomass |> 
+  # PlotID is blockID where blockID is missing
+  mutate(blockID = if_else(is.na(blockID), paste0(substr(siteID, 1, 3), Plot), blockID)) |> 
+  pivot_wider(names_from = Biomass_Attributes, values_from = Biomass_Values) |> 
+  # fix Ram blockIDs
+  mutate(blockID = case_when(blockID == "Ram1" ~ "Ram6",
+                             blockID == "Ram2" ~ "Ram8",
+                             blockID == "Ram3" ~ "Ram9",
+                             TRUE ~ blockID)) |> 
+  # sort, rename and drop newturf and Plot
+  select(year, siteID, blockID, plotID, turfID,
+         forb = Forb, woody = Woody, forb_woody = Forb_Woody,
+         carex = Carex, poaceae_juncaceae = Grass, graminoid = Gram, 
+         bryophyte = Bryo, lichen = Lichen, litter = Litter, litter_lichen = Litter_Lichen, 
+         root_1 = Root_bio_1, root_2 = Root_bio_2,
+         sampling_date = samplingDate, sorting_date = sortingDate)
 
-# Check turfID codes
-# ? If need be: Remove rows labelled with RTC, which is a different experiment. 
-# Chat with Aud 18.5.2021, all of 2010 might dissapear, are TTC meant to have been cut? For example plot 286, TTC plot from Block One 
-# And are the RTC meant to be in SG.9, or SG.7 Though that was 2011-2016.
-# Format might also need to be changed
-unique(SG.9.Biomass$turfID)
-#SG.9.Biomass <- dplyr::filter(SG.9.Biomass, !grepl('RTC', turfID))
 
-
-write_csv(SG.9.Biomass, "data/processed/seedclim_SG_9_biomass_functional_groups.csv")
+write_csv(SG.9.Biomass, "biomass/SG_9_clean_biomass_functional_groups_2010-2015.csv")
 
 
 
 #################################################################
 # Species Only DataFrame
-# 2012 and 2013 years
+# 2013 years
 ################################################################
-
-# Import the species-level 2012 dataset
-BM_2012_sp <- read_excel("biomass/data/SFarinas-Biomass 2012.xlsx",
-                         sheet =1, col_names = TRUE)
-# Drop first row with units
-BM_2012_sp = BM_2012_sp[-1,]
-# Add year
-BM_2012_sp$year <- 2012
-
-# Remove aggregate columns + precip/temp site characterstics
-BM_2012_sp <- BM_2012_sp %>% 
-  select(-c(Precip_level:Temp_level, Precip:Temp, Forbs_raw:`_...162`))
-
-# Change units
-BM_2012_sp[3:134] <- lapply(BM_2012_sp[3:134], as.numeric)
-
-BM_2012_sp_long <- BM_2012_sp %>% 
-  pivot_longer(cols = Ach_mil:Vio_tri,
-               names_to = "species", values_to = "Biomass_g",
-               values_drop_na = TRUE)
 
 #########################################################################
 # Import the 2013 species-level file
 # Select only site and species level info, not the repeated summaries
-BM_2013_sp <- read_excel("biomass/data/Biomasse 2013 Sigrid.xlsx",
+BM_2013_sp <- read_excel("biomass/data/raw/Biomasse 2013 Sigrid.xlsx",
                          sheet =1, col_names = TRUE)
 
 # Add year
@@ -361,10 +365,8 @@ BM_2013_sp_long <- BM_2013_sp %>%
                names_to = "species", values_to = "Biomass_g",
                values_drop_na = TRUE)
 
-# Merge 2012 and 2013 species level biomass data
-SG.9.Species_Combined <- bind_rows(BM_2012_sp_long, BM_2013_sp_long)
-
-
+# rename object
+SG.9.Species_Combined <- BM_2013_sp_long
 
 
 #################################################################
@@ -392,5 +394,13 @@ SG.9.Species_Combined <- SG.9.Species_Combined %>% select(-c(Site))
 # Reformat species, changing '_' to '.'
 SG.9.Species_Combined$species <- gsub("_","\\.", SG.9.Species_Combined$species)
 
-write_csv(SG.9.Species_Combined, "data/processed/seedclim_SG_9_biomass_species.csv")
+SG.9.Species_Combined <- SG.9.Species_Combined |> 
+  select(year, siteID, plotID = Plot, species, value = Biomass_g)
 
+write_csv(SG.9.Species_Combined, "biomass/SG_9_clean_biomass_species_2013.csv")
+
+# vizualisation
+ggplot(SG.9.Species_Combined, aes(x = as.character(year), y = value)) + 
+  geom_violin() + 
+  geom_jitter(alpha = 0.5) +
+  facet_wrap(~siteID)

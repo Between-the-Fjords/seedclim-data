@@ -22,7 +22,7 @@ get_file(node = "npfa9",
          remote_path = "6_Biomass_data/Raw_data")
 
 zipFile <- "biomass/data/SG8_Biomass.zip"
-outDir <- "biomass/data/"
+outDir <- "biomass/data/raw"
 unzip(zipFile, exdir = outDir)
 
 
@@ -34,14 +34,14 @@ sitename <- c("Ulvehaugen","Alrust","Fauske","Lavisdalen","Hogsete",
 site <- c("U","Al","F","L","H","Vi","G","R","Ar","S","Ve","O")
 
 # Climate
-climate <- read.delim("./data/raw/Clim_dat_daily_all.txt",dec=",")
+climate <- read.delim("biomass/data/raw/Clim_dat_daily_all.txt",dec=",")
 
 ###########################################################
 # Data prep for Carex pallescens
 # Based off original 'dataprep cpal.r' 
 ###########################################################
 
-cpalseeds <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/cpal seeds all sites.txt",
+cpalseeds <- read.delim("biomass/data/raw/cpal seeds all sites.txt",
                         sep="\t",dec=",")
 cpalseeds$IND <- gsub("\\[","",cpalseeds$IND)
 cpalseeds$IND <- gsub("\\]","",cpalseeds$IND)
@@ -53,7 +53,7 @@ i <- which(!duplicated(cpalseeds$IND))
 cpalseeds <- data.frame(cpalseeds[i,c(1,2)],temp)
 cpalseeds$BMseeds <- cpalseeds$seeds*cpalseeds$weight..g./cpalseeds$no..Of.seeds
 
-cpal <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/pall gen.txt",sep=";",dec=".")
+cpal <- read.delim("./biomass/data/raw/pall gen.txt",sep=";",dec=".")
 cpal$siteID <- cpal$site
 levels(cpal$siteID) <- substr(levels(cpal$siteID),1,1)
 
@@ -87,7 +87,7 @@ cpal$BMTOT <- cpal$BM+cpal$FBM						# Total biomass per genet in mg
 ###########################################################
 
 # Read in Carex Capillaris seed dataset
-ccapseeds <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/ccap seeds all sites.txt",sep="\t",dec=",")
+ccapseeds <- read.delim("./biomass/data/raw/ccap seeds all sites.txt",sep="\t",dec=",")
 ccapseeds$IND <- gsub("\\[","",ccapseeds$IND)
 ccapseeds$IND <- gsub("\\]","",ccapseeds$IND)
 f <- function(x,split) unlist(strsplit(x,split))[1]
@@ -99,7 +99,7 @@ ccapseeds <- data.frame(ccapseeds[i,c(1,2)],temp)
 ccapseeds$BMseeds <- ccapseeds$seeds*ccapseeds$weight..g./ccapseeds$no..Of.seeds
 
 # Read in Carex capillaris trait and biomass datasest
-ccap <- read.delim("./data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/cap gen.txt",sep=";",dec=".")
+ccap <- read.delim("./biomass/data/raw/cap gen.txt",sep=";",dec=".")
 ccap$siteID <- ccap$site
 levels(ccap$siteID) <- substr(levels(ccap$siteID),1,1)
 
@@ -133,9 +133,11 @@ ccap$BMTOT <- ccap$BM								# Total biomass per genet in mg
 ###########################################################
 
 # Read in raw files
-valp <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/VeronicaAlpinaSimplifiedAllSites.txt",
+valp <- read.delim("./biomass/data/raw/VeronicaAlpinaSimplifiedAllSites.txt",
                    dec=",",na.strings=c("?"))
-levels(valp$Site)[5] <- "Skjellingahaugen"
+valp <- valp |> 
+  mutate(Site = recode(Site, "Vikafjell" = "Skjellingahaugen"))
+#levels(valp$Site)[5] <- "Skjellingahaugen"
 valp$siteID <- valp$Site
 # converting sitenames to siteIDs
 levels(valp$siteID) <- site[match(levels(valp$Site),sitename)]
@@ -211,9 +213,11 @@ valp.genet$FL <- valp.genet$FBM/valp.genet$LBM
 ###########################################################
 
 # Data prep Viola biflora
-vbif <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/ViolaBifloraSimplifiedAllSites.txt",
+vbif <- read.delim("./biomass/data/raw/ViolaBifloraSimplifiedAllSites.txt",
                    dec=",",na.strings=c("?"))
-levels(vbif$Site)[5] <- "Skjellingahaugen"
+vbif <- vbif |> 
+  mutate(Site = recode(Site, "Vikafjell" = "Skjellingahaugen"))
+#levels(vbif$Site)[5] <- "Skjellingahaugen"
 vbif$siteID <- vbif$Site
 # converting sitenames to siteIDs
 levels(vbif$siteID) <- site[match(levels(vbif$Site),sitename)]			
@@ -256,7 +260,7 @@ vbif$FL <- vbif$FBM/vbif$LBM									# Ratio of fertile to photosynthetic biomas
 
 # Data prep Viola palustris
 
-vpal <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/ViolaPalustrisSimplifiedAllSites.txt",
+vpal <- read.delim("./biomass/data/raw/ViolaPalustrisSimplifiedAllSites.txt",
                    dec=",",na.strings=c("?"))
 vpal$siteID <- vpal$Site
 levels(vpal$siteID) <- site[match(levels(vpal$Site),sitename)]			# converting sitenames to siteIDs
@@ -313,14 +317,15 @@ vpal.genet$FL <- vpal.genet$FBM/vpal.genet$LBM
 
 # ramet level
 
-voff <- read.delim("./biomass/data/raw/Skarpaas_et_al_2016/raw_data_and_scripts/VeronicaOfficinalisSimplifiedCorrectedag.txt",
+voff <- read.delim("./biomass/data/raw/VeronicaOfficinalisSimplifiedCorrectedag.txt",
                    dec=",",na.strings=c("?","-","*"))
 voff$siteID <- voff$Site
 levels(voff$siteID) <- site[match(levels(voff$Site),sitename)]			# converting sitenames to siteIDs
 for(i in 2:length(voff$IDG)) if(voff$IDG[i]=="") voff$IDG[i] <- voff$IDG[i-1]	# Filling in missing genet IDs
 voff$IDR <- factor(paste(voff$siteID,".",voff$IDG,".",voff$IDS,sep=""))			# New unique Ramet IDs
 voff$IDGsite <- factor(paste(voff$siteID,".",voff$IDG,sep=""))				# New unique Genet IDs
-voff <- within(voff,IDGsite <- factor(siteID:IDG))
+# next line does not work
+#voff <- within(voff,IDGsite <- factor(siteID:IDG))
 
 
 #######
@@ -637,11 +642,19 @@ Biomass_Combined_long_cleaned <- Biomass_Combined_long_cleaned %>%
 Biomass_Combined_long_cleaned$year <- 2009
 Biomass_Combined_long_cleaned$month <- "July"
 
+Biomass_Combined_long_cleaned <- Biomass_Combined_long_cleaned |> 
+  mutate(siteID = recode(siteID, 
+                              'Skjellingahaugen' = "Skjelingahaugen",
+                              'Vikafjell' = "Skjelingahaugen",
+                              'Ovstedal' = "Ovstedalen"))
+
+
 # Tidy up order of columns
 SG8_Biomass <- Biomass_Combined_long_cleaned %>% 
-  select(siteID, year, month, IDR, IDGsite, IDG, IDS, MS, IND, species,
-         Biomass_Attributes_Old, Biomass_Attributes, Data_Type, Values)
+  select(year, month, siteID, genet = IDG, ramet = IDS, mother_shoot = MS, individualID = IND, 
+         species, biomass_attributes = Biomass_Attributes, value = Values, data_type = Data_Type, 
+         biomass_attributes_old = Biomass_Attributes_Old)
 
 # Save file
-write.csv2(SG8_Biomass,
-           file = "./biomass/data/processed/SG8_Biomass.csv")
+write_csv(SG8_Biomass,
+           file = "biomass/SG8_clean_biomass_2009.csv")
