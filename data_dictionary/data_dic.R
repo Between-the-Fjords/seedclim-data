@@ -296,6 +296,12 @@ teabag_dic <- make_data_dictionary(data = teabag,
                                    table_ID = "teabag")
 
 
+litter_cn <- read_csv("cn_data/Litter_cn_clean_2016.csv")
+
+litter_cn_dic <- make_data_dictionary(data = litter_cn,
+                                   description_table = description_table,
+                                   table_ID = "litter_cn")
+
 
 #************************************************************************
 #************************************************************************
