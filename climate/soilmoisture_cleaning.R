@@ -143,17 +143,19 @@ soilmoisture_raw  <- bind_rows(
   select(!c(treatment, removal)) %>% #those treatments and removal are confusing and using various labelling. TurfId and site name is enough to add the treatment later if needed.
   mutate(
     site = str_replace_all(site, c( #need to replace site name with full names
-      "ULV" = "Ulvhaugen",
+      "ULV" = "Ulvehaugen",
       "LAV" = "Lavisdalen",
       "HOG" = "Hogsete",
+      "Hosgete" = "Hogsete",
       "VIK" = "Vikesland",
       "GUD" = "Gudmedalen",
       "RAM" = "Rambera",
       "ARH" = "Arhelleren",
-      "SKJ" = "Skjellingahaugen",
+      "SKJ" = "Skjelingahaugen",
+      "Skjellingahaugen" = "Skjelingahaugen",
       "VES" = "Veskre",
       "ALR" = "Alrust",
-      "OVS" = "Ovstedal",
+      "OVS" = "Ovstedalen",
       "FAU" = "Fauske"
     )), 
     year = year(date),
