@@ -57,8 +57,9 @@ BD <- BD_raw %>%
                          "ARN" = "Arhelleren",
                          "OVS" = "Ovstedalen"),
          variable = "bulk_density",
+         unit = "g cm-³",
          year = 2018) %>%
-  select(year, siteID, sampleID, depth, variable, value = bulk_density)
+  select(year, siteID, sampleID, depth, variable, value = bulk_density, unit)
 
 # check
 # ggplot(BD, aes(x = siteID, y = bulk_density)) +
@@ -78,10 +79,12 @@ soil_texture <- soil_texture_raw %>%
                          "GUD" = "Gudmedalen",
                          "SKJ" = "Skjelingahaugen"),
          variable = recode(variable, 
-                         "% Clay" = "clay_percent",
-                         "% Silt" = "silt_percent",
-                         "% Sand" = "sand_percent"),
-         year = 2013)
+                         "% Clay" = "clay",
+                         "% Silt" = "silt",
+                         "% Sand" = "sand"),
+         unit = "percentage",
+         year = 2013) |> 
+  select(year, everything())
 
 # 2014 data
 SD1_raw <- read_excel("soil_structure/data/soil-grass-heath-2014.xlsx", skip = 1, sheet = "grassland")
@@ -109,8 +112,9 @@ SD1 <- SD1_raw %>%
          blockID = paste0(substr(siteID, 1, 3), blockID)) %>% 
   pivot_longer(cols = depth1:depth3, names_to = "variable", values_to = "value") %>% 
   mutate(sampleID = str_extract(variable, "\\d"),
-         variable = paste0("soil_", str_remove(variable, "\\d"))) %>% 
-  select(year, siteID, blockID, variable, sampleID, value)
+         variable = paste0("soil_", str_remove(variable, "\\d")),
+         unit = "cm") %>% 
+  select(year, siteID, blockID, variable, sampleID, value, unit)
 
 
 SD2 <- SD2_raw %>% 
@@ -124,17 +128,20 @@ SD2 <- SD2_raw %>%
   pivot_longer(cols = c(soil_depth1, soil_depth2), names_to = "variable", values_to = "value") %>% 
   mutate(value = as.numeric(value),
          sampleID = str_extract(variable, "\\d"),
-         variable = str_remove(variable, "\\d")) %>% 
-  select(year, siteID, blockID, variable, sampleID, value)
+         variable = str_remove(variable, "\\d"),
+         unit = "cm") %>% 
+  select(year, siteID, blockID, variable, sampleID, value, unit)
   
 soil_depth <- bind_rows(SD1, SD2)
   
 
 soil_strucutre <- bind_rows(soil_depth, soil_texture, BD) %>% 
-  mutate(unit = case_when(variable %in% c("clay_percent", "silt_percent", "sand_percent") ~ "percent",
-                          variable %in% c("bulk_density") ~ "g cm^-3",
-                          variable == "soil_depth" ~ "cm",
-                          TRUE ~ NA_character_),
-         variable = recode(variable, clay_percent = "clay", silt_percent = "silt", sand_percent = "sand"))
+  select(year:blockID, sampleID, depth, variable, value, unit)
 
-write_csv(soil_strucutre, "soil_structure/VCG_clean_soil_structure_2013_2014_2018.csv")
+write_csv(soil_strucutre, "soil_structure/data/VCG_clean_soil_structure_2013_2014_2018.csv")
+
+soil_strucutre |> 
+  filter(variable == "soil_depth") |> 
+  ggplot(aes(x = year, y = value)) +
+  geom_point() +
+  facet_wrap(~ siteID)
