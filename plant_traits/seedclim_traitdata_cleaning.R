@@ -258,5 +258,5 @@ traitdata_full <- traitdata %>%
                              "permil" = "d15N")) |> 
    select(year, date, siteID, species, individual_nr = individual, trait, value, unit, flag)
 
-write_csv(traitdata_full, file = "plant_traits/data/ VCG_clean_trait_data_2012-2016.csv")
+write_csv(traitdata_full, file = "plant_traits/data/VCG_clean_trait_data_2012-2016.csv")
  
