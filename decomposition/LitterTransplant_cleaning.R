@@ -68,10 +68,15 @@ Litter_clean <- Litter_raw %>%
                             "WE"="wet", 
                             "WA+WE"="warm_wet"), 
          year = 2016) %>% 
-  select(year, siteID_origin = OriginSite, siteID_dest = DestinationSite, temperature_level = T_level, precipitation_level = P_level, treatment = Treatment, BagID = Bag, W_loss, L_startweight, L_endweight, Time, BurialDate, RecoveryDate, Timestep, TTtreat, DataCheck) %>% 
+  select(year, siteID_origin = OriginSite, siteID_dest = DestinationSite, 
+         temperature_level = T_level, precipitation_level = P_level, 
+         treatment = Treatment, bagID = Bag, weight_loss = W_loss, 
+         start_weight = L_startweight, end_weight = L_endweight, 
+         time = Time, burial_date = BurialDate, recovery_date = RecoveryDate, 
+         timestep = Timestep, TTtreat, data_check = DataCheck) %>% 
   left_join(litter_collection_date, by = "siteID_dest")
   # # new column with 1/0 for warmer or wetter treatment
   # mutate(warmer = ifelse(grepl("WA", Treatment, fixed = TRUE), "1", "0"),
   #        wetter = ifelse(grepl("WE", Treatment, fixed = TRUE), "1", "0"))
 
-write_csv(Litter_clean, "decomposition/Decomposition_litter_2016_clean.csv")
+write_csv(Litter_clean, "decomposition/data/VCG_clean_decomposition_litter_2016.csv")
