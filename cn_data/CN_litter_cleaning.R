@@ -1,7 +1,9 @@
 ### Clean CN data ###
 library(janitor)
+library(readxl)
+library(tidyverse)
 
-cn_raw <- read_excel("cn_data/Litter_CN2016.xlsx") |> 
+cn_raw <- read_excel("cn_data/data/Litter_CN2016.xlsx") |> 
   clean_names()
 
 cn_data <- cn_raw |> 
@@ -22,7 +24,7 @@ cn_data <- cn_raw |>
          cn_ratio = c/n) |> 
   select(year, date_time, siteID = site, sampleID = sample, sub_sampleID = name, sample_weight = weight, n_percent = n, c_percent = c, cn_ratio)
 
-write_csv(cn_data, "cn_data/Litter_cn_clean_2016.csv")
+write_csv(cn_data, "cn_data/data/VCG_clean_litter_cn_2016.csv")
 
 ggplot(cn_data, aes(x = sampleID, y = cn_ratio)) +
   geom_point() +
