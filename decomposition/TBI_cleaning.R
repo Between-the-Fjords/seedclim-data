@@ -16,7 +16,7 @@ TBI <- TBI_raw %>%
                          "Gud"="Gudmedalen", 
                          "Hog"= "Hogsete", 
                          "Lav"="Lavisdalen", 
-                         "Ovs"= "Ovstedal", 
+                         "Ovs"= "Ovstedalen", 
                          "Ram"="Rambera", 
                          "Skj"= "Skjelingahaugen", 
                          "Ulv"="Ulvehaugen", 
