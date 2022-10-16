@@ -18,7 +18,7 @@ if(file.exists(zipFile)){
 
 #importing the data
 
-soilmoisture1516 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
+soilmoisture1516 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
   rename( #renaming the measurements because I want to do a pivot later and I think it makes more sense to have them as replicate number
     # "1" = "M1",
     # "2" = "M2",
@@ -43,7 +43,7 @@ soilmoisture1516 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture_1516.
 
 
 
-soilmoisture_2015_2016 <- read_csv("data/SeedClim_Plot_SoilMoisture/soilMoisture_2015-2016.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
+soilmoisture_2015_2016 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/soilMoisture_2015-2016.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
   rename(
     # "1" = "M1",
     # "2" = "M2",
@@ -68,13 +68,13 @@ soilmoisture_2015_2016 <- read_csv("data/SeedClim_Plot_SoilMoisture/soilMoisture
 
 
 
-soilmoisture2017 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", col_types = "cfffffddddff", na = c("na", "NA")) %>% 
+soilmoisture2017 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", col_types = "cfffffddddff", na = c("na", "NA")) %>% 
   rename(
     "date" = "Date",
     "site" = "Site",
     "turfID" = "Turf ID",
     "treatment" = "Treatment",
-    "blockSC" = "SCBlock",
+    "blockSC" = "SCBlock...5",
     # "blockSC2" = "SCBlock", #There are two SCBlock columns in the raw file, but it seems there are identical
     "M1" = "Measurement1",
     "M2" = "Measurement2",
@@ -94,11 +94,11 @@ soilmoisture2017 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.c
       mdy(date) # if false, date is mdy
     )
   ) %>% 
-  select(!SCBlock_1)
+  select(!SCBlock...6)
 
 
 
-soilmoisture2018 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", col_types = "cfffffddddff", na = c("na", "NA", "u")) %>% 
+soilmoisture2018 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", col_types = "cfffffddddff", na = c("na", "NA", "u")) %>% 
   rename(
     "date" = "Date",
     "site" = "Site",
@@ -123,7 +123,7 @@ soilmoisture2018 <- read_csv("data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.c
 
 
 
-soilmoisture_extra <- read_csv("data/SeedClim_Plot_SoilMoisture/SeedClim_soilmoisture_archive.csv", col_types = "cfffffddddffcc", na = c("na", "NA", "u")) %>% 
+soilmoisture_extra <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/SeedClim_soilmoisture_archive.csv", col_types = "cfffffddddffcc", na = c("na", "NA", "u")) %>% 
   mutate(
     date = mdy(date)
   )
@@ -156,6 +156,7 @@ soilmoisture_raw  <- bind_rows(
       "OVS" = "Ovstedal",
       "FAU" = "Fauske"
     )), 
+    year = year(date),
   blockID = str_c(str_sub(site, 1, 3), blockSC, sep = "", collapse = NULL), #blockID needs to be in the format [first 3 letters of site][block number]
   turfID = str_replace_all(turfID, c(" " = ""))
     ) %>% 
@@ -171,9 +172,9 @@ soilmoisture_raw  <- bind_rows(
     "blockID_FC" = "blockFC"
   ) %>% 
   pivot_longer(cols = c("1":"4"), names_to = "replicate") %>% 
-  select(date, siteID, turfID, blockID, blockID_FC, replicate, value, weather, recorder, comments, transcriber_comment)
+  select(year, date, siteID, turfID, blockID, blockID_FC, replicate, value, weather, recorder, comments, transcriber_comment)
 
-write_csv(soilmoisture_raw, "data/seedclim_soilmoisture_plotlevel.csv")
+write_csv(soilmoisture_raw, "climate/data/VCG_soilmoisture_plotlevel_1010_2015-2018.csv")
 
 
 # making a graph to have an overview of the campaigns and see if something is missing
