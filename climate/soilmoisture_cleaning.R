@@ -174,7 +174,7 @@ soilmoisture_raw  <- bind_rows(
   pivot_longer(cols = c("1":"4"), names_to = "replicate") %>% 
   select(year, date, siteID, turfID, blockID, blockID_FC, replicate, value, weather, recorder, comments, transcriber_comment)
 
-write_csv(soilmoisture_raw, "climate/data/VCG_soilmoisture_plotlevel_1010_2015-2018.csv")
+write_csv(soilmoisture_raw, "climate/data/VCG_clean_soilmoisture_plotlevel_1010_2015-2018.csv")
 
 
 # making a graph to have an overview of the campaigns and see if something is missing
