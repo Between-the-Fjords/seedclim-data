@@ -12,11 +12,15 @@ pn <- . %>% print(n = Inf)
 
 #### IMPORT CLIMATE DATA FOR ALL SITES ####
 # load in premade functions
-source('Functions_ReadInSeedClimClimateData.R')
+source('climate/Functions_ReadInSeedClimClimateData.R')
 
-# Download zip files from OSF, place them in folder of your choice, insert that path name into "path"
-### on line 20
-climateRepo <- list.files(path = "/Users/joshisoriginal/Downloads/filesfromosf", 
+# Download the following zip files from OSF:
+# ClimatDataFromBioFelles.zip
+# ClimateDataFromBioEECRG.zip
+# and place them in a folder climate/data/raw in your R project.
+# if you choose anothe data structure change the path name in L23.
+
+climateRepo <- list.files(path = "climate/data/raw", 
                              pattern = "txt", recursive = TRUE, full.names = TRUE) %>% 
   grep(pattern = "Notes|Notater|UVB", x = ., invert = TRUE, value = TRUE, ignore.case = TRUE) %>%
   grep(pattern = "ITAS\\d{0,4}\\.txt|ITAS-FALL-2014\\.txt", x = ., invert = TRUE, value = TRUE, ignore.case = TRUE) %>%
@@ -47,8 +51,8 @@ climate <- climate %>%
   group_by(date, logger, site, type) %>% 
   slice(1)
 
-save(climate, file = "climate.Rdata")
-#load(file = "climate.Rdata")  
+save(climate, file = "climate/data/climate.Rdata")
+#load(file = "climate/data/climate.Rdata")  
 
 
 #### CLEAN DATA ####
@@ -68,8 +72,8 @@ temperature <- subset(climate, logger %in% c("temp1", "temp2", "temp200cm", "tem
 precipitation <- subset(climate, logger %in% c("nedbor", "rain", "arg100", "counter", "counter1", "counter2"))
 soilmoisture <- subset(climate, logger %in% c("jordf1", "jordf2", "soil.moisture", "soil moisture 2", "soil moisture 1", "soil moisture", "sm300 2", "sm300 1", "jordfukt2"))
 
-write.csv(precipitation, "Precipitation.csv")
-save(soilmoisture, file = "Soilmoisture.RData")
+# uncleaned precipitation data
+write.csv(precipitation,"climate/data/VCG_unclean_precipitation.csv")
 
 # if(basename(textfile) %in% c("Fauske_temp_Fall2016.txt")){
 #   message("removing soil moisture and precipitation data from fauske fall 2016 file")
@@ -408,11 +412,20 @@ temperature2 <- temperature2 %>%
   
   # Rename and order sites levels
   ungroup() %>% 
-  mutate(site = recode(site, "skj" = "Skjellingahaugen", "gud" = "Gudmedalen", 
-                       "lav" = "Lavisdalen", "ulv" = "Ulvhaugen", "ves" = "Veskre", 
-                       "ram" = "Rambera", "hog" = "Hogsete", "alr" = "Alrust", "ovs" = "Ovstedalen",
-                       "arh" = "Arhelleren", "vik" = "Vikesland", "fau" = "Fauske"),
-         site = factor(site, levels = c("Skjellingahaugen", "Gudmedalen", "Lavisdalen", "Ulvhaugen", "Veskre", "Rambera", "Hogsete", "Alrust", "Ovstedalen", "Arhelleren", "Vikesland", "Fauske")))
+  mutate(site = recode(site, 
+                       "skj" = "Skjelingahaugen", 
+                       "gud" = "Gudmedalen", 
+                       "lav" = "Lavisdalen", 
+                       "ulv" = "Ulvehaugen", 
+                       "ves" = "Veskre", 
+                       "ram" = "Rambera", 
+                       "hog" = "Hogsete", 
+                       "alr" = "Alrust", 
+                       "ovs" = "Ovstedalen",
+                       "arh" = "Arhelleren", 
+                       "vik" = "Vikesland", 
+                       "fau" = "Fauske"),
+         site = factor(site, levels = c("Skjelingahaugen", "Gudmedalen", "Lavisdalen", "Ulvehaugen", "Veskre", "Rambera", "Hogsete", "Alrust", "Ovstedalen", "Arhelleren", "Vikesland", "Fauske")))
 
 # fill missing dates with NA and merging with complete dataset
 full_grid <- expand.grid(logger = unique(temperature2$logger), site = unique(temperature2$site), date = seq(min(temperature2$date), max(temperature2$date), by = "hour"))
@@ -421,9 +434,19 @@ temperature2 <- left_join(full_grid, temperature2) %>% as_tibble()
 
 temperature2 <- temperature2 %>% filter(date < "2021-01-01 00:00:00")# remove the 2038 data point 
 
+temperature2 <- temperature2 |> 
+  mutate(year = year(date),
+         unit = "°C") |> 
+  select(year, date, siteID = site, logger, value, unit, flag, type, file)
 
-write.csv(temperature2,"Temperature.csv")
+write.csv(temperature2,"climate/data/VCG_clean_temperature.csv")
 
+dat <- read_csv("climate/data/VCG_clean_temperature.csv")
+temperature2 <- dat |> 
+  mutate(siteID = recode(siteID,
+         "Skjellingahaugen" = "Skjelingahaugen",
+         "Ulvhaugen" = "Ulvehaugen")) |> 
+  distinct(siteID)
 
 # plot single site to check
 temperature2 %>% 
@@ -576,17 +599,21 @@ soilmoisture <-  soilmoisture %>%
 soilmoisture2 <- soilmoisture %>% spread(key = "logger", value = "value") %>%
   mutate(sensor.disagree = soil.moisture1-soil.moisture2)
 
+# vizualisation
 soilmoisture2 %>%
   ggplot(aes(x = date, y = sensor.disagree)) +
   geom_line() +
   facet_wrap(~ site)
 
-soilmoisture2 %>% filter(sensor.disagree > -0.25) %>% filter(sensor.disagree < 0.25) %>%
+soilmoisture2 %>% 
+  filter(sensor.disagree > -0.25) %>% 
+  filter(sensor.disagree < 0.25) %>%
   ggplot(aes(x = date, y = sensor.disagree)) +
   geom_line() +
   facet_wrap(~ site)
 
-soilmoisture2 %>% gather("soil.moisture1", "soil.moisture2", key= "logger", value="value") %>%
+soilmoisture2 %>% 
+  gather("soil.moisture1", "soil.moisture2", key= "logger", value="value") %>%
   filter(sensor.disagree > -0.25) %>% filter(sensor.disagree < 0.25) %>%
   ggplot(aes(x = date, y = value)) +
   geom_line() +
@@ -596,13 +623,26 @@ soilmoisture3 <- soilmoisture2 %>% gather("soil.moisture1", "soil.moisture2", ke
 
 
 # finally reassign site names and save
-soilmoisture3 <-  soilmoisture3 %>% mutate(site = recode(site, "skj" = "Skjellingahaugen", "gud" = "Gudmedalen", 
-                     "lav" = "Lavisdalen", "ulv" = "Ulvhaugen", "ves" = "Veskre", 
-                     "ram" = "Rambera", "hog" = "Hogsete", "alr" = "Alrust", "ovs" = "Ovstedalen",
-                     "arh" = "Arhelleren", "vik" = "Vikesland", "fau" = "Fauske"),
-       site = factor(site, levels = c("Skjellingahaugen", "Gudmedalen", "Lavisdalen", "Ulvhaugen", "Veskre", "Rambera", 
+soilmoisture3 <-  soilmoisture3 %>% 
+  mutate(site = recode(site, "
+                       skj" = "Skjelingahaugen", 
+                       "gud" = "Gudmedalen",
+                       "lav" = "Lavisdalen", 
+                       "ulv" = "Ulvehaugen", 
+                       "ves" = "Veskre",
+                       "ram" = "Rambera",
+                       "hog" = "Hogsete", 
+                       "alr" = "Alrust", 
+                       "ovs" = "Ovstedalen",
+                       "arh" = "Arhelleren", 
+                       "vik" = "Vikesland", 
+                       "fau" = "Fauske"),
+         site = factor(site, levels = c("Skjellingahaugen", "Gudmedalen", "Lavisdalen", "Ulvhaugen", "Veskre", "Rambera", 
                                       "Hogsete", "Alrust", "Ovstedalen", "Arhelleren", "Vikesland", "Fauske")))
 
+soilmoisture3 <- soilmoisture3 |> 
+  mutate(year = year(date)) |> 
+  select(year, date, siteID = site, logger, value, flag, sensor.disagree, type, file)
 
-write.csv(soilmoisture3, "SoilMoisture.csv")
+write_csv(soilmoisture3, "climate/data/VCG_clean_soil_moisture.csv")
 

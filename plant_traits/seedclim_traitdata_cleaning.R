@@ -29,8 +29,8 @@ unzip(zipFile, exdir = outDir)
 ## Read in data ##
 
 my_sla <- read.csv('plant_traits/data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
-my_leaf_chem <- read.csv('plant_traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
-
+#my_leaf_chem <- read.csv('plant_traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
+my_leaf_chem <- read_csv('plant_traits/Data/raw_data_CN_2014Sept15.csv')
 
 ## Site name dictionary ##
 
@@ -84,7 +84,11 @@ my_leaf_chem <- my_leaf_chem %>%
   filter(!Site == "Apple") %>% 
   mutate(Site = plyr::mapvalues(Site, from = dict_Site_2012$old, to = dict_Site_2012$new)) %>% 
   rename(siteID = Site, species = Species) %>% 
-  mutate(year = "2012")
+  mutate(year = "2012",
+         siteID = str_replace(siteID, "\xc5lr", "Alrust"),
+         siteID = str_replace(siteID, "H\xf8g", "Hogsete"),
+         siteID = str_replace(siteID, "L\xe5v", "Lavisdalen"),
+         siteID = str_replace(siteID, "\xd8vs", "Ovstedalen"))
 
 
 
@@ -225,8 +229,34 @@ traitdata_full <- traitdata %>%
    # make a long table
    pivot_longer(cols = c(height_mm:dry_mass_g, leaf_area_cm2:leaf_thickness, d13C, d15N), names_to = "trait", values_to = "value") %>% 
    filter(!is.na(value)) %>% 
-   select(year, date, siteID, species, individual, trait, value, flag)
+   ungroup() |> 
+   mutate(trait = fct_recode(trait,
+                                   "height" = "height_mm",
+                                   "fresh_mass" = "fresh_mass_g",
+                                   "dry_mass" = "dry_mass_g",
+                                   "leaf_area" = "leaf_area_cm2",
+                                   "SLA" = "SLA_cm2_g",
+                                   "LDMC" = "LDMC_g_g",
+                                   "leaf_thickness" = "leaf_thickness",
+                                   "N" = "N_percent",
+                                   "C" = "C_percent",
+                                   "CN_ratio" = "CN_ratio",
+                                   "d13C" = "d13C",
+                                   "d15N" = "d15N"),
+          unit = fct_recode(trait,
+                             "mm" = "height",
+                             "g" = "fresh_mass",
+                             "g" = "dry_mass",
+                             "cm2" = "leaf_area",
+                             "cm2g-1" = "SLA",
+                             "gg-1" = "LDMC",
+                             "mm" = "leaf_thickness",
+                             "percent" = "N",
+                             "percent" = "C",
+                             "unitless" = "CN_ratio",
+                             "permil" = "d13C",
+                             "permil" = "d15N")) |> 
+   select(year, date, siteID, species, individual_nr = individual, trait, value, unit, flag)
 
-write_csv(traitdata_full, file = "SeedClim_Trait_data_2012_2016.csv")
- 
+write_csv(traitdata_full, file = "plant_traits/data/VCG_clean_trait_data_2012-2016.csv")
  

@@ -125,6 +125,10 @@ BM_2010_2012 <- BM_2010_2012 |>
                             TRUE ~ blockID)) |> 
   select(-newturf)
 
+# remove 2012, because it is a copy of 2013
+BM_2010 <- BM_2010_2012 |> 
+  tidylog::filter(year != 2012) |> 
+  select(-Root_bio_1, -Root_bio_2)
 
 
 #################################################################
@@ -236,8 +240,8 @@ BM_2015<- BM_2015 %>% rename(Litter_Lichen = Litter)
 ################################################################
 
 # Long Format
-BM_2010_2012_long <- BM_2010_2012 %>% 
-  pivot_longer(cols = Root_bio_1:Forb_Woody, names_to = "Biomass_Attributes",
+BM_2010_long <- BM_2010 %>% 
+  pivot_longer(cols = Forb:Forb_Woody, names_to = "Biomass_Attributes",
                values_to = "Biomass_Values",
                values_drop_na = TRUE)
 
@@ -258,7 +262,7 @@ BM_2015_long <- BM_2015 %>%
 
 ###################################################################################
 # Merge the dataframes
-SG.9.Biomass <- bind_rows(BM_2010_2012_long, BM_2013_long, BM_2014_long, BM_2015_long)
+SG.9.Biomass <- bind_rows(BM_2010_long, BM_2013_long, BM_2014_long, BM_2015_long)
 
 #####################################################
 # Check Date Format & Recode to match data dictionary
@@ -331,11 +335,83 @@ SG.9.Biomass <- SG.9.Biomass |>
          forb = Forb, woody = Woody, forb_woody = Forb_Woody,
          carex = Carex, poaceae_juncaceae = Grass, graminoid = Gram, 
          bryophyte = Bryo, lichen = Lichen, litter = Litter, litter_lichen = Litter_Lichen, 
-         root_1 = Root_bio_1, root_2 = Root_bio_2,
          sampling_date = samplingDate, sorting_date = sortingDate)
 
 
-write_csv(SG.9.Biomass, "biomass/SG_9_clean_biomass_functional_groups_2010-2015.csv")
+write_csv(SG.9.Biomass, "biomass/data/VCG_clean_functional_group_biomass_2010_2013-2015.csv")
+
+
+
+ggplot(SG.9.Biomass, aes(x = as.character(year), y = forb)) + 
+  geom_point() + 
+  facet_wrap(~siteID)
+
+SG.9.Biomass |> filter(year %in% c(2012, 2013)) |> 
+  ggplot(aes(x = as.character(year), y = forb)) +
+  geom_violin() +
+  geom_point() +
+  facet_wrap(~ siteID)
+
+
+#################################################################
+# Belowground biomass
+# 2012? and 2014 years
+################################################################
+
+# Root biomass 2013
+# run code above for 2010-2012 data to get BM_2010_2012
+
+root_biomass_2012 <- BM_2010_2012 |> 
+  filter(year == 2012) |> 
+  select(year, siteID, blockID, Root_bio_1, Root_bio_2) |> 
+  pivot_longer(cols = c(Root_bio_1, Root_bio_2), names_to = "replicate", values_to = "value") |> 
+  mutate(replicate = str_sub(replicate, -1, -1),
+         variable = "belowground_biomass",
+         unit = "gm-2",
+         siteID = recode(siteID, 
+                         'Ulvhaugen' = "Ulvehaugen",
+                         'Skjellingahaugen' = "Skjelingahaugen",
+                         'Ovstedal' = "Ovstedalen"))
+
+
+# Import raw data
+soil_depth_raw <- read_excel(path = "biomass/data/raw/soil-grass-heath-2014.xlsx", skip = 1, sheet = "grassland")
+ric_raw <- read_excel(path = "biomass/data/raw/soil-grass-heath-2014.xlsx", sheet = "root biomass raw (grass)")
+
+# prettify and merge
+soil_depth <- soil_depth_raw |> 
+  select(siteID = Site, blockID = Block, soil_depth_1 = depth1, soil_depth_2 = depth2, soil_depth_3 = depth3) |> 
+  mutate(siteID = recode(siteID, "Lav" = "Lad"))
+
+ric_2014 <- ric_raw |> 
+  select(siteID = Side, blockID = Block, replicate = Replicate, wet_mass_g = FW, dry_mass_g = DW) |> 
+  left_join(soil_depth, by = c("siteID", "blockID")) |> 
+  mutate(year = 2014,
+         siteID = recode(siteID, 
+         'Gud' = "Gudmedalen",
+         'Lad' = "Lavisdalen",
+         'Ram' = "Rambera",
+         'Ulv' = "Ulvehaugen",
+         'Skj' = "Skjelingahaugen",
+         'Alr' = "Alrust",
+         'Arh' = "Arhelleren",
+         'Fau' = "Fauske",
+         'Hog' = "Hogsete",
+         'Ovs' = "Ovstedalen",
+         'Vik' = "Vikesland",
+         'Ves' = "Veskre"),
+         blockID = paste0(str_sub(siteID, 1, 3), blockID),
+         replicate = recode(replicate, "A" = 1, "B" = 2)) |> 
+  pivot_longer(cols = c(wet_mass_g, dry_mass_g), names_to = "variable", values_to = "value") |> 
+  mutate(variable = recode(variable, "wet_mass_g" = "belowground_productivity_wet", "dry_mass_g" = "belowground_productivity_dry"),
+         unit = "gy-1") |> 
+  select(year, siteID, blockID, variable, value, unit, soil_depth_1, soil_depth_2, soil_depth_3)
+
+# merge root and ric
+root_data <- bind_rows(root_biomass_2012, ric_2014) |> 
+  select(year, siteID, blockID, replicate, variable, value, unit, soil_depth_1:soil_depth_3)
+
+write_csv(root_data, file = "biomass/data/VCG_clean_belowground_biomass_2013-2014.csv")
 
 
 
@@ -397,7 +473,7 @@ SG.9.Species_Combined$species <- gsub("_","\\.", SG.9.Species_Combined$species)
 SG.9.Species_Combined <- SG.9.Species_Combined |> 
   select(year, siteID, plotID = Plot, species, value = Biomass_g)
 
-write_csv(SG.9.Species_Combined, "biomass/SG_9_clean_biomass_species_2013.csv")
+write_csv(SG.9.Species_Combined, "biomass/data/VCG_clean_species_level_biomass_2013.csv")
 
 # vizualisation
 ggplot(SG.9.Species_Combined, aes(x = as.character(year), y = value)) + 

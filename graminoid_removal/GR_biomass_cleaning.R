@@ -1,7 +1,7 @@
 # Graminoid removal biomass cleaning code
 
 
-biomass_11_16 <- read_excel("graminoid_removal/GR7_raw_graminoid_biomass_2011-2016.xlsx") |> 
+biomass_11_16 <- read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_2011-2016.xlsx") |> 
   # merge site and block
   mutate(blockID = paste0(site, block),
          # recode site
@@ -19,14 +19,15 @@ biomass_11_16 <- read_excel("graminoid_removal/GR7_raw_graminoid_biomass_2011-20
                          "Ves"="Veskre",
                          "Vik"="Vikesland")) |> 
   # make numeric
-  mutate(biomass = as.numeric(biomass)) |> 
-  select(year, siteID, blockID, turfID, cutting, value = biomass, comment = comments)
+  mutate(biomass = as.numeric(biomass),
+         unit = "g") |> 
+  select(year, siteID, blockID, turfID, cutting, value = biomass, unit, comment = comments)
 
 
 
 
-biomass_17_18 <- bind_rows("2017" = read_excel("graminoid_removal/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2018"),
-          "2018" = read_excel("graminoid_removal/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2017"),
+biomass_17_18 <- bind_rows("2017" = read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2018"),
+          "2018" = read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2017"),
           .id = "year") |> 
   mutate(date = dmy(Dato),
          year = as.numeric(year),
@@ -53,12 +54,13 @@ biomass_17_18 <- bind_rows("2017" = read_excel("graminoid_removal/GR7_raw_gramin
                          "Ram7RTC" = "Ram7RTCnew",
                          "Ram9RTC" = "Ram9RTCnew",
                          "Vik1RTC" = "Vik1RTCnew"
-                         )) |> 
+                         ),
+         unit = "g") |> 
   # remove unknown data
   filter(turfID != "Skjukjent SKJRTC") |> 
-  select(year, date, siteID = Lokalitet, blockID, turfID, cutting, value = Vekt, comment = Kommentarer)
+  select(year, date, siteID = Lokalitet, blockID, turfID, cutting, value = Vekt, unit, comment = Kommentarer)
 
 
 bind_rows(biomass_11_16, biomass_17_18) |> 
   select(year, date, everything()) %>% 
-  write_csv(., "graminoid_removal//Graminoid_removal_clean_biomass_2011-2018.csv")
+  write_csv(., "graminoid_removal/data/VCG_clean_graminoid_removal_biomass_2011-2018.csv")

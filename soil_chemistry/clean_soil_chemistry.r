@@ -71,7 +71,7 @@ soil_chem_2009 <- soil_chem_2009_raw %>%
          destinationPlotID = if_else(destinationPlotID == 207, 170, destinationPlotID)) %>%  
   left_join(turf_table, by = c("siteID", "originPlotID", "destinationPlotID")) %>% 
   mutate(TTtreat = if_else(is.na(TTtreat) & turfID == "507 TTC", "TTC", TTtreat)) %>% 
-  select(year, destinationSiteID = siteID, destinationBlockID = blockID, originPlotID, destinationPlotID, turfID, TTtreat, pH, LOI)
+  select(year, siteID_dest = siteID, blockID_dest = blockID, originPlotID, destinationPlotID, turfID, TTtreat, pH, loi = LOI)
 
 
 
@@ -93,7 +93,7 @@ soil_chem_2010 <- soil_chem_1012_raw %>%
       NO3N = as.numeric(NO3N),
       NH4N = as.numeric(NH4N),
       AvailN = as.numeric(AvailN)) %>% 
-  select(year, destinationSiteID = siteID, destinationPlotID = plotID, plotID, turfID, NO3N, NH4N, available_N = AvailN) %>% 
+  select(year, siteID_dest = siteID, destinationPlotID = plotID, plotID, turfID, NO3N, NH4N, available_N = AvailN) %>% 
   # remove 2012, seems to be strange summary of 2010
   filter(year == 2010)
 
@@ -107,8 +107,8 @@ soil_chem_2013_raw <- read_excel("soil_chemistry/data/Seedclim-rootgrowth-tested
     col_names = TRUE)
 
 soil_chem_2013 <- soil_chem_2013_raw %>% 
-  select(destinationSiteID = Site, soil_depth = depth2013, NO3N = NO3, NH4N = NH4, available_N = N, pH, LOI) %>% 
-  mutate(destinationSiteID = recode(destinationSiteID,
+  select(siteID_dest = Site, soil_depth = depth2013, NO3N = NO3, NH4N = NH4, available_N = N, pH, loi = LOI) %>% 
+  mutate(siteID_dest = recode(siteID_dest,
       "Ulvhaugen" = "Ulvehaugen",
       "Skjellingahaugen" = "Skjelingahaugen"),
       year = 2013) %>% 
@@ -137,7 +137,7 @@ soil_chem_2015 <- soil_chem_2015_raw %>%
                            "VES"="Veskre", 
                            "VIK"="Vikesland"),
          blockID = paste0(substr(siteID, 1, 3), blockID)) %>% 
-  select(year, destinationSiteID = siteID, destinationBlockID = blockID, soil_depth = depth, N_content = N, C_content = C, CN_ratio = CN) %>% 
+  select(year, siteID_dest = siteID, blockID_dest = blockID, soil_depth = depth, N_content = N, C_content = C, CN_ratio = CN) %>% 
   filter(!is.na(N_content))
 
 
@@ -146,14 +146,18 @@ soil_chem <- bind_rows(soil_chem_2009, soil_chem_2010, soil_chem_2013, soil_chem
   select(year:TTtreat, soil_depth, everything()) %>% 
   pivot_longer(cols = c(soil_depth:CN_ratio), names_to = "variable", values_to = "value") %>% 
   filter(!is.na(value)) %>% 
-  mutate(unit = case_when(variable %in% c("LOI", "N_content", "C_content") ~ "percent",
+  mutate(unit = case_when(variable %in% c("loi", "N_content", "C_content") ~ "percent",
                           variable %in% c("NO3N", "NH4N", "available_N") ~ "μg per g resin/bag/day",
                           variable == "soil_depth" ~ "cm",
                           TRUE ~ NA_character_))
 
 # save file
-write_csv(soil_chem, "soil_chemistry/VCG_clean_soil_chemistry_2009_2010_2013_2015.csv")
+write_csv(soil_chem, "soil_chemistry/data/VCG_clean_soil_chemistry_2009_2010_2013_2015.csv")
 
+
+ggplot(soil_chem, aes(x = year, y = value)) +
+  geom_point() +
+  facet_wrap(~ variable, scales = "free_y")
 
 # Remarks
 # LOI: Values seem to differ between 2009 and 2013, so keep both

@@ -46,3 +46,6 @@ vignettes/*.pdf
 *.zip
 *.rar
 -MBP13’s MacBook Pro.Rhistory
+*.dt6
+*.utl
+climate/data/raw/

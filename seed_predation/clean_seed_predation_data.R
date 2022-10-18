@@ -25,7 +25,7 @@ predation <- predation_raw %>%
   rename(siteID = site, 
          biogeographic_zone = temp, 
          annual_precipitation_gridded = precipitation, 
-         treatment = treat) %>% 
+         predation_treatment = treat) %>% 
   mutate(siteID = recode(siteID, "ulv" = "Ulvehaugen",
                          "lav" = "Lavisdalen",
                          "gud" = "Gudmedalen",
@@ -40,7 +40,10 @@ predation <- predation_raw %>%
                          "ovs" = "Ovstedalen"),
          biogeographic_zone = recode(biogeographic_zone, "Low-alpine" = "alpine",
                                      "Sub-alpine" = "sub.alpine",
-                                     "North-boreal" = "boreal"))
+                                     "North-boreal" = "boreal"),
+         unit = "percentage",
+         year = 2018) |> 
+  select(year, siteID, predation_treatment, value = predated, unit, biogeographic_zone, annual_precipitation_gridded, weather)
         
 
-write_csv(predation, file = "seed_predation/data/Seed_predation_2018.csv")
+write_csv(predation, file = "seed_predation/data/VCG_clean_seed_predation_2018.csv")
