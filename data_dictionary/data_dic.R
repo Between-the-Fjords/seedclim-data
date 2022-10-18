@@ -17,8 +17,29 @@ description_table <- read_excel("data_dictionary/data_description.xlsx")
 #************************************************************************
 #************************************************************************
 ### 1 SEED DATA
+# Seedbank
+seedbank1 <- read_excel("seeds/data/VCG_clean_seedbank.xlsx", sheet = "seedbank")
+
+seedbank_s_dic <- make_data_dictionary(data = seedbank1,
+                                      description_table = description_table,
+                                      table_ID = "seedbank")
+
+seedbank2 <- read_excel("seeds/data/VCG_clean_seedbank.xlsx", sheet = "vegetation")
+
+seedbank_v_dic <- make_data_dictionary(data = seedbank2,
+                                     description_table = description_table,
+                                     table_ID = "seedbank")
+
+# Seedrain
+seedrain <- read_csv("seeds/data/VCG_clean_seedrain.csv")
+
+
+seedseedrain_dic <- make_data_dictionary(data = seedrain,
+                                      description_table = description_table,
+                                      table_ID = "seedrain")
+
 # Seed predation
-seed_pred <- read_csv("seed_predation/data/Seed_predation_2018.csv")
+seed_pred <- read_csv("seed_predation/data/VCG_clean_seed_predation_2018.csv")
 
 
 seed_pred_dic <- make_data_dictionary(data = seed_pred,
@@ -227,7 +248,7 @@ community_dic <- bind_rows(site_dic,
 
 #### 4 PHENOLOGY DATA #### 
 # Community phenology
-phenology <- read_csv("phenology/clean_data/Community_phenology_2014-2015.csv")
+phenology <- read_csv("phenology/data/VCG_clean_community_phenology_2014-2015.csv")
 
 phenology_dic <- make_data_dictionary(data = phenology,
                                       description_table = description_table,
@@ -238,7 +259,7 @@ phenology_dic <- make_data_dictionary(data = phenology,
 #************************************************************************
 #### 5 TRAIT DATA #### 
 # Leaf traits
-leaf_trait <- read_csv("plant_traits/data/SeedClim_Trait_data_2012_2016.csv")
+leaf_trait <- read_csv("plant_traits/data/VCG_clean_trait_data_2012-2016.csv")
 
 leaf_trait_dic <- make_data_dictionary(data = leaf_trait,
                                        description_table = description_table,
@@ -250,14 +271,14 @@ leaf_trait_dic <- make_data_dictionary(data = leaf_trait,
 #************************************************************************
 #### 6 BIOMASS #### 
 # SG8 Biomass
-biomass_allocation <- read_csv("biomass/SG8_clean_biomass_2009.csv")
+biomass_allocation <- read_csv("biomass/data/VCG_clean_biomass_allocation_2009.csv")
 
 biomass_allocation_dic <- make_data_dictionary(data = biomass_allocation,
                                        description_table = description_table,
                                        table_ID = "SG8_biomass")
 
 # SG9 Biomass FG
-biomass_fg <- read_csv("biomass/SG_9_clean_biomass_functional_groups_2010-2015.csv")
+biomass_fg <- read_csv("biomass/data/VCG_clean_functional_group_biomass_2010_2013-2015.csv")
 
 biomass_fg_dic <- make_data_dictionary(data = biomass_fg,
                                        description_table = description_table,
@@ -265,15 +286,22 @@ biomass_fg_dic <- make_data_dictionary(data = biomass_fg,
 
 
 # SG9 Biomass SPECIES
-biomass_sp <- read_csv("biomass/SG_9_clean_biomass_species_2013.csv")
+biomass_sp <- read_csv("biomass/data/VCG_clean_species_level_biomass_2013.csv")
 
 biomass_sp_dic <- make_data_dictionary(data = biomass_sp,
                                        description_table = description_table,
                                        table_ID = "SG9_biomass_sp")
 
+# Belowground biomass and productivitiy
+biomass_below <- read_csv("biomass/data/VCG_clean_belowground_biomass_2013-2014.csv")
+
+biomass_below_dic <- make_data_dictionary(data = biomass_below,
+                                       description_table = description_table,
+                                       table_ID = "biomass_below")
+
 
 # GR BIOMASS
-biomass_gr <- read_csv("graminoid_removal/Graminoid_removal_clean_biomass_2011-2018.csv")
+biomass_gr <- read_csv("graminoid_removal/data/VCG_clean_graminoid_removal_biomass_2011-2018.csv")
 
 biomass_gr_dic <- make_data_dictionary(data = biomass_gr,
                                        description_table = description_table,
@@ -283,20 +311,20 @@ biomass_gr_dic <- make_data_dictionary(data = biomass_gr,
 #************************************************************************
 #### 6 ECOSYSTEM #### 
 # Decomposition
-litter <- read_csv("decomposition/Decomposition_litter_2016_clean.csv")
+litter <- read_csv("decomposition/data/VCG_clean_decomposition_litter_2016.csv")
 
 litter_dic <- make_data_dictionary(data = litter,
                                    description_table = description_table,
                                    table_ID = "litterbags")
 
-teabag <- read_csv("decomposition/Decomposition_teabag_2014_clean.csv")
+teabag <- read_csv("decomposition/data/VCG_clean_decomposition_teabag_2014.csv")
 
 teabag_dic <- make_data_dictionary(data = teabag,
                                    description_table = description_table,
                                    table_ID = "teabag")
 
 
-litter_cn <- read_csv("cn_data/Litter_cn_clean_2016.csv")
+litter_cn <- read_csv("cn_data/data/VCG_clean_litter_cn_2016.csv")
 
 litter_cn_dic <- make_data_dictionary(data = litter_cn,
                                    description_table = description_table,
@@ -307,29 +335,21 @@ litter_cn_dic <- make_data_dictionary(data = litter_cn,
 #************************************************************************
 #### 8 ENVIRONMENTAL DATA #### 
 # Temperature
-temperature <- read_csv("climate/data/Temperature.csv")
+temperature <- read_csv("climate/data/VCG_clean_temperature.csv")
 
 temperature_dic <- make_data_dictionary(data = temperature,
                                        description_table = description_table,
                                        table_ID = "temperature")
 
-
-# Precipitation
-precipitation <- read_csv("climate/data/Precipitation.csv")
-
-precipitation_dic <- make_data_dictionary(data = precipitation,
-                                       description_table = description_table,
-                                       table_ID = "precipitation")
-
 # Soilmoisture
-soilmoisture <- read_csv("climate/data/SoilMoisture.csv")
+soilmoisture <- read_csv("climate/data/VCG_clean_soil_moisture.csv")
 
 soilmoisture_dic <- make_data_dictionary(data = soilmoisture,
                                        description_table = description_table,
                                        table_ID = "soilmoisture")
 
 # Soilmoisture
-soilmoisture_plot <- read_csv("climate/data/seedclim_soilmoisture_plotlevel.csv")
+soilmoisture_plot <- read_csv("climate/data/VCG_clean_soilmoisture_plotlevel_2015-2018.csv")
 
 soilmoisture_plot_dic <- make_data_dictionary(data = soilmoisture_plot,
                                        description_table = description_table,
@@ -337,7 +357,7 @@ soilmoisture_plot_dic <- make_data_dictionary(data = soilmoisture_plot,
 
 
 # Gridded climate data
-climate <- read_csv("climate/data/GriddedDailyClimateData2009-2019.csv")
+climate <- read_csv("climate/data/VCG_clean_gridded_daily_climate_2008-2022.csv")
 
 climate_plot_dic <- make_data_dictionary(data = climate,
                                               description_table = description_table,
@@ -345,8 +365,16 @@ climate_plot_dic <- make_data_dictionary(data = climate,
 
 
 # Soil structure
-soil_structure <- read_csv("soil_structure/Soil_structure_2013-2014_clean.csv")
+soil_structure <- read_csv("soil_structure/data/VCG_clean_soil_structure_2013_2014_2018.csv")
 
-soilmoisture_plot_dic <- make_data_dictionary(data = soil_structure,
+soil_structure_dic <- make_data_dictionary(data = soil_structure,
                                               description_table = description_table,
                                               table_ID = "soil_structure")
+
+# Soil chemistry
+soil_chemistry <- read_csv("soil_chemistry/data/VCG_clean_soil_chemistry_2009_2010_2013_2015.csv")
+
+soil_chemistry_dic <- make_data_dictionary(data = soil_chemistry,
+                                              description_table = description_table,
+                                              table_ID = "soil_chemistry")
+
