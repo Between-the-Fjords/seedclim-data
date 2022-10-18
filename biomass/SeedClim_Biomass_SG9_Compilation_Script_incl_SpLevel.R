@@ -404,13 +404,14 @@ ric_2014 <- ric_raw |>
          replicate = recode(replicate, "A" = 1, "B" = 2)) |> 
   pivot_longer(cols = c(wet_mass_g, dry_mass_g), names_to = "variable", values_to = "value") |> 
   mutate(variable = recode(variable, "wet_mass_g" = "belowground_productivity_wet", "dry_mass_g" = "belowground_productivity_dry"),
-         unit = "g") |> 
+         unit = "gy-1") |> 
   select(year, siteID, blockID, variable, value, unit, soil_depth_1, soil_depth_2, soil_depth_3)
 
 # merge root and ric
-root_data <- bind_rows(root_biomass_2012, ric_2014)
+root_data <- bind_rows(root_biomass_2012, ric_2014) |> 
+  select(year, siteID, blockID, replicate, variable, value, unit, soil_depth_1:soil_depth_3)
 
-write_csv(root_data, file = "biomass/data/VCG_clean_belowground_biomass.csv")
+write_csv(root_data, file = "biomass/data/VCG_clean_belowground_biomass_2013-2014.csv")
 
 
 
