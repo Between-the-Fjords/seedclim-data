@@ -589,7 +589,7 @@ Biomass_Data_Type <- read.table(header = TRUE,
                                   PH0stem Flowering_Shoot_B Raw
                                   LL Largest_Leaf Raw
                                   SStem.T Shoots_w_Leaves Raw
-                                  PStemT Shoots_w_Flowers Raw
+                                  PStem.T Shoots_w_Flowers Raw
                                   Tu.Rt Tuber_w_Roots Raw
                                   Tuber Tuber Raw
                                   St.Rt Stolen_w_Roots Raw
@@ -635,7 +635,8 @@ Biomass_Combined_long_cleaned <- left_join(Biomass_Combined_long,
 # Remove cols and rename
 Biomass_Combined_long_cleaned <- Biomass_Combined_long_cleaned %>% 
   rename("Biomass_Attributes_Old" = "Biomass_Attributes") %>% 
-  rename("Biomass_Attributes" = "Biomass_Attributes.y")
+  rename("Biomass_Attributes" = "Biomass_Attributes.y") |> 
+  mutate(Biomass_Attributes = tolower(Biomass_Attributes))
 
 # Add year columns
 # July, 2009
@@ -657,4 +658,9 @@ SG8_Biomass <- Biomass_Combined_long_cleaned %>%
 
 # Save file
 write_csv(SG8_Biomass,
-           file = "biomass/SG8_clean_biomass_2009.csv")
+           file = "biomass/data/VCG_clean_biomass_allocation_2009.csv")
+
+
+ggplot(SG8_Biomass, aes(x = species, y = value, colour = siteID)) +
+  geom_point() +
+  facet_wrap(~ biomass_attributes, scales = "free_y")
