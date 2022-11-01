@@ -38,6 +38,7 @@ vignettes/*.pdf
 *.txt
 *.sqlite
 !/databaseUtils/setup-data/*
+!/data_dictionary/data_description.xlsx
 
 #tmpfiles
 *~
