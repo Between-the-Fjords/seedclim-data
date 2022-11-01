@@ -157,7 +157,7 @@ probs=as.data.frame(matrix(c(
 ##########SLA
 
 #Read in my raw SLA data + rename cols
-my.sla = read.csv("Plant traits/RawTraitData_SLA.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+my.sla = read.csv("cleaning_code/5_trait_data/data/RawTraitData_SLA.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
 my.sla <- my.sla %>%
   select(binomial = Species, vals = SLA..m2.kg.1.) %>%
   separate(binomial, into = c("genus", "species")) %>%
@@ -167,7 +167,7 @@ my.sla <- my.sla %>%
   as.data.frame()
   
 #Read in LEDA SLA data + remove dubious records + rename cols
-LEDA.sla = read.csv("Plant traits/LEDA_SLA_RawData.csv", stringsAsFactors = FALSE)
+LEDA.sla = read.csv("cleaning_code/5_trait_data/data/LEDA_SLA_RawData.csv", stringsAsFactors = FALSE)
 LEDA.sla = LEDA.sla[LEDA.sla$general.method!="laboratory/greenhouse/garden experiment",]
 LEDA.sla = LEDA.sla %>%
   select(binomial = SBS.name, vals = Single.Value..LEDA.) %>%

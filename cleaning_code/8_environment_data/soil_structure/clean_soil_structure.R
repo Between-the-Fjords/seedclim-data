@@ -21,7 +21,7 @@ library(lubridate)
 
 ## CLEAN DATA
 
-BD_raw <- read_excel("soil_structure/data/BulkDensity_FunCaB.xlsx", col_types = c("text", "text", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", rep("skip", 7)))
+BD_raw <- read_excel("cleaning_code/8_environment_data/soil_structure/data/BulkDensity_FunCaB.xlsx", col_types = c("text", "text", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", rep("skip", 7)))
 
 # Assumption stone denistiy is 2.65 g cm–³
 stone_density = 2.65
@@ -66,7 +66,7 @@ BD <- BD_raw %>%
 #   geom_boxplot()
 
 
-soil_texture_raw <- read_excel("soil_structure/data/soil_characteristics2012_2014 John+Serge.xlsx", sheet = "microsom sites")
+soil_texture_raw <- read_excel("cleaning_code/8_environment_data/soil_structure/data/soil_characteristics2012_2014 John+Serge.xlsx", sheet = "microsom sites")
 
 soil_texture <- soil_texture_raw %>% 
   rename(variable = "...1") %>% 
@@ -87,10 +87,10 @@ soil_texture <- soil_texture_raw %>%
   select(year, everything())
 
 # 2014 data
-SD1_raw <- read_excel("soil_structure/data/soil-grass-heath-2014.xlsx", skip = 1, sheet = "grassland")
+SD1_raw <- read_excel("cleaning_code/8_environment_data/soil_structure/data/soil-grass-heath-2014.xlsx", skip = 1, sheet = "grassland")
 
 # 2013 data only subalpine and alpine sites
-SD2_raw <- read_excel("soil_structure/data/SFarinas-Compiled data for SEEDCLIM-2010 and 2012.xlsx", sheet = "Compiled data")
+SD2_raw <- read_excel("cleaning_code/8_environment_data/soil_structure/data/SFarinas-Compiled data for SEEDCLIM-2010 and 2012.xlsx", sheet = "Compiled data")
 
 SD1 <- SD1_raw %>% 
   select(Site, Block, depth1:depth3) %>% 
@@ -138,7 +138,7 @@ soil_depth <- bind_rows(SD1, SD2)
 soil_strucutre <- bind_rows(soil_depth, soil_texture, BD) %>% 
   select(year:blockID, sampleID, depth, variable, value, unit)
 
-write_csv(soil_strucutre, "soil_structure/data/VCG_clean_soil_structure_2013_2014_2018.csv")
+write_csv(soil_strucutre, "cleaning_code/8_environment_data/soil_structure/data/VCG_clean_soil_structure_2013_2014_2018.csv")
 
 soil_strucutre |> 
   filter(variable == "soil_depth") |> 

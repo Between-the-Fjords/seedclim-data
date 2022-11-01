@@ -34,7 +34,7 @@ ReadInFiles <- function(textfile){
 }
 
 # Connect to data on P drive
-myfiles <- list.files(path ="climate/data/AH2022/", pattern='\\.dat$', recursive = TRUE, full.names = TRUE)
+myfiles <- list.files(path ="cleaning_code/8_environment_data/climate/data/AH2022/", pattern='\\.dat$', recursive = TRUE, full.names = TRUE)
 
 # make a list of textfiles
 climate_gridded_raw <- plyr::ldply(myfiles, ReadInFiles)
@@ -58,8 +58,8 @@ climate_threeD <- climate_gridded %>%
   filter(siteID %in% c("Vikesland", "Joasete", "Liahovden"))
 
 # Change directory
-write_csv(climate, file = "VCG_clean_gridded_daily_climate_2008-2022.csv", col_names = TRUE)
-write_csv(climate_threeD, file = "THREE_D_GriddedDailyClimateData2008-2022.csv", col_names = TRUE)
+write_csv(climate, file = "cleaning_code/8_environment_data/data/VCG_clean_gridded_daily_climate_2008-2022.csv", col_names = TRUE)
+write_csv(climate_threeD, file = "cleaning_code/8_environment_data/data/THREE_D_GriddedDailyClimateData2008-2022.csv", col_names = TRUE)
 
 # Calculate Monthly Mean
 monthlyClimate <- climate %>%

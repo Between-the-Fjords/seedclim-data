@@ -19,7 +19,7 @@ library("dataDownloader")
 
 ## CLEAN DATA
 
-predation_raw <- read_delim(file = "seed_predation/data/SeedPredation_2018_SG_18.csv", delim = ",")
+predation_raw <- read_delim(file = "cleaning_code/1_seed_data/data/SeedPredation_2018_SG_18.csv", delim = ",")
 
 predation <- predation_raw %>% 
   rename(siteID = site, 
@@ -46,4 +46,4 @@ predation <- predation_raw %>%
   select(year, siteID, predation_treatment, value = predated, unit, biogeographic_zone, annual_precipitation_gridded, weather)
         
 
-write_csv(predation, file = "seed_predation/data/VCG_clean_seed_predation_2018.csv")
+write_csv(predation, file = "cleaning_code/1_seed_data/data/VCG_clean_seed_predation_2018.csv")

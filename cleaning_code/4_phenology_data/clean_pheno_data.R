@@ -8,7 +8,7 @@ library("lubridate")
 library("dataDownloader")
 library("RSQLite")
 
-source("phenology/pheno_functions.R")
+source("cleaning_code/4_phenology_data/pheno_functions.R")
 
 ## DOWNLOAD DATA
 # Use this code to download the data directly from OSF and unzip the file.
@@ -33,13 +33,13 @@ source("phenology/pheno_functions.R")
 
 #### 2014
 # Turfs 2014
-turfs.14 <- read_delim(file = "phenology/data/2014/Community_phenology_turf_table_2014.csv", delim = ";", col_names = TRUE) %>% 
+turfs.14 <- read_delim(file = "cleaning_code/4_phenology_data/data/2014/Community_phenology_turf_table_2014.csv", delim = ";", col_names = TRUE) %>% 
   select(turfID, blockID, d.date.osm) %>% 
   mutate(d.date.osm = dmy(d.date.osm)) %>% 
   rename(originBlockID = blockID, snowmelt_date = d.date.osm)
 
 ## Phenology 2014 data
-pheno14_raw <- read_delim(file = "phenology/data/2014/Community_phenology_2014.csv", delim =";", col_names = TRUE) # data with 1 for vegetative
+pheno14_raw <- read_delim(file = "cleaning_code/4_phenology_data/data/2014/Community_phenology_2014.csv", delim =";", col_names = TRUE) # data with 1 for vegetative
 phenology_2014 <- pheno14_raw %>% 
   # remove unused cols
   select(-SiteShort, - destSiteShort, -destT_level, -destP_level, -destblock, -plot.id, -originPlotID, -destPlotID, -treatment, -seed.coll) %>% 
@@ -65,12 +65,12 @@ pivot_longer(cols = Bis.viv.v:Tha.alp.r, names_to = "stage", values_to = "value"
 
 ## Phenology 2015 data
 #Head
-dath1 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Hog.csv", "Hogsete") %>% as_tibble()
-dath2 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Ram.csv", "Rambaera")  %>% as_tibble()
-dath3 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Ves.csv", "Veskre")  %>% as_tibble()
-dath4 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Lav.csv", "Lavisdalen")  %>% as_tibble()
-dath5 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Gud.csv", "Gudmedalen")  %>% as_tibble()
-dath6 <- ReadInHeadPhenology15("phenology/data/2015/DataSheet2015Skj.csv", "Skjellingahaugen")  %>% as_tibble()
+dath1 <- ReadInHeadPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Hog.csv", "Hogsete") %>% as_tibble()
+dath2 <- ReadInHeadPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Ram.csv", "Rambaera")  %>% as_tibble()
+dath3 <- ReadInHeadPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Ves.csv", "Veskre")  %>% as_tibble()
+dath4 <- ReadInHeadPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Lav.csv", "Lavisdalen")  %>% as_tibble()
+dath5 <- ReadInHeadPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Gud.csv", "Gudmedalen")  %>% as_tibble()
+dath6 <- ReadInHeadPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Skj.csv", "Skjellingahaugen")  %>% as_tibble()
 meta.pheno <- rbind(dath1, dath2, dath3, dath4, dath5, dath6) %>% 
   mutate(date = dmy(date),
          doy = as.numeric(doy)) %>% 
@@ -78,17 +78,17 @@ meta.pheno <- rbind(dath1, dath2, dath3, dath4, dath5, dath6) %>%
   filter(!is.na(date))
 
 #Body
-dat1 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Hog.csv", "Hogsete")
-dat2 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Ram.csv", "Rambaera")
-dat3 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Ves.csv", "Veskre")
-dat4 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Lav.csv", "Lavisdalen")
-dat5 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Gud.csv", "Gudmedalen")
-dat6 <- ReadInBodyPhenology15("phenology/data/2015/DataSheet2015Skj.csv", "Skjellingahaugen")
+dat1 <- ReadInBodyPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Hog.csv", "Hogsete")
+dat2 <- ReadInBodyPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Ram.csv", "Rambaera")
+dat3 <- ReadInBodyPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Ves.csv", "Veskre")
+dat4 <- ReadInBodyPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Lav.csv", "Lavisdalen")
+dat5 <- ReadInBodyPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Gud.csv", "Gudmedalen")
+dat6 <- ReadInBodyPhenology15("cleaning_code/4_phenology_data/data/2015/DataSheet2015Skj.csv", "Skjellingahaugen")
 pheno15_raw <- rbind(dat1, dat2, dat3, dat4, dat5, dat6) %>% 
   as_tibble()
 
 # Turfs 2015
-turfs.15 <- read_delim(file = "phenology/data/2015/turfs.csv", delim = ";", col_names = TRUE) %>% 
+turfs.15 <- read_delim(file = "cleaning_code/4_phenology_data/data/2015/turfs.csv", delim = ";", col_names = TRUE) %>% 
   select(siteID, TTtreat, blockID, turfID, destBlockID, Temperature_level, Precipitation_level, destBlockID, destSiteID, newTT, d.date.osm) %>% 
   rename(originSiteID = siteID, originBlockID = blockID, destinationBlockID = destBlockID, temperature_level = Temperature_level, precipitation_level = Precipitation_level, destinationSiteID = destSiteID, treatment = newTT, snowmelt_date = d.date.osm) %>% 
   mutate(treatment = recode(treatment, "TT2" = "warm", "TT3" = "wet", "TT4" = "warm_wet"),
@@ -137,5 +137,5 @@ phenology <- phenology |>
                     siteID_dest = recode(siteID_dest, 
                                 "Skjellingahaugen"= "Skjelingahaugen"))
 
-write_csv(phenology, file = "phenology/data/VCG_clean_community_phenology_2014-2015.csv")
+write_csv(phenology, file = "cleaning_code/4_phenology_data/data/VCG_clean_community_phenology_2014-2015.csv")
 

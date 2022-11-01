@@ -6,8 +6,8 @@ library(writexl)
 
 #######################################################################################
 #### SEEDBANK DATA ####
-seedbank_raw <- read_excel("seeds/data/Vandvik_OIKOS.xlsx", sheet = "Vandvik_SB")
-vegetation_raw <- read_excel("seeds/data/Vandvik_OIKOS.xlsx", sheet = "Vandvik_Veg")
+seedbank_raw <- read_excel("cleaning_code/1_seed_data/data/Vandvik_OIKOS.xlsx", sheet = "Vandvik_SB")
+vegetation_raw <- read_excel("cleaning_code/1_seed_data/data/Vandvik_OIKOS.xlsx", sheet = "Vandvik_Veg")
 
 
 seedbank <- seedbank_raw |>
@@ -50,11 +50,11 @@ vegetation <- vegetation_raw |>
 
 write_xlsx(x = list(seedbank = seedbank, 
                     vegetation = vegetation), 
-           path = "seeds/data/VCG_clean_seedbank.xlsx")
+           path = "cleaning_code/1_seed_data/data/VCG_clean_seedbank.xlsx")
 
 #######################################################################################
 
-seedrain_raw <- read_excel("seeds/data/SEEDCLIM seedrain 2010 data.xlsx", sheet = "seedrain and vegetation data")
+seedrain_raw <- read_excel("cleaning_code/1_seed_data/data/SEEDCLIM seedrain 2010 data.xlsx", sheet = "seedrain and vegetation data")
 
 
 seedrain <- seedrain_raw |> 
@@ -82,7 +82,7 @@ seedrain <- seedrain_raw |>
   rename(nr_seed = S, cover = v)
 
 
-write_csv(seedrain, file = "seeds/data/VCG_clean_seedrain.csv")
+write_csv(seedrain, file = "cleaning_code/1_seed_data/data/VCG_clean_seedrain.csv")
 
 
 #######################################################################################

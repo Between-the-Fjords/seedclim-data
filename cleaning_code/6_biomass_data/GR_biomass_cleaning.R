@@ -1,7 +1,7 @@
 # Graminoid removal biomass cleaning code
 
 
-biomass_11_16 <- read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_2011-2016.xlsx") |> 
+biomass_11_16 <- read_excel("cleaning_code/6_biomass_data/data/GR7_raw_graminoid_biomass_2011-2016.xlsx") |> 
   # merge site and block
   mutate(blockID = paste0(site, block),
          # recode site
@@ -26,8 +26,8 @@ biomass_11_16 <- read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_20
 
 
 
-biomass_17_18 <- bind_rows("2017" = read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2018"),
-          "2018" = read_excel("graminoid_removal/data/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2017"),
+biomass_17_18 <- bind_rows("2017" = read_excel("cleaning_code/6_biomass_data/data/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2018"),
+          "2018" = read_excel("cleaning_code/6_biomass_data/data/GR7_raw_graminoid_biomass_2017-2018.xlsx", sheet = "2017"),
           .id = "year") |> 
   mutate(date = dmy(Dato),
          year = as.numeric(year),
@@ -63,4 +63,4 @@ biomass_17_18 <- bind_rows("2017" = read_excel("graminoid_removal/data/GR7_raw_g
 
 bind_rows(biomass_11_16, biomass_17_18) |> 
   select(year, date, everything()) %>% 
-  write_csv(., "graminoid_removal/data/VCG_clean_graminoid_removal_biomass_2011-2018.csv")
+  write_csv(., "cleaning_code/6_biomass_data/data/VCG_clean_graminoid_removal_biomass_2011-2018.csv")

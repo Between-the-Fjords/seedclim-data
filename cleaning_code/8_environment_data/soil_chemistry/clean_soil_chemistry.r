@@ -25,7 +25,7 @@ turf_table <- tbl(con, "turfs") %>%
 #############################################################
 # Read in Kari's SeedClim data from 2009 (pre transplants)
 #############################################################
-soil_chem_2009_raw <- read_excel("soil_chemistry/data/Species and env pre-experiment.xls", sheet = "Env var part filled")
+soil_chem_2009_raw <- read_excel("cleaning_code/8_environment_data/soil_chemistry/data/Species and env pre-experiment.xls", sheet = "Env var part filled")
 
 # Relabel variables
 soil_chem_2009 <- soil_chem_2009_raw %>% 
@@ -80,7 +80,7 @@ soil_chem_2009 <- soil_chem_2009_raw %>%
 # and 2012 is from Farinas PhD Thesis Proposal
 #############################################################
 
-soil_chem_1012_raw <- read_excel("soil_chemistry/data/SFarinas_Compiled_data_for_SEEDCLIM_2010_and_2012.xlsx", 
+soil_chem_1012_raw <- read_excel("cleaning_code/8_environment_data/soil_chemistry/data/SFarinas_Compiled_data_for_SEEDCLIM_2010_and_2012.xlsx", 
                                  sheet = "Compiled data") 
 
 soil_chem_2010 <- soil_chem_1012_raw %>% 
@@ -102,7 +102,7 @@ soil_chem_2010 <- soil_chem_1012_raw %>%
 ############################################################
 ## Based off Farinas PhD Thesis Proposal, dated 2013
 
-soil_chem_2013_raw <- read_excel("soil_chemistry/data/Seedclim-rootgrowth-tested-variables.xlsx",
+soil_chem_2013_raw <- read_excel("cleaning_code/8_environment_data/soil_chemistry/data/Seedclim-rootgrowth-tested-variables.xlsx",
     sheet = 1,
     col_names = TRUE)
 
@@ -119,7 +119,7 @@ soil_chem_2013 <- soil_chem_2013_raw %>%
 
 ### 2015 soil C and N content
 
-soil_chem_2015_raw <- read_delim("soil_chemistry/data/soilCN_2015.txt", locale = locale(decimal_mark = ","))
+soil_chem_2015_raw <- read_delim("cleaning_code/8_environment_data/soil_chemistry/data/soilCN_2015.txt", locale = locale(decimal_mark = ","))
 
 soil_chem_2015 <- soil_chem_2015_raw %>% 
   mutate(year = 2015,
@@ -152,7 +152,7 @@ soil_chem <- bind_rows(soil_chem_2009, soil_chem_2010, soil_chem_2013, soil_chem
                           TRUE ~ NA_character_))
 
 # save file
-write_csv(soil_chem, "soil_chemistry/data/VCG_clean_soil_chemistry_2009_2010_2013_2015.csv")
+write_csv(soil_chem, "cleaning_code/8_environment_data/soil_chemistry/data/VCG_clean_soil_chemistry_2009_2010_2013_2015.csv")
 
 
 ggplot(soil_chem, aes(x = year, y = value)) +

@@ -28,9 +28,9 @@ unzip(zipFile, exdir = outDir)
 
 ## Read in data ##
 
-my_sla <- read.csv('plant_traits/data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
+my_sla <- read.csv('cleaning_code/5_trait_data/data/RawTraitData_SLA.csv', header=TRUE, stringsAsFactors = FALSE)
 #my_leaf_chem <- read.csv('plant_traits/Data/raw_data_CN_2014Sept15.csv', header=TRUE, stringsAsFactors = FALSE)
-my_leaf_chem <- read_csv('plant_traits/Data/raw_data_CN_2014Sept15.csv')
+my_leaf_chem <- read_csv('cleaning_code/5_trait_data/Data/raw_data_CN_2014Sept15.csv')
 
 ## Site name dictionary ##
 
@@ -96,13 +96,13 @@ my_leaf_chem <- my_leaf_chem %>%
  
 #### Load trait data ####
  
-traits <- read.csv("plant_traits/Data/LeafTraits_SeedClim.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
- LA <- read.csv2("plant_traits/Data/Leaf_area_total.csv", stringsAsFactors = FALSE)
- CN <- read.csv2("plant_traits/Data/CNratio.csv", dec=".", sep=";")
+traits <- read.csv("cleaning_code/5_trait_data/Data/LeafTraits_SeedClim.csv", header=TRUE, sep = ";", stringsAsFactors = FALSE)
+ LA <- read.csv2("cleaning_code/5_trait_data/Data/Leaf_area_total.csv", stringsAsFactors = FALSE)
+ CN <- read.csv2("cleaning_code/5_trait_data/Data/CNratio.csv", dec=".", sep=";")
  
 #### Dictionaries ####
  
-dict_CN <- read.csv2("plant_traits/Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
+dict_CN <- read.csv2("cleaning_code/5_trait_data/Data/Dict_CN.csv", header = TRUE, sep=";", stringsAsFactors = FALSE)
 
 dict_Site_CN_2016 <- read.table(header = TRUE, stringsAsFactors = FALSE, text = 
                            "old new
@@ -258,5 +258,5 @@ traitdata_full <- traitdata %>%
                              "permil" = "d15N")) |> 
    select(year, date, siteID, species, individual_nr = individual, trait, value, unit, flag)
 
-write_csv(traitdata_full, file = "plant_traits/data/VCG_clean_trait_data_2012-2016.csv")
+write_csv(traitdata_full, file = "cleaning_code/5_trait_data/data/VCG_clean_trait_data_2012-2016.csv")
  

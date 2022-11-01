@@ -18,7 +18,7 @@ if(file.exists(zipFile)){
 
 #importing the data
 
-soilmoisture1516 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
+soilmoisture1516 <- read_csv("cleaning_code/8_environment_data/climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture_1516.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
   rename( #renaming the measurements because I want to do a pivot later and I think it makes more sense to have them as replicate number
     # "1" = "M1",
     # "2" = "M2",
@@ -43,7 +43,7 @@ soilmoisture1516 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoistu
 
 
 
-soilmoisture_2015_2016 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/soilMoisture_2015-2016.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
+soilmoisture_2015_2016 <- read_csv("cleaning_code/8_environment_data/climate/data/SeedClim_Plot_SoilMoisture/soilMoisture_2015-2016.csv", col_types = "cffffffdddddffc", na = c("#DIV/0!", "NA")) %>% 
   rename(
     # "1" = "M1",
     # "2" = "M2",
@@ -68,7 +68,7 @@ soilmoisture_2015_2016 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/soil
 
 
 
-soilmoisture2017 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", col_types = "cfffffddddff", na = c("na", "NA")) %>% 
+soilmoisture2017 <- read_csv("cleaning_code/8_environment_data/climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture2017.csv", col_types = "cfffffddddff", na = c("na", "NA")) %>% 
   rename(
     "date" = "Date",
     "site" = "Site",
@@ -98,7 +98,7 @@ soilmoisture2017 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoistu
 
 
 
-soilmoisture2018 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", col_types = "cfffffddddff", na = c("na", "NA", "u")) %>% 
+soilmoisture2018 <- read_csv("cleaning_code/8_environment_data/climate/data/SeedClim_Plot_SoilMoisture/Soilmoisture2018.csv", col_types = "cfffffddddff", na = c("na", "NA", "u")) %>% 
   rename(
     "date" = "Date",
     "site" = "Site",
@@ -123,7 +123,7 @@ soilmoisture2018 <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/Soilmoistu
 
 
 
-soilmoisture_extra <- read_csv("climate/data/SeedClim_Plot_SoilMoisture/SeedClim_soilmoisture_archive.csv", col_types = "cfffffddddffcc", na = c("na", "NA", "u")) %>% 
+soilmoisture_extra <- read_csv("cleaning_code/8_environment_data/climate/data/SeedClim_Plot_SoilMoisture/SeedClim_soilmoisture_archive.csv", col_types = "cfffffddddffcc", na = c("na", "NA", "u")) %>% 
   mutate(
     date = mdy(date)
   )
@@ -176,7 +176,7 @@ soilmoisture_raw  <- bind_rows(
   pivot_longer(cols = c("1":"4"), names_to = "replicate") %>% 
   select(year, date, siteID, turfID, blockID, blockID_FC, replicate, value, weather, recorder, comments, transcriber_comment)
 
-write_csv(soilmoisture_raw, "climate/data/VCG_clean_soilmoisture_plotlevel_1010_2015-2018.csv")
+write_csv(soilmoisture_raw, "cleaning_code/8_environment_data/climate/data/VCG_clean_soilmoisture_plotlevel_1010_2015-2018.csv")
 
 
 # making a graph to have an overview of the campaigns and see if something is missing

@@ -4,7 +4,7 @@ library(lubridate)
 library(tidyverse)
 
 #load litter transplant data
-Litter_raw <- read.table("decomposition/data/LitterTransplant_14082017.txt", header=TRUE, dec= ",") %>% 
+Litter_raw <- read.table("cleaning_code/7_ecosystem_data/data/LitterTransplant_14082017.txt", header=TRUE, dec= ",") %>% 
   as_tibble()
 
 # litter collection dates
@@ -79,4 +79,4 @@ Litter_clean <- Litter_raw %>%
   # mutate(warmer = ifelse(grepl("WA", Treatment, fixed = TRUE), "1", "0"),
   #        wetter = ifelse(grepl("WE", Treatment, fixed = TRUE), "1", "0"))
 
-write_csv(Litter_clean, "decomposition/data/VCG_clean_decomposition_litter_2016.csv")
+write_csv(Litter_clean, "cleaning_code/7_ecosystem_data/data/VCG_clean_decomposition_litter_2016.csv")

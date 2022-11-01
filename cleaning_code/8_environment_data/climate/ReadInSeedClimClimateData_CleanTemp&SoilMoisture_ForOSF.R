@@ -12,7 +12,7 @@ pn <- . %>% print(n = Inf)
 
 #### IMPORT CLIMATE DATA FOR ALL SITES ####
 # load in premade functions
-source('climate/Functions_ReadInSeedClimClimateData.R')
+source('cleaning_code/8_environment_data/climate/Functions_ReadInSeedClimClimateData.R')
 
 # Download the following zip files from OSF:
 # ClimatDataFromBioFelles.zip
@@ -20,7 +20,7 @@ source('climate/Functions_ReadInSeedClimClimateData.R')
 # and place them in a folder climate/data/raw in your R project.
 # if you choose anothe data structure change the path name in L23.
 
-climateRepo <- list.files(path = "climate/data/raw", 
+climateRepo <- list.files(path = "cleaning_code/8_environment_data/climate/data/raw", 
                              pattern = "txt", recursive = TRUE, full.names = TRUE) %>% 
   grep(pattern = "Notes|Notater|UVB", x = ., invert = TRUE, value = TRUE, ignore.case = TRUE) %>%
   grep(pattern = "ITAS\\d{0,4}\\.txt|ITAS-FALL-2014\\.txt", x = ., invert = TRUE, value = TRUE, ignore.case = TRUE) %>%
@@ -51,7 +51,7 @@ climate <- climate %>%
   group_by(date, logger, site, type) %>% 
   slice(1)
 
-save(climate, file = "climate/data/climate.Rdata")
+save(climate, file = "cleaning_code/8_environment_data/climate/data/climate.Rdata")
 #load(file = "climate/data/climate.Rdata")  
 
 
@@ -73,7 +73,7 @@ precipitation <- subset(climate, logger %in% c("nedbor", "rain", "arg100", "coun
 soilmoisture <- subset(climate, logger %in% c("jordf1", "jordf2", "soil.moisture", "soil moisture 2", "soil moisture 1", "soil moisture", "sm300 2", "sm300 1", "jordfukt2"))
 
 # uncleaned precipitation data
-write.csv(precipitation,"climate/data/VCG_unclean_precipitation.csv")
+write.csv(precipitation,"cleaning_code/8_environment_data/climate/data/VCG_unclean_precipitation.csv")
 
 # if(basename(textfile) %in% c("Fauske_temp_Fall2016.txt")){
 #   message("removing soil moisture and precipitation data from fauske fall 2016 file")
@@ -439,9 +439,9 @@ temperature2 <- temperature2 |>
          unit = "°C") |> 
   select(year, date, siteID = site, logger, value, unit, flag, type, file)
 
-write.csv(temperature2,"climate/data/VCG_clean_temperature.csv")
+write.csv(temperature2,"cleaning_code/8_environment_data/climate/data/VCG_clean_temperature.csv")
 
-dat <- read_csv("climate/data/VCG_clean_temperature.csv")
+dat <- read_csv("cleaning_code/8_environment_data/climate/data/VCG_clean_temperature.csv")
 temperature2 <- dat |> 
   mutate(siteID = recode(siteID,
          "Skjellingahaugen" = "Skjelingahaugen",
@@ -644,5 +644,5 @@ soilmoisture3 <- soilmoisture3 |>
   mutate(year = year(date)) |> 
   select(year, date, siteID = site, logger, value, flag, sensor.disagree, type, file)
 
-write_csv(soilmoisture3, "climate/data/VCG_clean_soil_moisture.csv")
+write_csv(soilmoisture3, "cleaning_code/8_environment_data/climate/data/VCG_clean_soil_moisture.csv")
 

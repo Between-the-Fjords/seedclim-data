@@ -4,7 +4,7 @@ library(tidyverse)
 library(janitor)
 
 # TBI data
-TBI_raw <- read_excel("decomposition/data/TBI_141516_07082017.xlsx")
+TBI_raw <- read_excel("cleaning_code/7_ecosystem_data/data/TBI_141516_07082017.xlsx")
 
 #change particular columns to factors 
 TBI <- TBI_raw %>% 
@@ -30,5 +30,5 @@ TBI <- TBI_raw %>%
          initial_weight_gteabag:final_weight_rtea, 
          Ag = ag, Ar = ar, Wt = wt, time, comment)
 
-write_csv(TBI, "decomposition/data/VCG_clean_decomposition_teabag_2014.csv")
+write_csv(TBI, "cleaning_code/7_ecosystem_data/data/VCG_clean_decomposition_teabag_2014.csv")
 
