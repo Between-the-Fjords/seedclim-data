@@ -1,0 +1,124 @@
+; Copyright (C) 2008 quiBus AG.  All rights reserved.
+;
+; Installation des USB-Drivers für den UTL3 Datenlogger
+; Verwendet PicWinUSB 1.0
+; 23.08.2008: Verwendet die neue VID der Geotest AG '1E9D'
+;
+; ================= Version section ===================
+
+[Version]
+Signature = "$Windows NT$"
+Class     = %ClassName%
+ClassGuid = {5B41269B-6D7B-4187-92D0-2C078D239010}
+Provider  = %ProviderName%
+DriverVer = 08/23/2008,1.0.0.0
+
+; ========== Manufacturer/Models sections ===========
+
+[Manufacturer]
+%ProviderName% = PicWinUSB, NTamd64
+
+[PicWinUSB]
+; %DeviceDesc% = WinUSB_Install, USB\VID_04D8&PID_0011
+%DeviceDesc% = WinUSB_Install, USB\VID_1E9D&PID_0011
+
+[PicWinUSB.NTamd64]
+; %DeviceDesc% = WinUSB_Install, USB\VID_04D8&PID_0011
+%DeviceDesc% = WinUSB_Install, USB\VID_1E9D&PID_0011
+
+[ClassInstall32]
+Addreg    = PicWinUSBClassReg86
+CopyFiles = PicWinUSBClassInstallerCopyFiles86
+
+[ClassInstall32.ntamd64]
+Addreg=PicWinUSBClassReg64
+CopyFiles=PicWinUSBClassInstallerCopyFiles64
+
+[PicWinUSBClassReg86]
+HKR,,,0,%ClassName%
+HKR,,Icon,,100
+HKR,,Installer32,,"picusb86.dll,PicUSBClassInstaller"
+
+[PicWinUSBClassReg64]
+HKR,,,0,%ClassName%
+HKR,,Icon,,100
+HKR,,Installer32,,"picusb64.dll,PicUSBClassInstaller"
+
+[PicWinUSBClassInstallerCopyFiles86]
+picusb86.dll
+
+[PicWinUSBClassInstallerCopyFiles64]
+picusb64.dll
+
+; ================== Installation ==================
+
+[WinUSB_Install]
+Include = WinUSB.inf
+Needs = WinUSB.NT
+
+[WinUSB_Install.Services]
+Include = WinUSB.inf
+AddService = WinUSB, 0x00000002, WinUSB_ServiceInstall
+
+[WinUSB_ServiceInstall]
+DisplayName   = %WinUSB_SvcDesc%
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %12%\WinUSB.sys
+
+[WinUSB_Install.Wdf]
+KmdfService = WinUSB, WinUSB_Install_Lib
+
+[WinUSB_Install_Lib]
+KmdfLibraryVersion = 1.7
+
+[WinUSB_Install.HW]
+AddReg = Dev_AddReg
+
+[Dev_AddReg]
+HKR,,DeviceInterfaceGUIDs,0x00010000,"{31415926-5358-9793-2384-626433832795}"
+
+[WinUSB_Install.CoInstallers]
+AddReg = CoInstallers_AddReg
+CopyFiles = CoInstallers_CopyFiles
+
+[CoInstallers_AddReg]
+HKR,,CoInstallers32,0x00010000,"WinUSBCoInstaller.dll","WdfCoInstaller01007.dll,WdfCoInstaller"
+
+[CoInstallers_CopyFiles]
+WinUSBCoInstaller.dll
+WdfCoInstaller01007.dll
+
+[SourceDisksNames]
+1 = %MediaDescription%
+
+[SourceDisksFiles]
+WinUSBCoInstaller.dll   = 1, x86
+WdfCoInstaller01007.dll = 1, x86
+picusb86.dll            = 1, x86
+picusb64.dll            = 1, amd64
+
+;[SourceDisksFiles.NTamd64]
+;WinUSBCoInstaller.dll   = 1, amd64
+;WdfCoInstaller01007.dll = 1, amd64
+;picusb64.dll            = 1, amd64
+
+[DestinationDirs]
+CoInstallers_CopyFiles = 11
+
+; ==================== Strings =====================
+
+[Strings]
+ClassName        = "Datalogger"
+DeviceDesc       = "UTL3 Temperaturlogger"
+ProviderName     = "Geotest AG"
+MediaDescription = "UTL3 Device Driver Disc"
+WinUSB_SvcDesc   = "Geotest AG UTL-3 Driver"
+
+; Bezeichnungen im Geräte-Manager:
+;   ProviderName     : Hersteller im Eigenschaftenfenster
+;   ClassName        : Gerätetyp, 1. Hierarchiestufe, unter Hostname)
+;   DeviceDesc       : Gerätebezeichnung, 2. Hierarchiestufe unter Gerätetyp
+;   MediaDescription : Wird in der Dialogbox "Erforderliche Dateien" in der Aufforderung verwendet
+;   WinUSB_SvcDesc   : 
