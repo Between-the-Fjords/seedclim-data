@@ -54,7 +54,7 @@ BD <- BD_raw %>%
                          "VES" = "Veskre",
                          "FAU" = "Fauske",
                          "VIK" = "Vikesland",
-                         "ARN" = "Arhelleren",
+                         "ARH" = "Arhelleren",
                          "OVS" = "Ovstedalen"),
          variable = "bulk_density",
          unit = "g cm-³",
